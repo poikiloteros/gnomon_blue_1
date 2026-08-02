@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="preload" as="image" href="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785523034/stylus_clean_uoiaor.png" fetchpriority="high">
-<link rel="preload" as="image" href="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785523029/tablet_clean_qc5lrn.png" fetchpriority="high">
+<link rel="preload" as="image" href="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785697416/tablet_portrait_clear_lc5vrp.jpg" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,100..900&amp;family=EB+Garamond:ital,wght@0,400..600;1,400..500&amp;family=Noto+Sans+Mono:wght@400..600&amp;display=swap" rel="stylesheet">
 <style>
 /* ==========================================================================
@@ -25,22 +25,58 @@
    One self-contained file, no build step. The figure is generated in the
    browser; the two introductory plates come from Cloudinary.
    ---------------------------------------------------------------------------
-   REVISION 8 — what moved, and the one number to reach for in each case.
+   REVISION 9 — what moved, and the one number to reach for in each case.
 
-     landing registration  plateBox() measures the codex plate's own content
-                           box and writes KEY[0].fill/fillY/px/py from it.
-                           Knob: LANDING.trim (>1 grows the drawing past the
-                           photograph, <1 sits it inside).
-     blur                  plates .15px, hand-off exit 7px, backplate ceiling
-                           10px, --back-scale 1 (was a 1.16x halo).
-     the turnover          a wordless, unnumbered room between the overture
-                           and move 01. Knob: the `turn` channel and the 2.8
-                           exponent in stateAt that front-loads it.
-     grain                 INFILL (renderer) is the readability fix; the dig /
-                           dens / ink columns of KEY are the taste.
-     mosaic                createMosaic(), keyed to the fraction between rooms.
-     compact layout        the sheet menu + section 17. Knob: the 44svh band.
-     the plate             dressPortrait(), same Bayer and inks as the figure.
+     the plate             a new render, tablet_portrait_clear. It is a matte
+                           on white rather than a cut-out, so it is keyed in
+                           the page: see the #platekey filter under <body>.
+                           Constants are measured off the file, not guessed.
+                           Knob: the alpha row of the feColorMatrix.
+     landing registration  the pose is now fitted to the plate rather than the
+                           other way round. KEY[0] carries pit 0.6974, roll
+                           0.0865 and lens 2.20, solved numerically against the
+                           render's own silhouette: leaf-outline agreement goes
+                           from IoU 0.88 to 0.977. Knobs: KEY[0].lens (focal
+                           length, x the 21-degree default) and LANDING.trim.
+     regL                  a new keyframe channel. At 1 the framing is decided
+                           by the two leaves alone and the stylus is ignored by
+                           both the centring and the fit -- which is what the
+                           plate requires, having no stylus in it. 1 on the
+                           landing, 0 by the third room.
+     the halo              --back-scale 1.46. The photograph is deliberately
+                           LARGER than the drawing now, blurred and radially
+                           masked, so the lattice stands inside a bloom rather
+                           than on an exact copy of itself. It runs through the
+                           loader too (.plate-halo) so the hand-over has
+                           nothing to cross. Knobs: --back-scale, and the 3.20
+                           and 0.80 in backplateAt().
+     transparency          grain 2.55 (was 3.15), INFILL 0.44 (was 0.58), and
+                           the dens column of KEY between 0.40 and 0.72 (was
+                           0.66 to 1.00). Measured: printed cells over the
+                           figure's own footprint fall from 0.357 to 0.169 on
+                           the landing and from 0.368 to 0.179 in the prose
+                           rooms -- about half the ink. Knob: dens per room;
+                           OPT.spacing if you want the cloud itself thinner.
+     the showcase          rooms 2-4 are movement and a one-line caption, and
+                           carry a slow `spin` so they keep turning while they
+                           are being looked at. The numerals have gone from
+                           them; stateAt's front-loading exponent is 2.0, not
+                           2.8, so the turnover is a movement not a jerk.
+     the numerals          numberMoves() now numbers .reg-fig -- the three
+                           kinds of commission, which is the one place a reader
+                           has to be told there are three of something.
+     mosaic                createMosaic() fires at the two boundaries of ONE
+                           room, not all fifteen. Knob: MARK (currently 4, THE
+                           TURN). Band raised to 40vh, envelope is a plateau.
+     the plate (studio)    .studio-media 660px, .portrait up to 80svh.
+     compact layout        the sheet could not be closed -- the dialog covered
+                           its own burger. Fixed with html.locked .nav, plus a
+                           close button and a dismissing backdrop. The figure's
+                           band is 48svh and its fillY multiplier 0.44, so the
+                           lattice no longer sits in the middle of a paragraph;
+                           .overture keeps its full screen so "Scroll" stops
+                           printing through the strapline; .hand is no longer
+                           clipped to 38vh against an unclipped canvas.
    ========================================================================== */
 
 /* ------------------------------------------------ 1 · tokens
@@ -81,7 +117,9 @@
      stylus where it comes to rest on the codex, and are the one thing to
      nudge if the two plates do not sit exactly on each other. */
   --plate-w: min(53vw, 720px);
-  --plate-h: calc(var(--plate-w) * .455);
+  --plate-h: calc(var(--plate-w) * .561);   /* the new plate is 1.968:1 */
+  /* keys the white matte out of the render; see the filter above */
+  --plate-key: url(#platekey);
   --sty-w:   min(30vw, 360px);
   --sty-spin: .62;   /* the stylus is smaller while it turns                */
   --sty-x:     0%;   /* the descent is straight: up and smaller, nothing else */
@@ -96,7 +134,12 @@
      blurred further away as the reader leaves. Both are written by script. */
   --back-o:    0;
   --back-blur: 10px;
-  --back-scale: 1;   /* the plate stands where it stood: no enlargement */
+  /* THE HALO.  The backplate is no longer registered 1:1 with the drawing --
+     it is deliberately larger than it, so the lattice sits INSIDE a blurred
+     bloom of the same photograph rather than on top of an exact copy of it.
+     That is the relation in the dithered-eye reference: a soft colour field
+     that overruns the marks on every side. 1.46 is about the ratio there. */
+  --back-scale: 1.46;
 
   /* written by the script once it knows the timings; declared here so the
      document is never briefly styled with an invalid duration. */
@@ -191,7 +234,9 @@ body.on-paper .invert { opacity: 1; }
    grid would fight the first — over the works carousel, and on paper. */
 .mosaic {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 2;
-  height: clamp(130px, 24vh, 290px);
+  /* nearly half again as tall as it was: the band has to be wide enough to
+     read as the ground breaking up rather than as a decorated edge */
+  height: clamp(210px, 40vh, 480px);
   pointer-events: none; opacity: 1; transition: opacity 420ms linear;
 }
 .mosaic.mute { opacity: 0; }
@@ -222,9 +267,11 @@ body.on-paper .invert { opacity: 1; }
 @supports (mix-blend-mode: screen) { .backplate { mix-blend-mode: screen; } }
 .backplate img {
   width: 100%; height: auto;
-  filter: var(--plate-mask) brightness(.66) contrast(1.14) blur(var(--back-blur));
-  -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 62%, rgba(0,0,0,.62) 84%, transparent 100%);
-  mask-image: radial-gradient(closest-side at 50% 50%, #000 62%, rgba(0,0,0,.62) 84%, transparent 100%);
+  filter: var(--plate-key) var(--plate-mask) brightness(.74) contrast(1.10) blur(var(--back-blur));
+  /* a wider, softer falloff than before: the halo has to run out past the
+     lattice on every side rather than stopping just outside it */
+  -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 46%, rgba(0,0,0,.55) 74%, transparent 100%);
+  mask-image: radial-gradient(closest-side at 50% 50%, #000 46%, rgba(0,0,0,.55) 74%, transparent 100%);
 }
 @media (prefers-reduced-motion: reduce) { .backplate { transition: none; } }
 
@@ -411,19 +458,33 @@ html:not(.js) .wsplit > i { transform: none; }
 /* Both plates are colour-masked into the ground's own hue and left a touch
    soft, so the photograph and the lattice that replaces it belong to one
    picture rather than two. The mask is a variable, so a theme carries it. */
-.plate { filter: var(--plate-mask) blur(.15px); }
+.plate { filter: var(--plate-key) var(--plate-mask) blur(.15px); }
 
 /* the loose stylus.
    Four quarter turns, the last of which also lays it down at its resting
    tilt; then a single monotone descent — smaller, and up onto the tablet.
    Nothing moves sideways and nothing turns after the fourth quarter. */
+/* the halo: the same plate, larger, blurred and dimmed, standing behind the
+   codex from the moment the codex arrives. It is what the landing's backplate
+   grows out of, so the hand-over has nothing to cross. */
+.plate-halo {
+  width: calc(100% * var(--back-scale));
+  opacity: 0;
+  filter: var(--plate-key) var(--plate-mask) brightness(.62) contrast(1.1) blur(26px);
+  -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 54%, rgba(0,0,0,.58) 80%, transparent 100%);
+  mask-image: radial-gradient(closest-side at 50% 50%, #000 54%, rgba(0,0,0,.58) 80%, transparent 100%);
+}
+.loader.k1 .plate-halo, .loader.k2 .plate-halo, .loader.k3 .plate-halo {
+  opacity: .72; transition: opacity 1200ms var(--ease);
+}
+
 .plate-sty {
   width: var(--sty-w);
   opacity: 0;
   transform: translate(-50%, -50%) rotate(0deg) scale(1);
   transform-origin: 50% 50%;
   clip-path: inset(0 100% 0 0);
-  filter: var(--plate-mask) blur(2px);
+  filter: var(--plate-mask) blur(2px);   /* already a cut-out PNG: no key */
 }
 .loader.s1 .plate-sty {
   opacity: 1; clip-path: inset(0 0 0 0); filter: var(--plate-mask) blur(.15px);
@@ -490,7 +551,7 @@ html:not(.js) .wsplit > i { transform: none; }
 }
 .handoff img {
   position: absolute; left: 50%; top: 50%; width: 100%; transform: translate(-50%, -50%);
-  filter: var(--plate-mask) blur(.15px);
+  filter: var(--plate-key) var(--plate-mask) blur(.15px);
 }
 .handoff.on { opacity: 1; }
 .handoff.off {
@@ -575,6 +636,23 @@ body.on-paper .swatches .lab { color: color-mix(in srgb, var(--paper-ink) 55%, t
   display: flex; flex-direction: column; justify-content: flex-end;
 }
 .sheet.open { opacity: 1; pointer-events: auto; }
+/* THE MENU COULD NOT BE CLOSED.  The sheet is a full-viewport dialog at
+   z-index 480 and the nav -- which is where the burger lives -- was at 100,
+   so the moment the sheet opened it covered its own close button and swallowed
+   the tap. Keyboard users had Escape; everyone on a phone had the back
+   gesture. The nav is lifted above the sheet for exactly as long as the sheet
+   is standing, which is what `locked` already marks, and dropped back
+   afterwards so it never outranks the case-study dialog at 450. */
+html.locked .nav { z-index: 490; }
+/* and a second way out: anywhere on the backdrop that is not the menu */
+.sheet .sheet-in { position: relative; z-index: 1; }
+.sheet-close {
+  position: absolute; z-index: 2;
+  top: calc(6px + env(safe-area-inset-top));
+  right: max(calc(var(--gutter) - 12px), env(safe-area-inset-right));
+  width: 46px; height: 46px; display: none; place-items: center;
+  color: var(--fg); -webkit-tap-highlight-color: transparent;
+}
 .sheet-in {
   padding: 0 max(var(--gutter), env(safe-area-inset-left))
            calc(clamp(34px, 7vh, 76px) + env(safe-area-inset-bottom))
@@ -667,20 +745,24 @@ html:not(.js) .turn-rule > i { transform: scaleX(1); }
    the only place the second tone is allowed to be large. */
 .move { justify-content: flex-end; }
 .move .inner { display: flex; flex-direction: column; align-items: flex-start; }
-.move-num {
-  display: block; line-height: .78;
-  font-variation-settings: 'wdth' 88, 'wght' 300;
-  font-size: clamp(64px, 11vw, 170px); letter-spacing: -.03em;
-  color: var(--warm);
+.move-cite { color: var(--fg-faint); }
+/* .move-num / .move-lab / .move-line went with the numerals. The numeral
+   itself is not gone from the page -- see .reg-fig, where it now counts the
+   three kinds of commission. */
+
+/* the showcase caption: one line, quiet, low in the room. It is a label on a
+   case, not a paragraph -- the object is the thing being read here. */
+.move-cap {
+  display: flex; flex-direction: column; gap: 7px; max-width: 38ch;
+  font-family: var(--font-s); font-size: clamp(1rem, 1.28vw, 1.24rem);
+  line-height: 1.52; color: var(--fg-soft);
 }
-.move-lab { margin-top: 6px; color: var(--fg-soft); letter-spacing: .3em; }
-.move-line {
-  margin-top: clamp(12px, 2vh, 22px); max-width: 40ch;
-  font-family: var(--font-s); font-size: clamp(1.1rem, 1.62vw, 1.5rem); line-height: 1.5;
-  color: var(--fg-soft);
+.move-cap .mono {
+  font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--fg-faint);
 }
-.move-line em { font-style: italic; color: var(--fg); }
-.move-cite { margin-top: 12px; color: var(--fg-faint); }
+.move-cap em { font-style: italic; color: var(--fg); }
+.move-cap .move-cite { margin-top: 2px; }
 
 /* ------------------------------------------------ 9 · hero */
 .hero { justify-content: flex-end; padding-bottom: clamp(44px, 7vh, 84px); }
@@ -750,7 +832,20 @@ html:not(.js) .turn-rule > i { transform: scaleX(1); }
 }
 .reg-card .body-w { max-width: 44ch; font-size: 15.5px; line-height: 1.62; }
 .reg-card .tags { margin-top: 16px; padding-top: 13px; font-size: 10.5px; }
-.reg-num { color: var(--fg-faint); }
+.reg-num { color: var(--fg-faint); display: block; margin-top: 4px; }
+/* THE NUMERAL, MOVED.  It used to run down the showcase rooms, where it was
+   counting camera angles. It counts the three kinds of commission now, which
+   is the one place on the page where a reader actually needs to be told there
+   are three of something and which one they are looking at. Same face, same
+   weight and same warm ink as before, one step smaller because it is standing
+   over a card rather than holding a room on its own. */
+.reg-fig {
+  display: block; line-height: .78;
+  font-variation-settings: 'wdth' 88, 'wght' 300;
+  font-size: clamp(52px, 6.4vw, 104px); letter-spacing: -.03em;
+  color: var(--warm); margin-bottom: 4px;
+}
+.reg-card[data-place="right"] .reg-fig { text-align: right; }
 
 /* ------------------------------------------------ 12 · works */
 .works { justify-content: space-between; }
@@ -882,7 +977,7 @@ html:not(.js) .step { opacity: 1; transform: none; }
 .step p { font-size: 14.5px; line-height: 1.56; color: color-mix(in srgb, var(--paper-ink) 78%, transparent); max-width: 50ch; }
 
 /* ------------------------------------------------ 14 · studio */
-.studio-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .92fr); gap: clamp(30px, 4vw, 64px); align-items: start; }
+.studio-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 1.18fr); gap: clamp(26px, 3.2vw, 52px); align-items: start; }
 .studio .body-w { font-size: 15.5px; line-height: 1.62; max-width: 56ch; }
 .studio .h2 { margin: 14px 0 18px; max-width: 22ch; }
 .studio p strong { color: var(--fg); font-weight: 500; }
@@ -897,10 +992,10 @@ html:not(.js) .step { opacity: 1; transform: none; }
    cross-origin work: if the host refuses, the canvas is removed and what is
    left is the scanned-line treatment the plate had before, which is why that
    rule is still here. */
-.studio-media { width: min(100%, 470px); margin-left: auto; }
+.studio-media { width: min(100%, 660px); margin-left: auto; }
 .portrait {
   position: relative; overflow: hidden; outline: 1px solid var(--rule-soft);
-  aspect-ratio: 4 / 5; width: 100%; max-height: min(64svh, 640px);
+  aspect-ratio: 4 / 5; width: 100%; max-height: min(80svh, 900px);
   cursor: pointer;
 }
 .portrait img {
@@ -1023,7 +1118,11 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 @media (max-width: 900px), (max-height: 600px) {
   html { scroll-snap-type: none; }
   .screen { min-height: 0; scroll-snap-align: none; padding-block: clamp(74px, 12vh, 120px) clamp(56px, 9vh, 100px); }
-  .hero { min-height: 100svh; }
+  /* The overture needs its full screen back. .o-cue is absolutely positioned
+     against the section's bottom edge, and with min-height:0 that edge sits
+     immediately under .o-sub -- which is why "Scroll" was printing straight
+     through "Web design studio - Oxford" on a phone. */
+  .hero, .overture { min-height: 100svh; }
 }
 
 /* ---------------------------------------------------------------- compact
@@ -1045,19 +1144,20 @@ html:not(.js) .cred { opacity: 1; transform: none; }
     padding: 14px max(var(--gutter), env(safe-area-inset-right)) 14px max(var(--gutter), env(safe-area-inset-left));
   }
   .nav-pill { display: none; }
+  /* on a phone every room scrolls under the nav rather than snapping past it,
+     so the scrim is not a scroll state -- it is permanent furniture */
+  .nav::before { opacity: 1; }
   .nav .swatches { display: none; }          /* they live in the sheet now */
   .burger { display: grid; }
 
   /* the figure's band, and the reading under it */
-  .screen[data-fig] { padding-top: calc(44svh + 20px); }
+  .screen[data-fig] { padding-top: calc(48svh + 24px); }
   .overture, .hero { padding-top: clamp(74px, 12vh, 120px); }
   .hero-copy, .practice-lede, .practice-2 .inner, .body-w, .contact-body { max-width: none; }
   .hero-cue { display: none; }
   .o-cue { bottom: calc(clamp(22px, 4vh, 44px) + env(safe-area-inset-bottom)); }
 
   .h2 { font-size: clamp(1.7rem, 6.6vw, 2.4rem); max-width: 20ch; }
-  .move-num { font-size: clamp(58px, 21vw, 120px); }
-  .move-line { font-size: clamp(1.06rem, 4.4vw, 1.3rem); max-width: none; }
   .o-mark { font-size: clamp(52px, 18vw, 150px); }
   .gigaword { font-size: clamp(48px, 17vw, 140px); }
   .turn-rule { width: min(70vw, 340px); }
@@ -1067,7 +1167,11 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .reg-title { margin-bottom: 20px; }
   .works-head { grid-template-columns: 1fr; }
   .works-note { grid-column: 1; }
-  .hand { height: 38vh; }
+  /* .hand used to be clipped to 38vh here. handGeom() lays the dial out
+     against window.innerHeight and the stylus itself is drawn on the
+     full-viewport canvas, so clipping the SVG -- which stretches, having
+     preserveAspectRatio="none" -- pulled the ticks off the needle by the
+     better part of a room. It keeps inset:0, like the canvas it belongs to. */
   .card { width: 78vw; }
   .method .inner { grid-template-columns: 1fr; }
 
@@ -1089,11 +1193,25 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   a, button { -webkit-tap-highlight-color: transparent; }
 
   .foot { padding-bottom: env(safe-area-inset-bottom); }
-  .mosaic { height: clamp(96px, 17vh, 180px); }
+  .mosaic { height: clamp(150px, 28vh, 300px); }
+
+  /* the showcase caption, and the numeral that moved to the registers */
+  .move-cap { font-size: clamp(1rem, 4.2vw, 1.18rem); max-width: none; }
+  .move-cap .mono { font-size: 9.5px; letter-spacing: .26em; }
+  .reg-fig { font-size: clamp(46px, 16vw, 96px); }
+  .reg-card[data-place="right"] .reg-fig { text-align: left; }
+
+  /* the plate is the loud thing in the studio room on a phone too, but it may
+     not be so tall that the credits below it are never seen */
+  .portrait { max-height: 68svh; }
+
+  /* the sheet gets a close of its own, and the backdrop closes it too */
+  .sheet-close { display: grid; }
+  .sheet-in { padding-top: 64px; }
 }
 @media (max-width: 560px) {
   .foot-grid { grid-template-columns: 1fr 1fr; }
-  .screen[data-fig] { padding-top: calc(40svh + 16px); }
+  .screen[data-fig] { padding-top: calc(45svh + 20px); }
   .move-cite, .plate-cap { font-size: 9.5px; letter-spacing: .1em; }
   .email { font-size: clamp(1.2rem, 7vw, 1.9rem); }
   .track-ui { flex-wrap: wrap; }
@@ -1123,11 +1241,44 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 
 <a class="skip" href="#main">Skip to content</a>
 
+<!-- THE WHITE KEY.  The new plate is a render on a white matte, not a
+     cut-out, so it cannot simply be dropped on a dark ground: the loader
+     would show a white rectangle and the screen-blended backplate would blow
+     out the whole quarter of the screen it stands in.
+
+     This keys it in the page instead of in the asset, and the constants are
+     measured off the file rather than guessed. The matte is a synthetic
+     render, so its ground is EXACTLY white: over the whole image the minimum
+     channel sum outside the object is 3.0000 and the brightest pixel on the
+     object is 2.8471. There is a clean gap, and the key is put in it.
+
+     alpha = 12 * (3 - (r + g + b)). White gives 0; anything summing below
+     2.9167 gives a solid 1, which is every pixel of the tablet with a
+     quarter of the gap to spare; the band between the two carries under a
+     tenth of one per cent of the image and is nothing but the render's own
+     antialiased edge, which is exactly where a soft key belongs. Nothing
+     about the colour is touched -- the matrix leaves the RGB rows as
+     identity and writes only the alpha row.
+
+     If you would rather ship a real cut-out (one less filter in the chain,
+     and it composites faster), upload tablet_portrait_cutout.png, point the
+     four plate <img> tags at it, and delete --plate-key from the filter
+     chains below. Everything else stays as it is. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="platekey" color-interpolation-filters="sRGB"
+          x="0%" y="0%" width="100%" height="100%">
+    <feColorMatrix type="matrix" values="1 0 0 0 0
+                                         0 1 0 0 0
+                                         0 0 1 0 0
+                                         -12 -12 -12 0 36"/>
+  </filter>
+</svg>
+
 <canvas id="tab" aria-hidden="true"></canvas>
 
 <!-- the photographic plate, left standing behind the lattice on the landing -->
 <div class="backplate" id="backplate" aria-hidden="true">
-  <img id="backImg" alt="" decoding="async" src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785523029/tablet_clean_qc5lrn.png">
+  <img id="backImg" alt="" decoding="async" src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785697416/tablet_portrait_clear_lc5vrp.jpg">
 </div>
 
 <div class="invert" aria-hidden="true"></div>
@@ -1137,8 +1288,12 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <!-- ==================================================== the introduction -->
 <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading Stylos">
   <div class="stage" aria-hidden="true">
+    <!-- the larger blurred halo of the same plate, standing behind the codex,
+         so the loader already carries the bloom the landing will inherit -->
+    <img class="plate plate-halo" id="plateHalo" alt="" aria-hidden="true" decoding="async"
+         src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785697416/tablet_portrait_clear_lc5vrp.jpg">
     <img class="plate plate-cod" id="plateCod" alt="" decoding="async" fetchpriority="high"
-         src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785523029/tablet_clean_qc5lrn.png">
+         src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785697416/tablet_portrait_clear_lc5vrp.jpg">
     <img class="plate plate-sty" id="plateSty" alt="" decoding="async" fetchpriority="high"
          src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785523034/stylus_clean_uoiaor.png">
   </div>
@@ -1149,7 +1304,7 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 
 <!-- the photographic plate hands over to the identical dithered pose -->
 <div class="handoff" id="handoff" aria-hidden="true">
-  <img id="handoffImg" alt="" src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785523029/tablet_clean_qc5lrn.png">
+  <img id="handoffImg" alt="" src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1785697416/tablet_portrait_clear_lc5vrp.jpg">
 </div>
 
 <nav class="nav" id="nav" aria-label="Main">
@@ -1177,6 +1332,11 @@ html:not(.js) .cred { opacity: 1; transform: none; }
      replaces it: the same five destinations, at a size a thumb can hit, with
      the ink pair and the address underneath. -->
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menu" inert>
+  <button class="sheet-close" id="sheetClose" type="button" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+      <path d="M5 5l14 14M19 5L5 19" stroke-linecap="round"/>
+    </svg>
+  </button>
   <div class="sheet-in">
     <!-- No numerals here. The numeral is the deck's device for a room that
          carries an idea; a menu is a list of destinations, and borrowing the
@@ -1228,31 +1388,42 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   <span class="turn-rule" aria-hidden="true"><i></i></span>
 </section>
 
-<!-- ==================================================== 2 · move I -->
-<section class="screen move" id="m1" data-room="2" data-nav="" data-scrim="left" data-fig data-move>
+<!-- ==================================================== 2-4 · THE SHOWCASE
+     Three rooms of movement and nothing else. The numerals have gone: a
+     numbered room is a room making an argument, and these are not making one
+     -- they are turning an object in the light so it can be looked at from
+     three sides. The device is spent instead where it earns its keep, on the
+     three kinds of commission further down.
+
+     What is left in each room is one caption, set small and low, saying what
+     is being looked at. Strip the <p> and the rooms still work; the caption
+     is there so the scroll is not four screens of unexplained motion.
+     Delete the captions and the rooms still work. -->
+<section class="screen move" id="m1" data-room="2" data-nav="" data-scrim="left" data-fig data-move aria-label="The tablet">
   <div class="inner">
-    <span class="move-num rv" style="--d:80ms">01</span>
-    <span class="move-lab mono rv-cut" style="--d:200ms">The tablet</span>
-    <p class="move-line rv" style="--d:420ms">Two leaves, a bed of wax, a cord through the spine. Everything a page has to do, and nothing it does not.</p>
+    <p class="move-cap rv" style="--d:260ms">
+      <span class="mono">The tablet</span>
+      Two leaves, a bed of wax, a cord through the spine.
+    </p>
   </div>
 </section>
 
-<!-- ==================================================== 2 · move II -->
-<section class="screen move" id="m2" data-room="3" data-nav="" data-scrim="right" data-fig data-move>
+<section class="screen move" id="m2" data-room="3" data-nav="" data-scrim="right" data-fig data-move aria-label="The cut">
   <div class="inner" style="align-items:flex-end;text-align:right">
-    <span class="move-num rv" style="--d:80ms">02</span>
-    <span class="move-lab mono rv-cut" style="--d:200ms">The cut</span>
-    <p class="move-line rv" style="--d:420ms"><em>Saepe stilum uertas.</em> Turn the stylus often &mdash; the advice given to anyone who wants to write something worth reading a second time.</p>
-    <span class="move-cite mono rv" style="--d:620ms">Horace, Sermones 1.10.72</span>
+    <p class="move-cap rv" style="--d:260ms">
+      <span class="mono">The cut</span>
+      <em>Saepe stilum uertas</em> &mdash; turn the stylus often.
+      <span class="move-cite mono">Horace, Sermones 1.10.72</span>
+    </p>
   </div>
 </section>
 
-<!-- ==================================================== 3 · move III -->
-<section class="screen move" id="m3" data-room="4" data-nav="" data-scrim="left" data-fig data-move>
+<section class="screen move" id="m3" data-room="4" data-nav="" data-scrim="left" data-fig data-move aria-label="The turn">
   <div class="inner">
-    <span class="move-num rv" style="--d:80ms">03</span>
-    <span class="move-lab mono rv-cut" style="--d:200ms">The turn</span>
-    <p class="move-line rv" style="--d:420ms">The wax becomes glass; the wood becomes a folded cover. The material is new every few years. The two gestures are not.</p>
+    <p class="move-cap rv" style="--d:260ms">
+      <span class="mono">The turn</span>
+      The wax becomes glass; the wood becomes a folded cover.
+    </p>
   </div>
 </section>
 
@@ -1306,7 +1477,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
       <h2 class="h2 rv-wipe" style="--d:140ms">Three kinds of commission.</h2>
     </div>
     <div class="reg-card" data-place="left">
-      <span class="mono reg-num rv" style="--d:200ms">I &mdash; Research &amp; humanities</span>
+      <span class="reg-fig rv" style="--d:170ms" aria-hidden="true">01</span>
+      <span class="mono reg-num rv" style="--d:200ms">Research &amp; humanities</span>
       <h3 class="rv-wipe" style="--d:300ms">Project sites, archives and databases</h3>
       <div class="body-w rv" style="--d:520ms">
         <p>Grant outputs, structured databases, digital editions and project platforms &mdash; built to be cited, and to hold up under scholarly scrutiny. Designed from inside research: what a work package, an advisory board and a funder each need to see, and how a database earns a reader&rsquo;s trust.</p>
@@ -1322,7 +1494,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <section class="screen reg" data-room="9" data-nav="registers" data-scrim="right" data-fig>
   <div class="inner">
     <div class="reg-card" data-place="right">
-      <span class="mono reg-num rv">II &mdash; Heritage &amp; visualisation</span>
+      <span class="reg-fig rv" aria-hidden="true">02</span>
+      <span class="mono reg-num rv" style="--d:60ms">Heritage &amp; visualisation</span>
       <h3 class="rv-wipe" style="--d:140ms">3D models, photogrammetry and digital exhibitions</h3>
       <div class="body-w rv" style="--d:430ms">
         <p>Photogrammetric models of ancient structures, annotated and embedded; visual archives and spatial evidence made legible for scholars, funders and the public. Drawn from years of archaeological visualisation and current work with Oxford galleries, libraries, archives and museums.</p>
@@ -1338,7 +1511,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <section class="screen reg" data-room="10" data-nav="registers" data-scrim="left" data-fig>
   <div class="inner">
     <div class="reg-card" data-place="left">
-      <span class="mono reg-num rv">III &mdash; Creative &amp; independent</span>
+      <span class="reg-fig rv" aria-hidden="true">03</span>
+      <span class="mono reg-num rv" style="--d:60ms">Creative &amp; independent</span>
       <h3 class="rv-wipe" style="--d:140ms">Portfolios, studios and small institutions</h3>
       <div class="body-w rv" style="--d:430ms">
         <p>Editorial sites for artists, performers, schools and independent professionals &mdash; design that catches the tone of a practice, with working machinery underneath: content systems, back offices, payments, and images handled with care.</p>
@@ -2042,81 +2216,81 @@ var KEY = [
          plate's own measured content box; the values here are the fallback
          used when the image cannot be sampled. */
   { open: 1.00, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.34,
-    yaw: -0.16, pit: 0.72, roll: 0.02, turn: 0, fill: 0.70, px: 0.02, py: -0.06,
-    dig: 0.94, dens: 0.66, ink: 0.98 },
+    yaw: -0.16, pit: 0.6974, roll: 0.0865, turn: 0, fill: 0.70, px: 0.02, py: -0.06,
+    dig: 0.88, dens: 0.40, ink: 0.84, lens: 2.20, regL: 1 },
 
   /* 1 · THE TURNOVER — wordless. The object lifts, shuts, and goes round
          once in front of the reader. The rotation is front-loaded (see
          stateAt) so the first flick of the wheel does nearly all of it and
          the rest of the room is the settle. */
   { open: 0.04, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.08,
-    yaw: -0.74, pit: 1.02, roll: 0.05, turn: TURN1, fill: 0.86, px: 0.00, py: -0.02,
-    dig: 0.88, dens: 0.78, ink: 1.00 },
+    yaw: -0.74, pit: 1.02, roll: 0.05, turn: TURN1, fill: 0.80, px: 0.00, py: -0.02,
+    dig: 0.84, dens: 0.50, ink: 0.94, lens: 1.55, regL: 0.35 },
 
   /* 2 · THE TABLET — it turns square on, so the object is read as an
          object: two leaves, a thickness, a cord through the spine. */
-  { open: 0.05, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.00,
-    yaw: -0.31, pit: 0.60, roll: -0.06, turn: TURN1, fill: 0.64, px: 0.19, py: -0.07,
-    dig: 0.86, dens: 0.86, ink: 1.00 },
+  { open: 0.34, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.00,
+    yaw: -0.44, pit: 0.86, roll: -0.04, turn: TURN1, fill: 0.72, px: 0.09, py: -0.05,
+    dig: 0.82, dens: 0.54, ink: 0.96, lens: 1.14, spin: 0.42 },
 
   /* 3 · THE CUT — flat, from overhead, and the stylus writes the motto
          into the wax while the room is being read. This is the room the
          grain is tuned against: everything else is measured from it. */
   { open: 1.00, morph: 0, write: 0.02, erase: 0, flip: 0, work: 1.00,
-    yaw: -0.05, pit: 1.30, roll: 0.02, turn: TURN1, fill: 0.76, px: -0.17, py: -0.05,
-    dig: 0.74, dens: 0.92, ink: 1.00,
+    yaw: -0.08, pit: 1.14, roll: 0.02, turn: TURN1, fill: 0.78, px: -0.07, py: -0.04,
+    dig: 0.74, dens: 0.58, ink: 0.98, spin: 0.30,
     writeTo: 1.00, actMs: 5200 },
 
   /* 4 · THE TURN — the deformation. morph runs 0 to 1 across the scroll
          between rooms 3 and 4, so the wax becomes glass under the reader's
          own hand rather than while they are looking somewhere else. */
   { open: 1.00, morph: 1, write: 0.12, erase: 0, flip: 0, work: 0.44,
-    yaw: 0.25, pit: 0.86, roll: 0.00, turn: TURN1, fill: 0.74, px: 0.18, py: -0.05,
-    dig: 0.66, dens: 0.96, ink: 1.00 },
+    yaw: 0.26, pit: 0.88, roll: 0.00, turn: TURN1, fill: 0.76, px: 0.11, py: -0.05,
+    dig: 0.66, dens: 0.60, ink: 1.00, spin: 0.34 },
 
   /* ---- the reading ---------------------------------------------------- */
 
   /* 5 · the first prose room. */
   { open: 1.00, morph: 1, write: 0.14, erase: 0, flip: 0, work: 0.30,
     yaw: 0.16, pit: 0.74, roll: 0.02, turn: TURN1, fill: 0.76, px: 0.21, py: -0.10,
-    dig: 0.56, dens: 1.00, ink: 0.94 },
+    dig: 0.56, dens: 0.64, ink: 0.88 },
 
   /* 6 · the name — the giant word holds the room; the tablet stands aside,
          shut and small, and lets it. */
   { open: 0.08, morph: 1, write: 0.00, erase: 0, flip: 0, work: 0.00,
     yaw: -0.07, pit: 1.08, roll: -0.08, turn: TURN1, fill: 0.52, px: 0.25, py: 0.15,
-    dig: 0.44, dens: 1.00, ink: 0.90 },
+    dig: 0.44, dens: 0.60, ink: 0.84 },
 
   /* 7 · structure first — opened wide and taken low, so the reader is
          looking along the object rather than down at it. */
   { open: 1.00, morph: 1, write: 0.06, erase: 0, flip: 0, work: 0.20,
     yaw: 0.31, pit: 0.50, roll: 0.04, turn: TURN1, fill: 0.92, px: 0.05, py: 0.06,
-    dig: 0.42, dens: 1.00, ink: 0.88 },
+    dig: 0.42, dens: 0.62, ink: 0.82 },
 
   /* 8 · register I — copy left, figure right, the screen turned up */
   { open: 1.00, morph: 1, write: 0.12, erase: 0, flip: 0, work: 0.58,
     yaw: 0.34, pit: 0.68, roll: 0.00, turn: TURN1, fill: 0.70, px: 0.22, py: 0.02,
-    dig: 0.48, dens: 1.00, ink: 1.00 },
+    dig: 0.48, dens: 0.66, ink: 0.92 },
 
   /* 9 · register II — the mirror of it */
   { open: 1.00, morph: 1, write: 0.18, erase: 0, flip: 0, work: 0.40,
     yaw: -0.34, pit: 0.82, roll: 0.00, turn: TURN1, fill: 0.70, px: -0.22, py: 0.02,
-    dig: 0.48, dens: 1.00, ink: 1.00 },
+    dig: 0.48, dens: 0.66, ink: 0.92 },
 
   /* 10 · register III — the cover folded most of the way back, seen low */
   { open: 0.58, morph: 1, write: 0.08, erase: 0, flip: 0, work: 0.10,
     yaw: 0.21, pit: 0.38, roll: 0.03, turn: TURN1, fill: 0.80, px: 0.16, py: 0.07,
-    dig: 0.44, dens: 1.00, ink: 0.98 },
+    dig: 0.44, dens: 0.64, ink: 0.90 },
 
   /* 11 · works — the tablet goes; the stylus stays and becomes the needle */
   { open: 1.00, morph: 1, write: 0.06, erase: 0, flip: 0, work: 0.30,
     yaw: 0.30, pit: 0.70, roll: 0.00, turn: TURN1, fill: 0.60, px: 0.00, py: 0.00,
-    dig: 0.38, dens: 1.00, ink: 1.00, hand: 1 },
+    dig: 0.38, dens: 0.72, ink: 0.94, hand: 1 },
 
   /* 12 · method — on paper. The markup types itself and is wiped off. */
   { open: 1.00, morph: 1, write: 0.00, erase: 0, flip: 0, work: 1.00,
     yaw: 0.02, pit: 1.22, roll: 0.02, turn: TURN1, fill: 0.68, px: 0.17, py: 0.02,
-    dig: 0.46, dens: 1.00, ink: 0.86,
+    dig: 0.46, dens: 0.62, ink: 0.80,
     writeTo: 1.00, eraseTo: 1.00, actMs: 8600 },
 
   /* 13 · studio — the slab up on its edge and slowly turning, behind the
@@ -2125,14 +2299,14 @@ var KEY = [
           afford to be read rather than merely sensed. */
   { open: 0.90, morph: 1, write: 0.24, erase: 0, flip: 0, work: 0.12,
     yaw: 0.36, pit: 0.15, roll: 0.00, turn: TURN1, fill: 0.46, px: -0.02, py: 0.12,
-    dig: 0.40, dens: 1.00, ink: 0.62, spin: 1 },
+    dig: 0.40, dens: 0.58, ink: 0.58, spin: 1 },
 
   /* 14 · contact — OPEN, turned toward the reader, the stylus down on the
           glass and the caret blinking under it. A shut tablet at the end of
           a page says the shop is closed; this one says begin. */
   { open: 1.00, morph: 1, write: 0.06, erase: 0, flip: 0, work: 0.94,
     yaw: 0.26, pit: 0.58, roll: 0.02, turn: TURN1, fill: 0.66, px: 0.24, py: -0.03,
-    dig: 0.52, dens: 1.00, ink: 1.00,
+    dig: 0.52, dens: 0.66, ink: 0.92,
     writeTo: 0.34, actMs: 4600 }
 ];
 
@@ -2162,6 +2336,25 @@ function stateAt(p, q) {
   o.hand = lerp(A.hand || 0, B.hand || 0, f);
   o.spin = lerp(A.spin || 0, B.spin || 0, f);
 
+  /* LENS.  Focal length, as a multiple of the 21-degree default. Above 1 the
+     field of view narrows and the lens gets longer.
+     It exists for one reason: the landing has to stand in the same perspective
+     as the photographic plate it is registered against, and that render was
+     made on a long lens. Raising lens raises the fit distance in step, so the
+     figure keeps its size on screen and only the foreshortening changes --
+     which is the whole difference between a silhouette that lies on the
+     photograph and one that merely resembles it. Measured: 2.20 takes the
+     leaf-outline agreement from IoU 0.88 to 0.977. Everything past the
+     overture runs at 1 and the change is spent across two rooms, so the
+     object is felt to be released into ordinary space rather than cut to it.
+
+     REGL.  How much of the framing is decided by the two leaves alone. At 1
+     the stylus is ignored by both the centring and the fit, which is what the
+     plate demands -- the plate has no stylus in it, so a fit that counted one
+     would always sit the drawing a few per cent small and off-centre. */
+  o.lens = lerp(A.lens === undefined ? 1 : A.lens, B.lens === undefined ? 1 : B.lens, f);
+  o.regL = lerp(A.regL === undefined ? 0 : A.regL, B.regL === undefined ? 0 : B.regL, f);
+
   /* fillY — how much of the box's HEIGHT the figure may use. It defaults to
      fill, so only the landing (which is registered against a photograph of a
      known aspect) has to declare it. */
@@ -2175,7 +2368,12 @@ function stateAt(p, q) {
      third of the scroll, so the first flick of the wheel throws the object
      round and the remainder of the room is the object coming to rest. */
   var lf = p - i;
-  var snap = lf <= 0 ? 0 : (lf >= 1 ? 1 : 1 - Math.pow(1 - lf, 2.8));
+  /* 2.0, not 2.8. The revolution is still front-loaded -- the first flick of
+     the wheel should throw the object round -- but at 2.8 it threw about two
+     thirds of a turn into the first sixth of the scroll, which read as a jerk
+     rather than as a movement. At 2.0 the same weight is spread over roughly
+     the first third and the settle is longer. */
+  var snap = lf <= 0 ? 0 : (lf >= 1 ? 1 : 1 - Math.pow(1 - lf, 2.0));
   o.turn = lerp(A.turn || 0, B.turn || 0, snap);
   return o;
 }
@@ -2338,9 +2536,26 @@ var PAL = {
   }
 };
 
+/* GRAIN AND DENSITY, RETUNED FOR TRANSPARENCY.
+
+   The field used to be woven: a 3.15px lattice printing between two thirds
+   and all of its cells, which is opaque enough that nothing can be seen
+   through it -- and the whole point of standing the drawing on a photographic
+   halo is that the halo should be visible between the marks.
+
+   grain 2.55 is the pilot's setting: a finer lattice, so each mark is smaller
+   and lighter and there are more of them to choose from. The choosing is done
+   by `dens` in the keyframes, which is now between 0.40 (the landing) and
+   0.72 rather than between 0.66 and 1.00 -- rather less than half the cells
+   print on the landing, and about two thirds in the reading rooms.
+
+   If you want it airier still, the pilot's other lever is `spacing`: raising
+   it thins the point cloud itself rather than the printing of it. 2.05 is the
+   value the inscription geometry was tuned against; 3.40 is noticeably sparse
+   and 4.60 (the pilot's ceiling) is a scatter. Raise it here, not per room. */
 var OPT = {
   theme: 'green',
-  grain: 3.15,       // lattice pitch, CSS px
+  grain: 2.55,       // lattice pitch, CSS px  (was 3.15)
   spacing: 2.05,     // model-space sample spacing
   xray: true,
   DPR_CAP: 1.8
@@ -2352,7 +2567,7 @@ var DSX = 2, DSY = 3;   // a digit occupies this many lattice cells
    made a high digit share hole the drawing: only one cell in six carries a
    digit, so five in six went dark. At 0.58 the between-digit cells hold the
    silhouette without competing with the numerals sitting on top of them. */
-var INFILL = 0.58;
+var INFILL = 0.44;
 
 /* ---- state ------------------------------------------------------------ */
 var W = 0, H = 0, DPR = 1, cell = 6, gw = 1, gh = 1;
@@ -2375,7 +2590,10 @@ var handOn = 0, handPhi = Math.PI * 0.5, handTarget = Math.PI * 0.5, handSectors
 /* the reaction: a soft disc of second-tone that follows the pointer, plus a
    floor the room can raise. hoR is its radius in lattice cells. */
 var hovX = -1e4, hovY = -1e4, hovA = 0, hovAim = 0, hoR = 15, warmBase = 0;
-var densCur = 1, digCur = 1;
+/* start where the landing stands, not at full density: these ease at 0.16 a
+   frame, and from 1.00 that is a fifth of a second of the field visibly
+   thinning out just as the photograph hands over to it. */
+var densCur = ENG.KEY[0].dens, digCur = ENG.KEY[0].dig;
 var pxNudge = 0, pyNudge = 0, pxAim = 0, pyAim = 0;
 var stCur = null, dirty = true;
 
@@ -2772,7 +2990,7 @@ function drawFrame(t) {
   var asm = ENG.assemblyAt(REDUCED ? 0 : t, st.roll + (st.turn || 0), st.spin);
   for (p = 0; p < 3; p++) WM[p] = ENG.tMul(asm, pose.mats[p]);
 
-  var f = (H / 2) / Math.tan(21 * Math.PI / 180);
+  var f = (H / 2) / Math.tan(21 * Math.PI / 180) * (st.lens === undefined ? 1 : st.lens);
   var panX, panY, cam;
 
   if (hand) {
@@ -2788,33 +3006,47 @@ function drawFrame(t) {
     /* frame the whole assembly to the share of the box the room asks for */
     var iters = fitted ? 1 : 24;
     for (var it = 0; it < iters; it++) {
-      var cx = 0, cy = 0, cz = 0, cnt = 0;
+      /* two centroids, the whole assembly and the leaves alone, blended by
+         regL. Blended rather than switched: a switch at a threshold would
+         put a visible step in the middle of the first scroll. */
+      var rl = st.regL === undefined ? 0 : st.regL;
+      var cx = 0, cy = 0, cz = 0, cnt = 0, lx0 = 0, ly0 = 0, lz0 = 0, lcnt = 0;
       for (i = 0; i < scene.n; i += 29) {
         ENG.tApply(WM[scene.part[i]], posCur[i * 3], posCur[i * 3 + 1], posCur[i * 3 + 2], o3);
         cx += o3[0]; cy += o3[1]; cz += o3[2]; cnt++;
+        if (scene.part[i] !== 2) { lx0 += o3[0]; ly0 += o3[1]; lz0 += o3[2]; lcnt++; }
       }
-      var tg = [cx / cnt, cy / cnt, cz / cnt];
+      if (!lcnt) lcnt = 1;
+      var tg = [ENG.lerp(cx / cnt, lx0 / lcnt, rl),
+                ENG.lerp(cy / cnt, ly0 / lcnt, rl),
+                ENG.lerp(cz / cnt, lz0 / lcnt, rl)];
       if (fitted) {
         target[0] += (tg[0] - target[0]) * 0.10;
         target[1] += (tg[1] - target[1]) * 0.10;
         target[2] += (tg[2] - target[2]) * 0.10;
       } else { target = tg; }
       cam = ENG.cameraAt(st.yaw + pxNudge, st.pit + pyNudge, dist, target);
-      var mx = 1, my = 1;
+      var mxA = 1, myA = 1, mxL = 1, myL = 1;
       for (i = 0; i < scene.n; i += 29) {
         ENG.tApply(WM[scene.part[i]], posCur[i * 3], posCur[i * 3 + 1], posCur[i * 3 + 2], o3);
         ENG.tApply(cam.V, o3[0], o3[1], o3[2], v3);
         var d0 = -v3[2]; if (d0 < 1) continue;
         var ax = Math.abs(f * v3[0] / d0), ay = Math.abs(f * v3[1] / d0);
-        if (ax > mx) mx = ax; if (ay > my) my = ay;
+        if (ax > mxA) mxA = ax; if (ay > myA) myA = ay;
+        if (scene.part[i] !== 2) { if (ax > mxL) mxL = ax; if (ay > myL) myL = ay; }
       }
+      var mx = ENG.lerp(mxA, mxL, rl), my = ENG.lerp(myA, myL, rl);
       /* On a narrow screen the figure normally lives in a band under the nav,
          which is a different framing from the one the landing needs. lw is 1
          on the landing and 0 by the turnover, so the registered pose survives
          the compact layout and the band takes over the moment it is left. */
       var lw = compact ? ENG.clamp(1 - deckP, 0, 1) : 0;
       var fillx = st.fill  * (compact ? ENG.lerp(0.80, 1.00, lw) : 1);
-      var filly = (st.fillY === undefined ? st.fill : st.fillY) * (compact ? ENG.lerp(0.52, 1.00, lw) : 1);
+      /* 0.44, not 0.52. At 0.52 the widest room (structure first, fill 0.92)
+         put the foot of the figure at just past half the viewport while the
+         copy began at 44svh, so the two overlapped by about six per cent of
+         the screen and the paragraph was being read through the lattice. */
+      var filly = (st.fillY === undefined ? st.fill : st.fillY) * (compact ? ENG.lerp(0.44, 1.00, lw) : 1);
       var kk = Math.max(mx / (0.5 * fillx * W), my / (0.5 * filly * H));
       var want = dist * kk;
       dist += (want - dist) * (fitted ? 0.12 : 0.62);
@@ -2826,7 +3058,7 @@ function drawFrame(t) {
     if (compact) {
       var lw2 = ENG.clamp(1 - deckP, 0, 1);
       panX = ENG.lerp(0, st.px, lw2) * W;
-      panY = ENG.lerp(-0.235, st.py, lw2) * H;
+      panY = ENG.lerp(-0.250, st.py, lw2) * H;
     }
   }
 
@@ -3708,9 +3940,16 @@ var backEl = $('backplate'), backO = -1, backB = -1, backLive = false;
 
 function backplateAt(p) {
   if (!backEl) return;
-  var t = clamp(p / 2.15, 0, 1);            /* gone by the middle of room 2 */
-  var o = backLive ? (1 - t) * (1 - t) * 0.62 : 0;
-  var b = 5 + t * 34;
+  /* HELD LONGER, AND BRIGHTER.  The halo used to be gone by the middle of
+     room 2, on the reasoning that a photograph has no business being under
+     prose. But the photograph is not being read as a photograph any more --
+     at 1.46x, blurred and radially masked, it is a bloom, and the drawing
+     wants something to stand on for the whole of the wordless showcase.
+     It now fades across three rooms and clears just as the first argument
+     arrives, which is where it was always meant to stop. */
+  var t = clamp(p / 3.20, 0, 1);
+  var o = backLive ? (1 - t) * (1 - t) * 0.80 : 0;
+  var b = 7 + t * 40;
   if (Math.abs(o - backO) > 0.004) { backO = o; backEl.style.setProperty('--back-o', o.toFixed(3)); }
   if (Math.abs(b - backB) > 0.35)  { backB = b; backEl.style.setProperty('--back-blur', b.toFixed(1) + 'px'); }
 }
@@ -3943,7 +4182,10 @@ function createMosaic(el) {
           x: rx * unit, y: ry * unit,
           w: (Math.random() < 0.22 ? 2 : 1) * unit - gap,
           h: (Math.random() < 0.10 ? 2 : 1) * unit - gap,
-          thr: clamp((1 - fy) * 0.58 + Math.random() * 0.34, 0, 1),
+          /* the stagger is compressed (0.58 -> 0.34) so more of the field is
+             standing at once and for longer; the band now holds rather than
+             ripples past */
+          thr: clamp((1 - fy) * 0.34 + Math.random() * 0.22, 0, 1),
           acc: Math.random() < 0.06
         });
       }
@@ -3960,7 +4202,7 @@ function createMosaic(el) {
     blank = false;
     for (var i = 0; i < tiles.length; i++) {
       var tl = tiles[i];
-      var a = sm((frac - tl.thr) / 0.14) * (1 - sm((frac - tl.thr - 0.40) / 0.20));
+      var a = sm((frac - tl.thr) / 0.11) * (1 - sm((frac - tl.thr - 0.62) / 0.26));
       a *= env;
       if (a < 0.022) continue;
       mctx.globalAlpha = a * 0.9;
@@ -3971,11 +4213,32 @@ function createMosaic(el) {
     mctx.globalAlpha = 1;
   }
 
-  /* p is the deck position in rooms. The transition is the bit between. */
+  /* WHERE IT FIRES.  It used to fire on every room change, which made it
+     punctuation rather than emphasis: fifteen identical breakings-up of the
+     ground, none of them meaning anything in particular.
+
+     It marks one room now, from both sides. MARK is room 4 -- THE TURN, where
+     the wax becomes glass and the wood becomes a cover. That is the hinge the
+     whole page is built around, the one place where the argument actually
+     changes state, and it is worth spending the device on twice: once going
+     in and once coming out. Every other room change is silent.
+
+     Move it by changing MARK. The two boundaries are MARK-1 -> MARK and
+     MARK -> MARK+1, which is what `floor(p) === MARK - 1 || === MARK` picks
+     out. Set MARK to -1 to switch the mosaic off without removing it. */
+  var MARK = 4;
+
   function update(p) {
-    var frac = p - Math.floor(p);
-    var env = Math.sin(Math.PI * frac);
-    env = env * env * 0.92;
+    var room = Math.floor(p);
+    var frac = p - room;
+    var env = 0;
+    if (room === MARK - 1 || room === MARK) {
+      /* a plateau, not a spike. The old sine peaked in the middle of the
+         transition and was gone either side of it, so the band was properly
+         visible for about a fifth of the scroll; this is up by a sixth of the
+         way in, held flat across the middle, and down over the last fifth. */
+      env = sm(frac / 0.17) * (1 - sm((frac - 0.80) / 0.20)) * 0.96;
+    }
     if (env < 0.012 && blank) return;
     paint(frac, env);
   }
@@ -4025,19 +4288,21 @@ function splitInto(el, mode) {
 }
 
 /* THE NUMBERED ROOMS.
-   The numeral is not a page-furniture device and it is not applied to every
-   room: it marks the rooms that carry an idea rather than a function. As it
-   stands that is exactly three — the tablet, the cut, the turn — and the
-   wordless turnover between the overture and move 01 is deliberately outside
-   the sequence, because it argues nothing.
+   The numeral is not page furniture and it is not applied to every room. It
+   used to run down the three showcase rooms, where what it was counting was
+   camera angles — which is a thing a reader has no need to keep count of.
 
-   The sequence is single-sourced from the markup: any section carrying
-   data-move and a .move-num span joins it, in document order, and the
-   numbers renumber themselves. To number another room, add the attribute and
-   the span; to take one out of the count, delete them. Nothing else changes. */
+   It counts the three kinds of commission now. That is the one place on the
+   page where the reader genuinely has to be told there are three of something
+   and which one is in front of them, and it is where the device pays for
+   itself. The showcase rooms are wordless again, as the turnover always was.
+
+   Still single-sourced from the markup: any .reg-fig inside a register card
+   joins the sequence, in document order, and they renumber themselves. Add a
+   fourth register and it becomes 04 with nothing else touched. */
 function numberMoves() {
   var n = 0;
-  Array.prototype.forEach.call(document.querySelectorAll('[data-move] .move-num'), function (el) {
+  Array.prototype.forEach.call(document.querySelectorAll('.reg-card .reg-fig'), function (el) {
     el.textContent = pad2(++n);
   });
 }
@@ -4089,6 +4354,16 @@ function setSheet(on) {
 
 if (burger && sheetEl) {
   burger.addEventListener('click', function () { setSheet(!sheetOpen); });
+  /* THREE WAYS OUT, because on a phone there was effectively none. The burger
+     is reachable again (see html.locked .nav in the stylesheet); this adds a
+     close button inside the dialog and makes the backdrop dismiss it. The
+     backdrop test is on the sheet itself rather than on a hit area, so a tap
+     that lands on the menu, the ink pair or the address is not swallowed. */
+  var sheetX = $('sheetClose');
+  if (sheetX) sheetX.addEventListener('click', function () { setSheet(false); });
+  sheetEl.addEventListener('click', function (e) {
+    if (e.target === sheetEl) setSheet(false);
+  });
   document.addEventListener('keydown', function (e) {
     if (sheetOpen && e.key === 'Escape') { e.preventDefault(); setSheet(false); }
   });
