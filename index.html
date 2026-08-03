@@ -25,6 +25,87 @@
    One self-contained file, no build step. The figure is generated in the
    browser; the two introductory plates come from Cloudinary.
    ---------------------------------------------------------------------------
+   REVISION 11.1 — eight decisions, and an audit.
+
+     the showroom index   lit in bone rather than in the warm ink, and gone
+                          below 901px. The second tone is the page's reaction
+                          and is not spent on furniture.
+     the asides           fold on a phone instead of vanishing. dressAsides()
+                          writes one control per room; .screen.told opens it.
+                          The sentence about the ink pair is reworded so it is
+                          true whether the pair is in the nav or in the menu.
+     works                a seventh slot, marked FILL ME in P[] — placeholder
+                          copy, not a claim. Replace it before publishing.
+     the overture         .o-pass, a quiet way past the three wordless rooms
+                          for a reader who arrived with a question.
+     the scroll cue       three passes, then it rests.
+     contact              writes the whole line (writeTo 1, actMs 14000). A
+                          third of a line read as a page that had run out.
+     case studies         paging them pages the row behind them: fillCase ->
+                          syncRowTo, so the counter in the chrome and the
+                          counter in the room can never disagree.
+     reduced motion       one slow pose change per room (the 0.035 in poseLoop)
+                          and the room's timed action shown at its end rather
+                          than performed. It used to SNAP, which is the most
+                          abrupt version of the figure there is.
+     the audit            removed: handMatrix and six unread ENG exports, the
+                          module.exports guard, F_TEXT, smooth(), setInk/inkA,
+                          Intro.skip, SETTLE.cancel, INTRO.reveal, the two
+                          unread --warm-* properties, the last .hero and
+                          .case-head rules, and the data-show / data-split
+                          attributes nothing selected. Nothing else was dead:
+                          every other function in the file is called, and of
+                          5,700 lines about 1,450 are the commentary this file
+                          is documented in and 460 are blank.
+   ---------------------------------------------------------------------------
+   REVISION 11 — what moved, and the one number to reach for in each case.
+
+     THE SHOWROOM        four wordless rooms became three. The fourth was the
+                         deformation, and a deformation performed at scroll
+                         speed is over before it can be seen; it has moved to
+                         STRUCTURE FIRST and is performed on a clock there.
+                         Rooms are KEY[], in document order, one per .screen.
+     the deformation     KEY[5].morphTo + actMs. The room's own clock drives
+                         it, exactly as writeTo/eraseTo already drove the wax
+                         being cut. The keyframe pair either side still reads
+                         0 -> 1, so scrolling on cannot leave it half-turned.
+     the scrims          the overture and the showroom carry none. A scrim is
+                         for type standing on the lattice; those rooms have no
+                         type, and four scrims fading in and out across a
+                         wordless stretch was the "background change" that was
+                         obscuring the choreography.
+     the mosaic          section 4c. MARKS, not MARK: the tile band is spent
+                         on the two structural seams — the showroom giving way
+                         to the first words, and the argument giving way to
+                         the work — and on nothing else.
+     the landing         KEY[0].idle. The stylus writes and wipes the wax in a
+                         slow loop until the reader scrolls, so the resting
+                         state of the page is the tool doing its one job.
+                         Period and depth: IDLE in the figure script.
+     the loader stylus   --sty-r 76deg (was 54) and --sty-s .64. It comes to
+                         rest standing on the wax rather than lying across it,
+                         which is the attitude the dithered pose then holds —
+                         the hand-over no longer shows two different styluses.
+     works               the needle is tweened sector to sector (HAND_TWEEN)
+                         rather than chased, so arrowing through the carousel
+                         no longer makes it stutter; the cards cascade in from
+                         the right under a clip; the case study opens again on
+                         a mouse (the track was capturing the pointer, which
+                         retargeted the click away from the card).
+     case studies        a masthead plate, an editorial measure and a rail of
+                         facts. Placeholder sections are marked PLACEHOLDER in
+                         the P[] table and are the copy to replace.
+     the studio plate    larger, cropped to the face, and dithered at a finer
+                         pitch so the face survives the lattice.
+     compact             the works room stacks instead of scrolling sideways,
+                         the needle and its dial stand down, the portrait
+                         comes first in the studio room, and the figure is
+                         kept out of the rooms that are only reading.
+     the settle          waits for momentum to actually stop before it acts,
+                         and leaves a room alone if the room is taller than
+                         the viewport. `scroll-behavior` is auto: the CSS
+                         smoothing was fighting the settle's own rAF.
+   ---------------------------------------------------------------------------
    REVISION 10 — what moved, and the one number to reach for in each case.
 
      THE DECK            fifteen rooms became fourteen, and three of them are
@@ -108,7 +189,6 @@
      to. It is never structural — it lights the numerals, the hover, and the
      one live rule — so the page still reads correctly without it. */
   --warm:        #ff7f66;
-  --warm-deep:   #d4472c;
 
   /* the photographic plates are pushed through this so they sit inside the
      palette instead of beside it. sepia lands near hue 40deg; the rotation is
@@ -140,16 +220,46 @@
      stylus is 122mm against a 227mm open spread, so 0.54) with a little taken
      off so it does not crowd the spine.
 
-     --sty-r is the tilt it comes to rest at. 24deg laid it almost flat across
-     the leaves; 54deg stands it up, which is the attitude it holds in the
-     dithered choreography as well, so the hand-over does not change its mind
-     about how the object is held. */
-  --sty-w:   min(30vw, 360px);
+     --sty-r / -s / -x / -y ARE NOT TASTE. They are a registration, and they
+     are solved rather than nudged. The hand-over runs both styluses at once
+     for the better part of a second — the loader fades while the drawing is
+     already standing behind it — so any disagreement between them is seen as
+     a doubling, which is exactly what was happening: the photograph laid the
+     stylus flat across the leaves at 54deg while KEY[0] held the drawn one at
+     rest beside the tablet. Two tools, one frame.
+
+     The four values below place the photograph on the drawing, measured:
+     STYLOS.stylus() in the console reports where the drawn stylus is standing
+     at deck position 0 (tip, butt, angle, length in CSS pixels), and these are
+     derived from it. At 1440x880 it stands at 48.7 degrees, 227px long, tip at
+     the first character of SAEPE on the writing leaf; the PNG's own axis is
+     vertical with the point at the foot, so the rotation is 90.4 - 48.6 = 42,
+     the scale is 227 / 441 element-px, and the offsets carry its midpoint from
+     the stage's centre to the drawn stylus's.
+
+     RE-SOLVING THEM.  Change KEY[0] (work, yaw, pit, fill) or the plate, load
+     the page, read STYLOS.stylus(), and redo those three sums. Do not nudge
+     one of the four on its own: they describe one line, and moving an end of
+     it without the other is how they came apart in the first place.
+
+     AND READ IT AT THE RIGHT MOMENT.  The landing writes in a loop, so the
+     drawn stylus is only in the pose the photograph has to match at the START
+     of that loop — sample it once mid-cycle and the answer is out by a tenth
+     of the element, which is a visible slip at the hand-over. The angle and
+     the length hold all the way round the loop; only the position moves. Take
+     the reading with the smallest tip x over a full twenty seconds, or read it
+     during the introduction, when the loop has not begun. */
+  /* tied to the plate, not to the viewport. It was min(30vw, 360px), which
+     agrees with half the plate at exactly one width (1440) and drifts away
+     from it at every other — the two caps do not fall at the same place. Half
+     the plate is half the plate at any size, and the registration below is
+     expressed as percentages of THIS, so it has to scale with the drawing. */
+  --sty-w:   calc(var(--plate-w) * .5);
   --sty-spin: .62;   /* the stylus is smaller while it turns                */
-  --sty-x:   -4%;    /* the descent is nearly straight: up, smaller, a nudge */
-  --sty-y:   -13%;
-  --sty-s:    .58;
-  --sty-r:   54deg;  /* the resting tilt, reached on the LAST quarter turn   */
+  --sty-x:   49.5%;  /* it steps up and to the right, onto the writing leaf  */
+  --sty-y:  -15.5%;
+  --sty-s:    .51;
+  --sty-r:   42deg;  /* the resting tilt, reached on the LAST quarter turn   */
   --sty-end:    1;
   --fig-x:   3vw;
   --fig-y:  -7vh;
@@ -179,7 +289,6 @@
 
   --fg:       var(--bone);
   --fg-soft:  color-mix(in srgb, var(--bone) 72%, transparent);
-  --warm-soft: color-mix(in srgb, var(--warm) 70%, transparent);
   --fg-faint: color-mix(in srgb, var(--bone) 42%, transparent);
   --rule:     color-mix(in srgb, var(--bone) 24%, transparent);
   --rule-soft:color-mix(in srgb, var(--bone) 14%, transparent);
@@ -193,7 +302,6 @@
   /* deep green ground, red-ochre mark. The pairing is not invented: it is the
      one a Fourth-Style wall reaches for, and it holds at screen luminance. */
   --warm:        #e8674c;
-  --warm-deep:   #b53a24;
   --plate-mask:  grayscale(1) sepia(.92) hue-rotate(116deg) saturate(1.05) brightness(1.08) contrast(1.03);
   --invert-c:    rgb(238,255,236);
   --paper:       #d8cfae;
@@ -204,7 +312,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html {
   background: var(--ground); color-scheme: dark;
-  overflow-x: clip; scroll-behavior: smooth;
+  /* SCROLL-BEHAVIOR IS AUTO, AND THAT IS THE FIX FOR THE JERK.  With `smooth`
+     declared here every programmatic scroll in the file gets the engine's own
+     easing put on top of it -- including the settle controller's, which calls
+     window.scrollTo once a frame from its own rAF. Two animations were driving
+     the same scroll position, each starting from where the other had left it,
+     and the result was the stutter and the stalling between rooms. Anything
+     that genuinely wants smoothing asks for it by name (goTo passes
+     behavior:'smooth'); nothing else is smoothed behind its own back. */
+  overflow-x: clip; scroll-behavior: auto;
   /* NO NATIVE SNAP.  CSS scroll-snap is all or nothing: it either refuses to
      stop between rooms or it does not snap at all, it behaves differently in
      every engine, and below 901px this build simply switched it off -- which
@@ -658,9 +774,14 @@ body.on-paper .swatches .lab { color: color-mix(in srgb, var(--paper-ink) 55%, t
    so the moment the sheet opened it covered its own close button and swallowed
    the tap. Keyboard users had Escape; everyone on a phone had the back
    gesture. The nav is lifted above the sheet for exactly as long as the sheet
-   is standing, which is what `locked` already marks, and dropped back
-   afterwards so it never outranks the case-study dialog at 450. */
-html.locked .nav { z-index: 490; }
+   is standing.
+
+   IT WAS HUNG ON THE WRONG CLASS.  `locked` means "something modal is open and
+   the page behind it must not scroll", and BOTH the menu and the case study
+   set it — so opening a case study lifted the nav to 490 over a dialog at 450
+   and buried its close button under the wordmark, in the one corner every
+   reader reaches for. The lift belongs to the sheet alone and now says so. */
+html.sheet-open .nav { z-index: 490; }
 /* and a second way out: anywhere on the backdrop that is not the menu */
 .sheet .sheet-in { position: relative; z-index: 1; }
 .sheet-close {
@@ -757,20 +878,50 @@ html.locked .nav { z-index: 490; }
   display: inline-flex; flex-direction: column; align-items: center; gap: 10px;
   color: var(--fg-faint); white-space: nowrap;
 }
+/* THE TRAILING TRACK.  The word is set at .16em of letter-spacing, and CSS puts
+   that space after the LAST letter as well as between them -- so the text box
+   is half a track wider on the right than the glyphs are, and the tick, which
+   is centred on the box, printed visibly right of the word. The word carries
+   the correction itself rather than the tick, so it stays true at any size. */
+.o-cue > i { font-style: inherit; margin-right: -.16em; }
 .o-cue::after { content: ""; width: 1px; height: 30px; background: currentColor; }
-.js .o-cue::after { animation: cue 2.8s var(--ease) infinite; transform-origin: top; }
+
+/* THE WAY PAST THE SHOWROOM.  It sits at the foot of the landing on the right,
+   away from the centred name and away from the scroll cue, and it is set at
+   the faintest weight on the page: it is not an invitation, it is a courtesy
+   for the reader who already knows what they came for. It leaves with the rest
+   of the overture on the first scroll. */
+.o-pass {
+  position: absolute; right: var(--gutter);
+  bottom: calc(clamp(30px, 5vh, 64px) + 9px);
+  color: var(--fg-faint); text-decoration: none;
+  padding-bottom: 4px; border-bottom: 1px solid transparent;
+  transition: color 320ms var(--ease), border-color 320ms var(--ease);
+}
+.o-pass:hover, .o-pass:focus-visible { color: var(--fg-soft); border-bottom-color: var(--rule); }
+html:not(.js) .o-pass { opacity: 1; transform: none; }
+
+.overture.leaving .o-pass { opacity: 0; transition: opacity 280ms linear; }
+/* THREE TIMES, THEN IT STOPS.  A cue that runs for ever is not a cue, it is a
+   fidget: after the third pass anyone who was going to scroll has scrolled,
+   and what is left is a hairline blinking at a reader who has decided to
+   stay and read the strapline. Eight seconds, then it rests. */
+.js .o-cue::after { animation: cue 2.8s var(--ease) 3; transform-origin: top; }
 
 /* ------------------------------------------------ 9 · the showroom
-   Four rooms with nothing in them. The only mark is the index at the foot of
-   the screen: four ticks, the current one lit and warm, so the reader can see
-   that the wordless stretch has a length and where in it they are. It is not
-   a control -- the scroll is the control -- so it takes no pointer events and
-   is hidden from the accessibility tree; the rooms carry sr-only headings
-   instead, which is what a screen reader should be given here.
+   THREE rooms with nothing in them, and nothing over them either. They used to
+   carry a scrim apiece, which is what a room does when type has to stand on
+   the lattice; there is no type here, and four scrims fading in and out one
+   after another across a wordless stretch read as the ground itself changing
+   colour behind the object -- the one thing the reader was meant to be
+   watching. The scrims are gone from the overture and the showroom both, and
+   the choreography is left alone with the ground it was drawn on.
 
-   Everything that used to live in this part of the stylesheet -- .turnover,
-   .turn-rule, the .move family and the whole .hero block with its .cta -- went
-   with the rooms it dressed. */
+   The only mark is the index at the foot of the screen: three ticks, the
+   current one lit, so the reader can see that the wordless stretch has a
+   length and where in it they are. It is not a control -- the scroll is the
+   control -- so it takes no pointer events and is hidden from the
+   accessibility tree; the rooms carry sr-only headings instead. */
 .show { justify-content: center; }
 .show-index {
   position: fixed; z-index: 5; left: 50%; transform: translateX(-50%);
@@ -784,7 +935,12 @@ html.locked .nav { z-index: 490; }
   transform-origin: center;
   transition: background-color 420ms var(--ease), transform 420ms var(--ease);
 }
-.show-index i.on { background: var(--warm); transform: scaleY(2.4); }
+/* THE LIT TICK IS BONE.  The warm ink is the page's reaction — it answers the
+   pointer, it lights the three numerals, and it is never structural. Spending
+   it on a progress mark made the one piece of furniture in the wordless
+   stretch the loudest thing on the screen. Bone at twice the weight says the
+   same thing in the drawing's own ink. */
+.show-index i.on { background: var(--fg-soft); transform: scaleY(2.6); }
 
 @keyframes cue { 0%,100% { transform: scaleY(.3); opacity: .35; } 50% { transform: scaleY(1); opacity: 1; } }
 
@@ -825,6 +981,9 @@ html.locked .nav { z-index: 490; }
 
 /* the sentence about handing the controls over, and the control it is about */
 .hand-over { margin-top: 2px; }
+/* the disclosure that folds the asides away belongs to the compact layout
+   only; at this width every room has the room for all of its copy */
+.aside-more { display: none; }
 .ink-nudge {
   font: inherit; color: var(--accent); background: none; padding: 0 1px 1px;
   border: 0; border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
@@ -833,12 +992,27 @@ html.locked .nav { z-index: 490; }
 .ink-nudge:hover, .ink-nudge:focus-visible { border-bottom-color: var(--accent); }
 
 .practice-lede {
-  margin-top: clamp(24px, 4.6vh, 56px); max-width: min(600px, 52vw);
+  margin-top: clamp(24px, 4.6vh, 56px); max-width: min(560px, 46vw);
   font-family: var(--font-s); font-weight: 400;
   font-size: clamp(1.24rem, 1.95vw, 1.74rem); line-height: 1.48;
 }
-.practice-2 .inner { max-width: min(980px, 66vw); }
-.practice-2 .body-w { max-width: 48ch; }
+/* THE ROOM THE DEFORMATION HAPPENS IN.  The copy used to run to 66vw and the
+   figure was framed at 0.74 of the viewport from a centre pushed only a fifth
+   of the way right, so the two overlapped across the middle third of the
+   screen and the paragraph was being read through the lattice. The measure is
+   pulled in to 46vw and the figure is framed smaller and pushed further out
+   (KEY[5].fill / .px), which leaves a clear band between the last character of
+   the line and the first mark of the drawing at every width down to 1100px.
+   The two numbers belong together: widen this and the figure has to come in. */
+/* AND IT HUGS THE GUTTER.  .inner is centred by default, which is right for
+   a room whose copy holds the middle and wrong for one with a figure standing
+   beside it: narrowing the measure on a centred block walks the text INTO the
+   drawing from both sides, which is how the two came to be overlapping across
+   the middle third of the screen. Left margin nought, and the space the
+   measure gives up all goes to the figure. */
+.practice-2 .inner { max-width: min(760px, 46vw); margin-left: 0; margin-right: auto; }
+.practice-2 .body-w { max-width: 42ch; }
+.practice-2 .h2 { max-width: 15ch; }
 
 /* ------------------------------------------------ 11 · the three registers
    The figure holds the middle of the room; the reading goes round it. */
@@ -878,13 +1052,19 @@ html.locked .nav { z-index: 490; }
 
 /* ------------------------------------------------ 12 · works */
 .works { justify-content: space-between; }
+/* THE HEAD.  It was three columns with the middle one empty, held open at up
+   to 700px so the needle would have somewhere to swing. The needle is fixed to
+   the viewport and takes no space in the flow, so the empty column was buying
+   nothing and costing the two real columns a third of the room -- which is why
+   the heading wrapped to three lines and the note sat marooned on the right.
+   Two columns, the note set against the heading's baseline. */
 .works-head {
-  display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 44vw, 700px) minmax(0, 1fr);
-  gap: clamp(16px, 2.4vw, 40px); align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 26em);
+  gap: clamp(16px, 3vw, 56px); align-items: end;
   max-width: var(--maxw); margin: 0 auto; width: 100%;
 }
-.works-head .h2 { max-width: 12ch; margin: 12px 0 0; font-size: clamp(1.45rem, 2.4vw, 2.2rem); }
-.works-note { grid-column: 3; color: var(--fg-soft); font-size: 15px; max-width: 38ch; align-self: end; }
+.works-head .h2 { max-width: 16ch; margin: 12px 0 0; font-size: clamp(1.45rem, 2.4vw, 2.2rem); }
+.works-note { color: var(--fg-soft); font-size: 15px; max-width: 42ch; }
 
 /* The stylus overhead, as a needle.
 
@@ -904,10 +1084,17 @@ html.locked .nav { z-index: 490; }
 .hand .tick {
   stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke;
   transition: stroke 420ms var(--ease), opacity 420ms var(--ease);
-  opacity: .5;
+  opacity: .42;
 }
 .hand .tick.on { stroke: var(--warm); opacity: 1; }
-.hand .dial { stroke: var(--rule-soft); stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
+/* THE ARC.  It was drawn end to end at rule-soft and ran clean across the
+   heading, which read as a stray circle behind the type rather than as the
+   track the needle keeps to. It is faint, and it is masked back to nothing at
+   both ends, so what the eye picks up is the lit sector and not the geometry. */
+.hand .dial {
+  stroke: var(--rule-soft); stroke-width: 1; fill: none;
+  vector-effect: non-scaling-stroke; opacity: .5;
+}
 
 .track {
   display: flex; gap: clamp(16px, 2vw, 30px);
@@ -918,20 +1105,36 @@ html.locked .nav { z-index: 490; }
 }
 .track::-webkit-scrollbar { display: none; }
 .track.dragging { cursor: grabbing; scroll-snap-type: none; }
+/* THE CASCADE.  The plates come in from the right, one behind another, and
+   each one is uncovered rather than faded on: the card slides while a clip
+   runs off its left edge, so the image appears to be drawn out from under the
+   one in front of it instead of materialising in place. Three things are on
+   the same per-card delay (--sd, written by the script at 150ms a card): the
+   slide, the clip, and the line scrim lifting off the photograph a beat later.
+
+   The travel is a long one (up to 260px) because a short slide with a fade
+   reads as a fade; the eye has to be given a direction. --ease-i is the
+   deceleration curve the headings use, so the row settles the way a line of
+   type settles. */
 .card {
   flex: 0 0 auto; width: clamp(250px, 24vw, 410px);
   scroll-snap-align: center; text-align: left;
-  opacity: 0; transform: translate3d(clamp(96px, 8vw, 150px), 0, 0);
-  will-change: transform, opacity;
+  opacity: 0; transform: translate3d(clamp(150px, 14vw, 260px), 0, 0);
+  clip-path: inset(0 0 0 82%);
+  will-change: transform, opacity, clip-path;
 }
 .js .track.cascade .card {
-  opacity: 1; transform: none;
-  transition: opacity 760ms var(--ease) calc(220ms + var(--sd, 0ms)),
-              transform 1060ms var(--ease-i) calc(220ms + var(--sd, 0ms));
+  opacity: 1; transform: none; clip-path: inset(0 0 0 0);
+  transition: opacity 520ms linear calc(220ms + var(--sd, 0ms)),
+              transform 1180ms var(--ease-i) calc(220ms + var(--sd, 0ms)),
+              clip-path 1180ms var(--ease-i) calc(220ms + var(--sd, 0ms));
 }
-.js .track.rested .card { will-change: auto; transition: transform 520ms var(--ease), opacity 400ms var(--ease); }
+.js .track.rested .card {
+  will-change: auto; clip-path: none;
+  transition: transform 520ms var(--ease), opacity 400ms var(--ease);
+}
 .js .track.rested .card:hover, .js .track.rested .card:focus-visible { transform: translateY(-6px); }
-html:not(.js) .card { opacity: 1; transform: none; }
+html:not(.js) .card { opacity: 1; transform: none; clip-path: none; }
 
 .shot {
   position: relative; aspect-ratio: 16 / 11; overflow: hidden;
@@ -949,9 +1152,14 @@ html:not(.js) .card { opacity: 1; transform: none; }
   opacity: 0;
 }
 .js .track.cascade .shot .scan { opacity: .9; transition: opacity 760ms var(--ease) calc(1320ms + var(--sd, 0ms)); }
-.card:hover .scan, .card:focus-visible .scan { opacity: .2; }
+/* HOVER IS A FULL UNMASK.  It used to leave the scrim at .2, which at a 1-in-4
+   pitch is still a legible set of vertical lines standing over somebody's
+   website -- the plate was never actually shown. Nought is the whole point of
+   the gesture: the lattice is the studio's mark, and lifting it off is how the
+   work underneath gets to be seen. */
+.card:hover .scan, .card:focus-visible .scan { opacity: 0; }
 .js .track.cascade .card:hover .shot .scan,
-.js .track.cascade .card:focus-visible .shot .scan { opacity: .2; transition-delay: 0ms; }
+.js .track.cascade .card:focus-visible .shot .scan { opacity: 0; transition-delay: 0ms; transition-duration: 420ms; }
 html:not(.js) .shot .scan { opacity: .9; }
 .shot .plus {
   position: absolute; right: 12px; bottom: 12px; z-index: 3;
@@ -967,13 +1175,22 @@ html:not(.js) .shot .scan { opacity: .9; }
               color-mix(in srgb, var(--ground-lift) 80%, transparent);
 }
 .shot.veiled .veil { color: var(--fg-soft); background: var(--ground); padding: 8px 14px; }
-.card-meta { padding: 13px 3px 0; }
+/* WHICH ONE IS THE CURRENT ONE.  The counter said 01 / 06 and the needle
+   pointed at it, but the row itself gave no sign at all -- six identically
+   weighted captions, and the reader had to take the chrome's word for which
+   plate it was talking about. The centred card now carries its caption at full
+   strength and the others stand back; hover and focus do the same thing, so
+   the answer is the same whether the reader is scrolling or pointing. */
+.card-meta { padding: 13px 3px 0; opacity: .55; transition: opacity 520ms var(--ease); }
+.card.is-on .card-meta, .card:hover .card-meta, .card:focus-visible .card-meta { opacity: 1; }
 .card-meta .row { display: flex; align-items: center; gap: 10px; color: var(--fg-faint); }
 .card-meta h3 {
   font-variation-settings: 'wdth' 102, 'wght' 600;
   font-size: clamp(1.02rem, 1.3vw, 1.26rem); letter-spacing: -.016em; margin-top: 7px;
 }
 .card-meta .client { margin-top: 4px; color: var(--fg-faint); }
+.card .shot { transition: outline-color 520ms var(--ease); }
+.card.is-on .shot { outline-color: var(--rule); }
 
 .track-ui { display: flex; align-items: center; gap: 18px; padding-top: 14px; max-width: var(--maxw); margin: 0 auto; width: 100%; }
 .disc {
@@ -1026,16 +1243,27 @@ html:not(.js) .step { opacity: 1; transform: none; }
    cross-origin work: if the host refuses, the canvas is removed and what is
    left is the scanned-line treatment the plate had before, which is why that
    rule is still here. */
-.studio-media { width: min(100%, 430px); margin-left: auto; }
+/* THE CROP.  4:5 at 430px wide, weighted to 22% down, put the head in the top
+   third at about 150px across -- a face printed through a 3.4px lattice needs
+   more than that to survive, and what the reader got was a texture with
+   spectacles in it. The plate is 520px and 5:6 now, which is squarer and
+   therefore closer in, and the crop is pulled to 34% so the face sits on the
+   frame's own centre line rather than under its top edge. The dither pitch
+   comes down with it (see PLATE_CELL in dressPortrait) -- the two have to move
+   together, or a bigger picture is simply a bigger set of dots. */
+.studio-media { width: min(100%, 520px); margin-left: auto; }
 .portrait {
   position: relative; overflow: hidden; outline: 1px solid var(--rule-soft);
-  aspect-ratio: 4 / 5; width: 100%; max-height: min(52svh, 560px);
+  /* 46svh, not 58: the plate has to be the loud thing in the room and the room
+     still has to fit the screen, and at 58 it pushed the credit table over the
+     bottom edge on a 880px laptop. The width above is what buys the face back,
+     not the height — a squarer crop at 520px is a bigger head than a taller
+     one at 430px, and it costs the room a hundred pixels less. */
+  aspect-ratio: 5 / 6; width: 100%; max-height: min(44svh, 600px);
   cursor: pointer;
 }
 .portrait img {
-  /* the plate is a standing portrait, and the head sits high in the frame:
-     a square crop took the crown off it. 4:5, weighted to the upper third. */
-  width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%;
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 34%;
   filter: grayscale(1) contrast(1.05) brightness(1.02);
   transition: filter 700ms var(--ease), transform 1400ms var(--ease);
 }
@@ -1063,10 +1291,10 @@ html:not(.js) .step { opacity: 1; transform: none; }
 .plate-cap b { font-weight: 500; color: var(--fg-soft); letter-spacing: .1em; }
 .plate-cap .cue { color: var(--warm); white-space: nowrap; }
 .portrait.resolved + .plate-cap .cue { opacity: .45; }
-.creds { margin-top: 16px; border-top: 1px solid var(--rule-soft); width: 100%; }
+.creds { margin-top: 14px; border-top: 1px solid var(--rule-soft); width: 100%; }
 .cred {
   display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
-  padding: 7px 2px; border-bottom: 1px solid var(--rule-soft);
+  padding: 6px 2px; border-bottom: 1px solid var(--rule-soft);
   font-size: 10px; letter-spacing: .10em; opacity: 0; transform: translateY(10px);
 }
 .js .studio.live .cred {
@@ -1114,58 +1342,98 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 .case-x { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--rule); display: grid; place-items: center; font-size: 17px; }
 .case-x:hover { background: color-mix(in srgb, var(--bone) 12%, transparent); }
 .case-scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
-/* THE CASE STUDY AS A READING ROOM.
 
-   It was a 460px column of body text beside a screenshot, which is a data
-   sheet. A case study is a piece of writing: it wants a measure you can read
-   along, a title with room around it, and the facts kept to one side rather
-   than run through the prose. So the media goes full width at the top, the
-   text falls into an editorial column under it, and the facts sit in a narrow
-   rail beside that column where they can be scanned without interrupting. */
+/* THE CASE STUDY AS A ROOM OF ITS OWN.
+
+   The screenshot has already been seen once, in the carousel, at 16:11 behind
+   a line scrim. Showing it again the same way says nothing; so here it is a
+   MASTHEAD -- bled to the full width at a long crop, taken well down in
+   luminance, with the title standing on its lower edge. The plate is the room's
+   ground rather than an illustration in it, and the reader arrives on the name
+   of the project with the work already behind it.
+
+   Under that, the densest reading on the site: a serif lede at a generous
+   size, then a single editorial measure with real subheadings, and the facts
+   kept out of the prose in a rail beside it. Nothing here is set at the deck's
+   sizes -- a room the reader has chosen to open can ask for more attention
+   than a room they are scrolling past. */
+.case-mast { position: relative; }
+.case-media { position: relative; aspect-ratio: 21 / 8; overflow: hidden; background: var(--ground-deep); }
+.case-media img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%;
+  display: block; filter: saturate(.38) contrast(1.06) brightness(.60);
+  transform: scale(1.02);
+}
+/* the same two treatments the carousel plate carries, at a coarser pitch so
+   the masthead reads as a printed ground rather than as a second screenshot */
+.case-media::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--ground) 62%, transparent) 0 1px, transparent 1px 5px),
+    linear-gradient(to top, var(--ground) 2%, color-mix(in srgb, var(--ground) 72%, transparent) 34%, transparent 78%);
+}
+.case-media .ph {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: repeating-linear-gradient(90deg, var(--rule-soft) 0 1px, transparent 1px 6px);
+}
+.case-mast-in {
+  position: absolute; left: 0; right: 0; bottom: clamp(14px, 2.6vh, 34px);
+  padding: 0 var(--gutter);
+  max-width: min(1180px, var(--maxw)); margin: 0 auto;
+}
+.case-mast-in h3 {
+  font-variation-settings: 'wdth' 104, 'wght' 620;
+  font-size: clamp(2rem, 5vw, 3.9rem); line-height: 1; letter-spacing: -.032em;
+  margin: 12px 0 0; max-width: 20ch; text-wrap: balance;
+}
+
 .case-grid {
   display: grid; grid-template-columns: minmax(0, 1fr);
   gap: clamp(22px, 3vh, 40px);
-  padding: clamp(22px, 4vh, 52px) var(--gutter) clamp(40px, 7vh, 90px);
+  padding: clamp(26px, 4.5vh, 58px) var(--gutter) clamp(40px, 7vh, 90px);
   max-width: min(1180px, var(--maxw)); margin: 0 auto;
 }
-.case-head { max-width: 30ch; }
-.case-grid h3 {
-  font-variation-settings: 'wdth' 104, 'wght' 620;
-  font-size: clamp(1.9rem, 4.2vw, 3.4rem); line-height: 1.02;
-  letter-spacing: -.03em; margin: 10px 0 0;
-}
 .case-dek {
-  margin-top: 14px; max-width: 40ch;
-  font-family: var(--font-s); font-size: clamp(1.1rem, 1.5vw, 1.42rem);
-  line-height: 1.45; color: var(--fg-soft);
+  max-width: 34ch;
+  font-family: var(--font-s); font-size: clamp(1.24rem, 1.9vw, 1.72rem);
+  line-height: 1.38; color: var(--fg);
 }
-.case-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 250px); gap: clamp(26px, 4vw, 62px); align-items: start; }
-.case-long { color: var(--fg-soft); max-width: 62ch; font-size: 16px; line-height: 1.68; }
-.case-long p + p { margin-top: 1.05em; }
+.case-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 260px); gap: clamp(26px, 4.5vw, 74px); align-items: start; }
+.case-long { color: var(--fg-soft); max-width: 64ch; font-size: 16.5px; line-height: 1.72; }
+.case-long p + p { margin-top: 1.1em; }
 /* the opening line is set to lead the eye in */
 .case-long p:first-child::first-line { color: var(--fg); }
-.facts { border-top: 1px solid var(--rule); }
+/* subheadings inside the reading, at the mono eyebrow's weight so a long case
+   study can be scanned as well as read */
+.case-long h4 {
+  margin: 2.1em 0 .7em; color: var(--fg);
+  font-family: var(--font-m); font-size: 10.5px; font-weight: 400;
+  letter-spacing: .18em; text-transform: uppercase;
+}
+.case-long h4:first-child { margin-top: 0; }
+.case-long h4::before {
+  content: ""; display: block; width: 26px; height: 1px;
+  background: var(--rule); margin-bottom: 12px;
+}
+.facts { border-top: 1px solid var(--rule); position: sticky; top: 0; }
 .facts .f { display: grid; grid-template-columns: 1fr; gap: 3px; padding: 11px 0; border-bottom: 1px solid var(--rule-soft); }
 .facts .f dt { font-family: var(--font-m); font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-faint); }
 .facts .f dd { font-size: 14px; color: var(--fg-soft); line-height: 1.45; }
-.case-media img { width: 100%; height: auto; outline: 1px solid var(--rule-soft); display: block; }
-.case-media .ph { aspect-ratio: 16/9; display: grid; place-items: center; outline: 1px solid var(--rule-soft); background: repeating-linear-gradient(90deg, var(--rule-soft) 0 1px, transparent 1px 6px); }
 .case-nav { display: flex; gap: 16px; align-items: center; padding: 14px var(--gutter) 22px; border-top: 1px solid var(--rule-soft); }
 
 /* ------------------------------------------------ 17 · responsive */
 @media (max-width: 1180px) {
-  .practice-lede { max-width: 56vw; }
+  .practice-lede { max-width: 48vw; }
   .reg-card .body-w { font-size: 15px; }
 }
 @media (max-height: 800px) and (min-width: 901px) {
-  .hero h1 { font-size: clamp(2rem, 4vw, 3.3rem); }
   .studio .h2 { font-size: clamp(1.65rem, 2.8vw, 2.3rem); margin: 12px 0 14px; }
   .studio .body-w { font-size: 14.8px; line-height: 1.56; }
   /* a short viewport takes it out of the plate, not out of the column: the
      credentials have to stay on one line each or they cost more than the
      picture does. */
-  .studio-media { width: min(100%, 290px); }
-  .portrait { max-height: 33svh; }
+  .studio-media { width: min(100%, 360px); }
+  .portrait { max-height: 38svh; }
   .cred { padding: 5px 2px; font-size: 9px; letter-spacing: .04em; }
   .studio-grid { gap: clamp(22px, 2.8vw, 48px); }
   .creds { margin-top: 12px; }
@@ -1190,7 +1458,24 @@ html:not(.js) .cred { opacity: 1; transform: none; }
    sized for a thumb rather than a cursor; and the gutters are pushed out of
    the notch by the safe-area insets. */
 @media (max-width: 900px) {
-  :root { --gutter: clamp(18px, 5.4vw, 34px); }
+  :root {
+    --gutter: clamp(18px, 5.4vw, 34px);
+    /* THE REGISTRATION, RE-SOLVED FOR THE COMPACT FRAMING.  The drawing is not
+       simply the desktop drawing scaled down here: the fit is height-bound
+       rather than width-bound on a tall screen, so the leaves land at the
+       plate's size but the object sits a little larger against it and a little
+       higher. STYLOS.stylus() at 376x814 reports the stylus 123px long at 48.9
+       degrees with its midpoint 69px right and 39px above the stage's centre;
+       these are that, expressed against the element. The angle is unchanged —
+       it comes out within a degree of the wide layout's, which is worth
+       knowing: what differs between the two is only how big the object is
+       against the plate and where it stands, never how it is held.
+       --sty-y is not overridden because it lands on the same figure at both
+       sizes. Re-measure these together with the desktop set. */
+    --sty-w: calc(var(--plate-w) * .59);
+    --sty-s: .53;
+    --sty-x: 36.5%;
+  }
   body { font-size: 16px; }
 
   .screen {
@@ -1208,11 +1493,32 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .nav .swatches { display: none; }          /* they live in the sheet now */
   .burger { display: grid; }
 
-  /* the figure's band, and the reading under it */
-  .screen[data-fig] { padding-top: calc(48svh + 24px); }
-  .overture, .hero { padding-top: clamp(74px, 12vh, 120px); }
+  /* THE FIGURE'S BAND, AND THE READING UNDER IT.
+
+     48svh is nearly half the screen held open above every room that carries
+     the figure, and with the reading under it that is what pushed four rooms
+     past the viewport and made the reader scroll inside a room before the room
+     would let them leave. 42 is still a generous stage for the object — it is
+     only ever the object and the ground up there — and it buys back about
+     seventy pixels a room, which is the difference between a room that fits
+     and one that does not. Only the rooms the figure is the subject of carry
+     data-fig now; see the note on the registers in the markup. */
+  .screen[data-fig] { padding-top: calc(42svh + 20px); }
+  .overture { padding-top: clamp(74px, 12vh, 120px); }
   .practice-lede, .practice-2 .inner, .body-w, .contact-body, .motto { max-width: none; }
   .o-cue { bottom: calc(clamp(22px, 4vh, 44px) + env(safe-area-inset-bottom)); }
+  /* the pass link comes off the right edge and stands above the cue, where a
+     thumb reaches it without covering the name */
+  .o-pass {
+    left: 50%; right: auto; transform: translateX(-50%);
+    bottom: calc(clamp(22px, 4vh, 44px) + 66px + env(safe-area-inset-bottom));
+    font-size: 10px;
+  }
+  /* THE SHOWROOM INDEX STANDS DOWN.  It exists to tell a reader that a
+     wordless stretch has a length; three swipes is not a length that needs
+     announcing, and on a phone it was one more thing hovering over the object
+     in the only rooms where the object is the whole point. */
+  .show-index { display: none; }
 
   .h2 { font-size: clamp(1.7rem, 6.6vw, 2.4rem); max-width: 20ch; }
   .o-mark { font-size: clamp(52px, 18vw, 150px); }
@@ -1221,24 +1527,59 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .reg .inner { display: block; min-height: 0; }
   .reg-card { grid-column: auto; grid-row: auto; }
   .reg-title { margin-bottom: 20px; }
-  .works-head { grid-template-columns: 1fr; }
-  .works-note { grid-column: 1; }
-  /* .hand used to be clipped to 38vh here. handGeom() lays the dial out
-     against window.innerHeight and the stylus itself is drawn on the
-     full-viewport canvas, so clipping the SVG -- which stretches, having
-     preserveAspectRatio="none" -- pulled the ticks off the needle by the
-     better part of a room. It keeps inset:0, like the canvas it belongs to. */
-  .card { width: 78vw; }
+  .works-head { grid-template-columns: 1fr; align-items: start; }
   .method .inner { grid-template-columns: 1fr; }
 
+  /* THE STUDIO ROOM, TURNED ROUND.  On a phone this was the worst room on the
+     site: heading, three paragraphs, and only then the photograph -- so the
+     one thing a reader actually wants from an about page was two screens of
+     scrolling away, and the credits were a third. The plate comes first,
+     directly under the heading, and the reading follows it. */
   .studio-grid { grid-template-columns: 1fr; }
-  .studio-media { margin-left: 0; width: 100%; }
+  .studio-media { margin-left: 0; width: 100%; order: -1; margin-bottom: 22px; }
   .portrait { max-height: none; aspect-ratio: 4 / 5; }
 
+  /* SHORTER ROOMS, AND A WAY BACK TO THE REST.
+
+     Every room on a phone had at least one paragraph that pushed it past the
+     viewport, which meant the reader was scrolling inside a room before the
+     room would let them leave it -- two different scrolls doing two different
+     jobs with one gesture. The sentences marked .aside in the markup are the
+     ones that carry the least, and they fold away here.
+
+     They FOLD rather than vanish. Copy switched off on a phone is a decision
+     taken on the reader's behalf about what they are allowed to want, and it
+     is the wrong one for a page whose argument is that things get handed over
+     properly. Each room that has asides gets one quiet control under them,
+     written in by dressAsides(), and the room opens in place. */
+  .aside { display: none; }
+  .screen.told .aside { display: block; }
+  .aside-more {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 15px; padding: 7px 0; min-height: 34px;
+    font-family: var(--font-m); font-size: 10.5px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--fg-faint);
+  }
+  /* the rule after the word is the affordance: it is long while there is more
+     to read and short once there is not */
+  .aside-more::after {
+    content: ""; width: 22px; height: 1px; background: currentColor;
+    transition: width 340ms var(--ease);
+  }
+  .screen.told .aside-more { color: var(--fg-soft); }
+  .screen.told .aside-more::after { width: 7px; }
+  .screen.inverted .aside-more { color: color-mix(in srgb, var(--paper-ink) 62%, transparent); }
+  .studio .body-w { font-size: 15.5px; }
+  .practice-lede { font-size: clamp(1.16rem, 5vw, 1.42rem); }
+  /* the tag rules are a footnote, not a section: they can sit closer */
+  .tags { margin-top: 16px; padding-top: 12px; gap: 5px 16px; }
+
   .case-grid { grid-template-columns: 1fr; }
-  .case-media { order: -1; }
+  .case-media { aspect-ratio: 16 / 10; }
+  .case-mast-in h3 { font-size: clamp(1.7rem, 8vw, 2.5rem); }
   .case-top, .case-nav { padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
   .case-nav { padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+  .facts { position: static; }
 
   /* thumbs, not cursors: nothing interactive under 44px */
   .disc { width: 46px; height: 46px; }
@@ -1256,7 +1597,12 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 
   /* the plate is the loud thing in the studio room on a phone too, but it may
      not be so tall that the credits below it are never seen */
-  .portrait { max-height: 46svh; }
+  .portrait { max-height: 40svh; }
+  /* two up: four full-width rows of qualification is a table of contents for
+     one person, and it was costing the room a sixth of its height */
+  .creds { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; }
+  .cred { grid-template-columns: 1fr; gap: 2px; }
+  .cred span { text-align: left; }
 
   /* THE SHEET'S CLOSE.  It was pinned to the top right, where iOS Safari puts
      its own back affordance and the URL bar's reload -- two round targets a
@@ -1271,21 +1617,49 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   }
   .sheet-foot { align-items: flex-end; }
 
-  /* THE WORKS ROOM, LAID OUT FOR A PHONE.  It was inheriting a desktop
-     carousel: a 78vw card in a horizontal scroller under a heading that
-     assumed three columns. On a phone the row becomes a single readable
-     column of plates -- still swipeable, but each card gets the full gutter
-     width and its caption sits under it rather than beside it. */
+  /* THE WORKS ROOM, LAID OUT FOR A PHONE.
+
+     It was the desktop carousel with narrower cards in it, and a carousel is
+     the wrong instrument on a phone twice over. Sideways scrolling inside a
+     page that scrolls downward means one finger doing two jobs, and it hides
+     the rest of the work behind a gesture nobody is told about -- a reader who
+     scrolls past sees one project and assumes there is one project. And the
+     needle overhead was indexing a row that could not be seen whole.
+
+     So it stacks. Every plate is on the page, full width, caption under it, in
+     the order the desktop row has them; the arrows and the counter go, because
+     a list does not need to be paged through; the needle and its dial stand
+     down with them. The room is taller than the viewport by design, and the
+     settle controller leaves tall rooms alone (see TALL in section 5e), so it
+     reads as an ordinary length of page.
+
+     The .track keeps its identity -- the script still writes .cascade to it and
+     still counts its children -- it is simply laid out downward. */
+  .works { justify-content: flex-start; }
   .works-head { gap: 14px; }
   .works-note { font-size: 14.5px; }
-  .track { gap: 18px; padding-bottom: 12px; }
-  .card { width: min(84vw, 420px); }
-  .track-ui { gap: 12px; margin-top: 4px; }
-  .counter { font-size: 10px; }
+  .track {
+    display: grid; grid-auto-flow: row; gap: clamp(30px, 6vh, 52px);
+    overflow: visible; scroll-snap-type: none; cursor: default;
+    padding: clamp(24px, 4vh, 44px) 0 0; margin: 0;
+  }
+  .card { width: 100%; }
+  /* stacked, the cards arrive from below rather than from the right: sideways
+     travel in a column reads as a mistake, and the clip goes with it. .in is
+     written per card by the observer in runCascade as each one comes up. */
+  .card { transform: translate3d(0, 38px, 0); clip-path: none; }
+  .js .track .card.in, .js .track.cascade .card {
+    opacity: 1; transform: none;
+    transition: opacity 620ms var(--ease), transform 900ms var(--ease-i);
+  }
+  .js .track.rested .card:hover, .js .track.rested .card:focus-visible { transform: none; }
+  .shot { aspect-ratio: 16 / 10; }
+  .shot .scan { opacity: .55 !important; }
+  .card-meta { opacity: 1; }
+  .track-ui, .hand { display: none; }
 
   /* the case study, as one column */
   .case-body { grid-template-columns: 1fr; gap: 22px; }
-  .case-head { max-width: none; }
   .case-long { font-size: 15.5px; }
 
   .motto { padding-left: 14px; }
@@ -1293,10 +1667,9 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 }
 @media (max-width: 560px) {
   .foot-grid { grid-template-columns: 1fr 1fr; }
-  .screen[data-fig] { padding-top: calc(45svh + 20px); }
+  .screen[data-fig] { padding-top: calc(40svh + 16px); }
   .plate-cap { font-size: 9.5px; letter-spacing: .1em; }
   .email { font-size: clamp(1.2rem, 7vw, 1.9rem); }
-  .track-ui { flex-wrap: wrap; }
 }
 /* a phone held sideways has no room for a 44svh band above the reading */
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
@@ -1310,7 +1683,12 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .js .rv, .js .rv-wipe, .js .rv-cut, .js .wsplit > i, .js .step, .js .cred { transition: none; opacity: 1; transform: none; clip-path: none; }
   .loader, .plate, .plate-sty, .plate-cod, .wordmark-i span, .handoff { transition: none !important; }
   .portrait canvas { transition: none; }
-  .js .track.cascade .card { transition: none; opacity: 1; transform: none; }
+  /* the scroll cue does not pulse at all, and the disclosure opens at once */
+  .js .o-cue::after { animation: none; }
+  .aside-more::after { transition: none; }
+  .o-pass { transition: none; }
+  .card { transition: none; }
+  .js .track.cascade .card, .js .track .card.in { transition: none; opacity: 1; transform: none; clip-path: none; }
   .js .track.cascade .shot .scan { transition: none; opacity: .9; }
 }
 </style>
@@ -1415,49 +1793,55 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 
 <!-- ==================================================== 0 · the overture
      The name, alone, over the object the name belongs to. -->
-<section class="screen overture" id="top" data-room="0" data-nav="" data-scrim="bottom" data-fig>
+<section class="screen overture" id="top" data-room="0" data-nav="" data-fig>
   <div class="inner">
-    <span class="o-mark" id="oMark" data-split>Stylos</span>
+    <span class="o-mark" id="oMark">Stylos</span>
     <span class="o-sub mono rv" style="--d:900ms">Web design studio &middot; Oxford &mdash; for research, heritage and creative practice</span>
   </div>
-  <span class="o-cue mono rv" style="--d:1500ms">Scroll</span>
+  <span class="o-cue mono rv" style="--d:1500ms"><i>Scroll</i></span>
+  <!-- THREE ROOMS OF PURE OBJECT, AND A WAY ROUND THEM.  The showroom is the
+       best thing on the site and it is also three screens before a word of
+       prose, which is a long time to ask of somebody who has arrived from a
+       link with a question. This is the answer to that question: quiet, at the
+       foot of the landing, and it goes to the first room that talks. -->
+  <a class="o-pass mono rv" style="--d:1700ms" href="#practice">Straight to the practice</a>
 </section>
 
-<!-- ==================================================== 1-4 · THE SHOWROOM
-     Four rooms, wordless, and the only thing that happens in them is the
-     object. The captions that used to sit here were doing the work the render
-     should be doing; the numerals they carried have gone to the three kinds
-     of commission, where a reader actually has to keep count of something.
+<!-- ==================================================== 1-3 · THE SHOWROOM
+     THREE rooms, wordless, and the only thing that happens in them is the
+     object: turned over and shut, seen edge-on with the stylus upright, and
+     taken from overhead while it writes.
 
-     Each room is one rest state of the choreography, and the scroll settles on
-     it: turned over and shut, seen edge-on with the stylus upright, taken from
-     overhead while it writes, and then the deformation into glass. The hairline
-     index at the foot of the screen is the only mark on any of them -- four
-     ticks, the current one lit, so the reader can see that the scroll has a
-     length and how much of it is left. -->
-<section class="screen show" id="s1" data-room="1" data-nav="" data-scrim="bottom" data-fig data-show>
+     There were four. The fourth was the deformation into glass, and it was in
+     the wrong place twice over -- it was performed at whatever speed the
+     reader's wheel happened to be turning, which is under a second once the
+     settle has hold of it, and it was performed over nothing, in a room with
+     no argument in it for the change to be a change of. It has gone to
+     STRUCTURE FIRST. THEN THE SURFACE, where the room's own clock runs it
+     while that sentence is being read, and where it means something.
+
+     No scrims here, and none on the overture either: a scrim is for keeping
+     type off the lattice, and there is no type in any of these rooms. The
+     hairline index at the foot of the screen is the only mark on them. -->
+<section class="screen show" id="s1" data-room="1" data-nav="" data-fig>
   <h2 class="sr-only">The object, turned over</h2>
 </section>
 
-<section class="screen show" id="s2" data-room="2" data-nav="" data-scrim="bottom" data-fig data-show>
+<section class="screen show" id="s2" data-room="2" data-nav="" data-fig>
   <h2 class="sr-only">The object, edge-on, with the stylus upright</h2>
 </section>
 
-<section class="screen show" id="s3" data-room="3" data-nav="" data-scrim="bottom" data-fig data-show>
+<section class="screen show" id="s3" data-room="3" data-nav="" data-fig>
   <h2 class="sr-only">The object from overhead, being written on</h2>
 </section>
 
-<section class="screen show" id="s4" data-room="4" data-nav="" data-scrim="bottom" data-fig data-show>
-  <h2 class="sr-only">The wax becomes glass</h2>
-</section>
-
-<!-- the showroom's own index: four ticks at the foot of the screen -->
+<!-- the showroom's own index: three ticks at the foot of the screen -->
 <div class="show-index" id="showIndex" aria-hidden="true">
-  <i></i><i></i><i></i><i></i>
+  <i></i><i></i><i></i>
 </div>
 
-<!-- ==================================================== 5 · the name -->
-<section class="screen practice" id="practice" data-room="5" data-nav="practice" data-scrim="left" data-fig>
+<!-- ==================================================== 4 · the name -->
+<section class="screen practice" id="practice" data-room="4" data-nav="practice" data-scrim="left" data-fig>
   <div class="inner">
     <span class="gigaword rv-wipe" aria-hidden="true">Stylos</span>
   </div>
@@ -1467,7 +1851,7 @@ html:not(.js) .cred { opacity: 1; transform: none; }
     <!-- Horace, moved here from the showroom, where it was set over a moving
          figure at a size nobody could read. It is the studio's motto and it
          deserves a line of its own, a translation, and a proper citation. -->
-    <blockquote class="motto rv" style="--d:660ms">
+    <blockquote class="motto rv aside" style="--d:660ms">
       <p class="motto-la"><em>Saepe stilum uertas, iterum quae digna legi sint scripturus.</em></p>
       <p class="motto-en">Turn the stylus often, if you mean to write something worth a second reading.</p>
       <cite class="mono">Horace, <i>Sermones</i> 1.10.72&ndash;73</cite>
@@ -1475,15 +1859,25 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== 6 · the work -->
-<section class="screen practice-2" id="practice2" data-room="6" data-nav="practice" data-scrim="left" data-fig>
+<!-- ==================================================== 5 · the work
+     AND THE ROOM THE DEFORMATION HAPPENS IN.  The wax becomes glass here, on
+     this room's own clock (KEY[5].morphTo), because this is the sentence it
+     illustrates: the surface is the thing that changes, and the structure
+     under it does not. The reader is reading "then the surface" while the
+     surface is being changed behind the line. -->
+<section class="screen practice-2" id="practice2" data-room="5" data-nav="practice" data-scrim="left" data-fig>
   <div class="inner">
     <span class="mono cap cap-rule rv">The work</span>
     <h2 class="h2 rv-wipe" style="--d:140ms">Structure first. Then the surface.</h2>
     <div class="body-w rv" style="--d:430ms">
       <p>We make websites for people whose material is complicated &mdash; a collection, an archive, a research programme, a body of work built up over years.</p>
-      <p>That means settling the structure before anything is styled: what the thing is, who has to read it, and how it is meant to last. The design follows from that, and is the better for it.</p>
-      <p class="hand-over">And then it is handed over properly. Whatever ought to be yours to change ends up yours to change &mdash; including how the thing looks. The two inks in the corner of this page are not a demonstration: <button type="button" class="ink-nudge" id="inkNudge">press one</button> and the whole site turns, drawing and all. Every commission leaves with controls of its own.</p>
+      <p class="aside">That means settling the structure before anything is styled: what the thing is, who has to read it, and how it is meant to last. The design follows from that, and is the better for it.</p>
+      <p class="hand-over">And then it is handed over properly. Whatever ought to be yours to change ends up yours to change &mdash; including how the thing looks.</p>
+      <!-- "on this page", not "in the corner of this page": the ink pair is in
+           the corner of the nav on a wide screen and inside the menu on a
+           phone, and the sentence has to be true in both — it is folded behind
+           the disclosure on a phone, not hidden, so it will be read there. -->
+      <p class="hand-over aside">The two inks on this page are not a demonstration: <button type="button" class="ink-nudge" id="inkNudge">press one</button> and the whole site turns, drawing and all. Every commission leaves with controls of its own.</p>
     </div>
     <div class="tags mono rv" style="--d:640ms">
       <span>Structure before decoration</span><span>Multilingual by default</span><span>Built to be kept</span>
@@ -1491,8 +1885,13 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== IV · register one -->
-<section class="screen reg" id="registers" data-room="7" data-nav="registers" data-scrim="left" data-fig>
+<!-- ==================================================== 6 · register one
+     No data-fig from here to the studio room. On a phone that attribute holds
+     a 48svh band open above the reading for the figure to stand in, and in a
+     room that is nothing but reading the band is half a screen of nothing —
+     the figure is not the subject of these rooms and is faded out of them by
+     the deck script (KEY[].figM). -->
+<section class="screen reg" id="registers" data-room="6" data-nav="registers" data-scrim="left">
   <div class="inner">
     <div class="reg-title">
       <span class="mono cap cap-rule rv">What we do</span>
@@ -1512,8 +1911,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== V · register two -->
-<section class="screen reg" data-room="8" data-nav="registers" data-scrim="right" data-fig>
+<!-- ==================================================== 7 · register two -->
+<section class="screen reg" data-room="7" data-nav="registers" data-scrim="right">
   <div class="inner">
     <div class="reg-card" data-place="right">
       <span class="reg-fig rv" aria-hidden="true">02</span>
@@ -1529,8 +1928,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== VI · register three -->
-<section class="screen reg" data-room="9" data-nav="registers" data-scrim="left" data-fig>
+<!-- ==================================================== 8 · register three -->
+<section class="screen reg" data-room="8" data-nav="registers" data-scrim="left">
   <div class="inner">
     <div class="reg-card" data-place="left">
       <span class="reg-fig rv" aria-hidden="true">03</span>
@@ -1542,19 +1941,18 @@ html:not(.js) .cred { opacity: 1; transform: none; }
       <div class="tags mono rv" style="--d:640ms">
         <span>Editorial design</span><span>Motion</span><span>Back office</span><span>Payments</span>
       </div>
-      <p class="aside-note rv" style="--d:760ms">The surface keeps changing. The tool barely has.</p>
+      <p class="aside-note aside rv" style="--d:760ms">The surface keeps changing. The tool barely has.</p>
     </div>
   </div>
 </section>
 
-<!-- ==================================================== VII · works -->
-<section class="screen works" id="works" data-room="10" data-nav="works" data-scrim="bottom">
+<!-- ==================================================== 9 · works -->
+<section class="screen works" id="works" data-room="9" data-nav="works" data-scrim="bottom">
   <div class="works-head">
     <div>
       <span class="mono cap cap-rule rv">Selected work</span>
       <h2 class="h2 rv-wipe" style="--d:140ms">Sites, platforms and digital environments.</h2>
     </div>
-    <div aria-hidden="true"></div>
     <p class="works-note rv" style="--d:430ms">Made for cultural, educational and independent projects. Much of the work is commissioned privately or waits on an institutional launch, so each item is shown as far as its status allows.</p>
   </div>
 
@@ -1569,8 +1967,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== VIII · method -->
-<section class="screen method inverted" id="method" data-room="11" data-nav="studio" data-scrim="left" data-fig>
+<!-- ==================================================== 10 · method -->
+<section class="screen method inverted" id="method" data-room="10" data-nav="studio" data-scrim="left">
   <div class="inner">
     <div>
       <span class="mono cap cap-rule rv">Method</span>
@@ -1598,16 +1996,16 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== IX · studio -->
-<section class="screen studio" id="studio" data-room="12" data-nav="studio" data-scrim="full">
+<!-- ==================================================== 11 · studio -->
+<section class="screen studio" id="studio" data-room="11" data-nav="studio" data-scrim="full">
   <div class="inner">
     <span class="mono cap cap-rule rv">Studio</span>
     <h2 class="h2 rv-wipe" style="--d:140ms">A practice rooted in classics, built for the present.</h2>
     <div class="studio-grid">
       <div class="body-w rv" style="--d:430ms">
         <p>Stylos is a one-person practice led by <strong>Arkadiy Avdokhin</strong>, a classicist and archaeologist at the University of Oxford and Wolfson College &mdash; a doctorate in Classics from King&rsquo;s College London, a Marie Sk&#322;odowska-Curie Fellowship at the Oxford Faculty of Classics, and current work towards a digital 3D and visualisation lab with the Ashmolean Museum.</p>
-        <p>The design work grew out of the research: a public platform for the inscriptions and 3D-modelled structures of late antique Aphrodisias, and a scholarly database for a Vienna-based project on Roman-era papyri. The same habits &mdash; structure, provenance, longevity, multilingual and accessible by default &mdash; shape every site, whether it serves a grant or a stage.</p>
-        <p class="studio-tail">Engagements are small and scoped &mdash; comfortable with grant timelines and work-package deliverables, and corresponding by email.</p>
+        <p class="aside">The design work grew out of the research: a public platform for the inscriptions and 3D-modelled structures of late antique Aphrodisias, and a scholarly database for a Vienna-based project on Roman-era papyri. The same habits &mdash; structure, provenance, longevity, multilingual and accessible by default &mdash; shape every site, whether it serves a grant or a stage.</p>
+        <p class="studio-tail aside">Engagements are small and scoped &mdash; comfortable with grant timelines and work-package deliverables, and corresponding by email.</p>
       </div>
       <div class="studio-media">
         <figure class="portrait rv" id="portrait" style="--d:300ms" tabindex="0" role="button" aria-pressed="false" aria-label="Portrait of Arkadiy Avdokhin — activate to resolve the dithered plate">
@@ -1627,8 +2025,8 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   </div>
 </section>
 
-<!-- ==================================================== X · contact -->
-<section class="screen contact" id="contact" data-room="13" data-nav="contact" data-scrim="left" data-fig>
+<!-- ==================================================== 12 · contact -->
+<section class="screen contact" id="contact" data-room="12" data-nav="contact" data-scrim="left" data-fig>
   <div class="inner">
     <div class="contact-body">
       <span class="mono cap cap-rule rv">Correspondence</span>
@@ -1663,14 +2061,20 @@ html:not(.js) .cred { opacity: 1; transform: none; }
     <span class="mono cap" id="caseCount">01 / 06</span>
     <button class="case-x" id="caseX" aria-label="Close case study">&#10005;</button>
   </div>
-  <div class="case-scroll">
-    <div class="case-grid">
+  <div class="case-scroll" id="caseScroll">
+    <!-- the plate again, but not the way the carousel showed it: bled to the
+         full width at a long crop and taken down in luminance, with the name
+         standing on its lower edge. It is the room's ground, not a picture in
+         the room. -->
+    <header class="case-mast">
       <div class="case-media" id="caseMedia"></div>
-      <div class="case-head">
+      <div class="case-mast-in">
         <span class="mono cap cap-rule" id="caseCat">&mdash;</span>
         <h3 id="caseTitle">&mdash;</h3>
-        <p class="case-dek" id="caseDek">&mdash;</p>
       </div>
+    </header>
+    <div class="case-grid">
+      <p class="case-dek" id="caseDek">&mdash;</p>
       <div class="case-body">
         <div class="case-long" id="caseLong">&mdash;</div>
         <dl class="facts" id="caseFacts"></dl>
@@ -1778,7 +2182,7 @@ var MSTY = [
 var STY_TIP = -60.0, STY_BUTT = 62.0;
 
 /* flags */
-var F_EDGE = 1, F_WAX = 2, F_METAL = 4, F_TEXT = 8, F_CORD = 16;
+var F_EDGE = 1, F_WAX = 2, F_METAL = 4, F_CORD = 16;
 
 /* ---------------------------------------------------------------------- */
 /* small maths                                                            */
@@ -1786,7 +2190,6 @@ var F_EDGE = 1, F_WAX = 2, F_METAL = 4, F_TEXT = 8, F_CORD = 16;
 var TAU = Math.PI * 2;
 function clamp(x, a, b) { return x < a ? a : (x > b ? b : x); }
 function lerp(a, b, t) { return a + (b - a) * t; }
-function smooth(a, b, t) { t = clamp((t - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
 function s01(t) { return t <= 0 ? 0 : (t >= 1 ? 1 : t * t * (3 - 2 * t)); }
 function mulberry32(a) {
   return function () {
@@ -2232,6 +2635,19 @@ var SCREEN = (function () {
    object does not unwind itself on the way to move 01. */
 var TURN1 = TAU;
 
+/* FIGM — how much of the figure survives on a phone.
+
+   The lattice is the argument in the rooms where the object is the subject and
+   it is furniture in the rooms that are only reading. On a wide screen there
+   is room for furniture. On a phone there is not: the figure was standing
+   behind three paragraphs of body text at a size where it could not be read as
+   an object and could not be got out of the way either, and the 48svh band it
+   was given cost half of every screen. So it is kept where it means something
+   — the landing, the showroom, the name, the deformation, the works needle,
+   the invitation to write — and it is faded out of the registers, the method
+   and the studio, which on a phone are reading and nothing else. 1 keeps it,
+   0 dismisses it, and anything between is a proportion of its usual ink. */
+
 var KEY = [
   /* ---- 0 · THE LANDING ------------------------------------------------
      The pose the photographic plate is standing in, and it is a registration
@@ -2239,24 +2655,39 @@ var KEY = [
      numerically against the render's own silhouette (see the lens note in
      stateAt): leaf-outline agreement is IoU 0.977. fill / px / py are written
      by syncLanding() from the plate's measured content box; the values here
-     are the fallback for when the image cannot be sampled. */
-  { open: 1.00, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.30,
-    yaw: -0.1394, pit: 0.6983, roll: 0.1055, turn: 0, fill: 0.70, px: 0.02, py: -0.06,
-    dig: 0.46, dens: 0.42, ink: 0.86, lens: 2.20, regL: 1 },
+     are the fallback for when the image cannot be sampled.
 
-  /* ---- 1-4 · THE SHOWROOM ---------------------------------------------
-     Four rest states, and the scroll settles on each of them. The arc is one
-     continuous orbit rather than four unrelated set-ups: yaw sweeps once from
-     behind the left shoulder round to the right, pit rises to overhead for the
-     writing and comes back down, and `spin` keeps a slow turn running while
-     the reader is sitting still in a room. Nothing here jumps: no neighbouring
-     pair differs by more than about 0.3 radians on any axis. */
+     WORK, AND THE DOUBLING IT FIXES.  This was 0.30 — the stylus lying at its
+     rest attitude beside the tablet — while the photograph that hands over to
+     it had the stylus standing ON the tablet. Two different objects in the
+     same frame, and the hand-over showed both. At 0.92 the drawing holds the
+     stylus where the photograph left it, and --sty-r in the stylesheet is the
+     other half of the same number: change one, check the other.
+
+     IDLE marks the room as having a resting state that is not a still. The
+     figure script reads it and runs the write-and-wipe loop described at
+     IDLE_CYCLE, which stops the moment the reader scrolls. */
+  { open: 1.00, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.92,
+    yaw: -0.1394, pit: 0.6983, roll: 0.1055, turn: 0, fill: 0.70, px: 0.02, py: -0.06,
+    dig: 0.46, dens: 0.42, ink: 0.86, lens: 2.20, regL: 1, figM: 1, idle: 1 },
+
+  /* ---- 1-3 · THE SHOWROOM ---------------------------------------------
+     Three rest states, and the scroll settles on each of them. The arc is one
+     continuous orbit rather than three unrelated set-ups: yaw sweeps once from
+     behind the left shoulder round toward the right, pit rises to overhead for
+     the writing, and `spin` keeps a slow turn running while the reader is
+     sitting still in a room. Nothing here jumps: no neighbouring pair differs
+     by more than about 0.3 radians on any axis.
+
+     All three are WAX. The object is ancient for the whole of the stretch in
+     which it is being looked at as an object; it becomes modern later, in the
+     room that says so. */
 
   /* 1 · turned over and shut. The revolution is front-loaded (see the snap
          curve in stateAt) so the first flick of the wheel throws it round. */
   { open: 0.06, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.36,
-    yaw: -0.62, pit: 0.92, roll: 0.06, turn: TURN1, fill: 0.74, px: 0.00, py: -0.01,
-    dig: 0.50, dens: 0.46, ink: 0.94, lens: 1.60, regL: 0.40, spin: 0.30 },
+    yaw: -0.62, pit: 0.92, roll: 0.06, turn: TURN1, fill: 0.76, px: 0.00, py: -0.01,
+    dig: 0.50, dens: 0.46, ink: 0.96, lens: 1.60, regL: 0.40, spin: 0.30, figM: 1 },
 
   /* 2 · EDGE-ON. The camera drops almost to the plane of the leaves, so the
          object is read as a thickness and a hinge rather than as two
@@ -2264,79 +2695,110 @@ var KEY = [
          from this height -- stands very nearly upright in frame. This is the
          lateral view the object has never been given. */
   { open: 0.60, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.88,
-    yaw: -0.94, pit: 0.13, roll: 0.00, turn: TURN1, fill: 0.80, px: 0.00, py: 0.02,
-    dig: 0.40, dens: 0.50, ink: 1.00, lens: 1.26, spin: 0.26 },
+    yaw: -0.94, pit: 0.13, roll: 0.00, turn: TURN1, fill: 0.82, px: 0.00, py: 0.02,
+    dig: 0.40, dens: 0.50, ink: 1.00, lens: 1.26, spin: 0.26, figM: 1 },
 
   /* 3 · overhead, and it writes. actMs is long on purpose: the inscription
-         should be watched being cut, not caught having been cut. */
+         should be watched being cut, not caught having been cut. This is the
+         last of the wordless rooms, so it is also the biggest the object gets. */
   { open: 1.00, morph: 0, write: 0.02, erase: 0, flip: 0, work: 1.00,
-    yaw: -0.14, pit: 0.96, roll: 0.02, turn: TURN1, fill: 0.86, px: 0.00, py: 0.00,
-    dig: 0.34, dens: 0.52, ink: 1.00, lens: 1.06, spin: 0.14,
-    writeTo: 1.00, actMs: 11000 },
-
-  /* 4 · the deformation. morph runs 0 to 1 across the scroll from room 3, so
-         the wax becomes glass under the reader's own hand. */
-  { open: 1.00, morph: 1, write: 0.14, erase: 0, flip: 0, work: 0.74,
-    yaw: 0.26, pit: 0.76, roll: 0.00, turn: TURN1, fill: 0.82, px: 0.02, py: -0.02,
-    dig: 0.38, dens: 0.54, ink: 1.00, spin: 0.22 },
+    yaw: -0.14, pit: 0.96, roll: 0.02, turn: TURN1, fill: 0.88, px: 0.00, py: 0.00,
+    dig: 0.34, dens: 0.52, ink: 1.00, lens: 1.06, spin: 0.14, figM: 1,
+    writeTo: 1.00, actMs: 12000 },
 
   /* ---- the reading ---------------------------------------------------- */
 
-  /* 5 · the name — the giant word holds the room; the tablet stands aside,
-         mostly shut and small, and lets it. */
-  { open: 0.44, morph: 1, write: 0.00, erase: 0, flip: 0, work: 0.48,
-    yaw: -0.10, pit: 0.90, roll: -0.06, turn: TURN1, fill: 0.62, px: 0.26, py: 0.15,
-    dig: 0.40, dens: 0.50, ink: 0.74 },
+  /* 4 · THE NAME — and the room where the copy is a stage direction. The line
+         says one end cuts the letter into the wax and the other wipes it away;
+         so the room does it. The wax is cut, held, and wiped, over sixteen
+         seconds, which is slow enough to be watched without being waited for.
+         Still wax: this is the ancient tool being described.
 
-  /* 6 · structure first — opened wide and taken low, so the reader is looking
-         along the object rather than down at it. */
-  { open: 1.00, morph: 1, write: 0.08, erase: 0, flip: 0, work: 0.48,
-    yaw: 0.31, pit: 0.54, roll: 0.04, turn: TURN1, fill: 0.74, px: 0.20, py: 0.06,
-    dig: 0.38, dens: 0.56, ink: 0.78 },
+         open is 1.00 (it was 0.44) because a shut tablet has no wax on it to
+         write on, and work is up with it — the stylus has to be held, not
+         parked. The figure keeps to the right of the giant word and well clear
+         of the copy under it. */
+  { open: 1.00, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.94,
+    yaw: 0.14, pit: 0.80, roll: -0.03, turn: TURN1, fill: 0.48, px: 0.29, py: 0.08,
+    dig: 0.38, dens: 0.52, ink: 0.84, figM: 1,
+    writeTo: 1.00, eraseTo: 1.00, actMs: 16000 },
 
-  /* 7 · register 01 — copy left, figure right, the screen turned up */
+  /* 5 · STRUCTURE FIRST. THEN THE SURFACE. — and the deformation, performed
+         here, on this room's clock. morphTo is the whole point: the wax
+         becomes glass over eleven seconds while the reader is reading the
+         sentence it illustrates, instead of over the third of a second a
+         settled scroll used to give it in a room with nothing to say.
+
+         The keyframes either side still read morph 0 -> 1, so a reader who
+         scrolls straight through gets the change anyway and can never be left
+         with a half-deformed object; stateAt takes whichever of the two has
+         got further. fill and px are set against .practice-2's measure — there
+         is a clear band between the last character and the first mark. */
+  { open: 1.00, morph: 0, write: 0.10, erase: 0, flip: 0, work: 0.44,
+    yaw: 0.34, pit: 0.58, roll: 0.03, turn: TURN1, fill: 0.54, px: 0.27, py: 0.02,
+    dig: 0.36, dens: 0.56, ink: 0.82, figM: 1,
+    morphTo: 1, actMs: 11000 },
+
+  /* 6 · register 01 — copy left, figure right, the screen turned up */
   { open: 1.00, morph: 1, write: 0.12, erase: 0, flip: 0, work: 0.62,
     yaw: 0.34, pit: 0.66, roll: 0.00, turn: TURN1, fill: 0.66, px: 0.24, py: 0.02,
-    dig: 0.42, dens: 0.60, ink: 0.90 },
+    dig: 0.42, dens: 0.60, ink: 0.90, figM: 0 },
 
-  /* 8 · register 02 — the mirror of it */
+  /* 7 · register 02 — the mirror of it */
   { open: 1.00, morph: 1, write: 0.18, erase: 0, flip: 0, work: 0.54,
     yaw: -0.34, pit: 0.80, roll: 0.00, turn: TURN1, fill: 0.66, px: -0.24, py: 0.02,
-    dig: 0.42, dens: 0.60, ink: 0.90 },
+    dig: 0.42, dens: 0.60, ink: 0.90, figM: 0 },
 
-  /* 9 · register 03 — the cover folded most of the way back, seen low */
+  /* 8 · register 03 — the cover folded most of the way back, seen low */
   { open: 0.60, morph: 1, write: 0.08, erase: 0, flip: 0, work: 0.44,
     yaw: 0.21, pit: 0.40, roll: 0.03, turn: TURN1, fill: 0.74, px: 0.20, py: 0.06,
-    dig: 0.40, dens: 0.58, ink: 0.88 },
+    dig: 0.40, dens: 0.58, ink: 0.88, figM: 0 },
 
-  /* 10 · works — the tablet goes; the stylus stays and becomes the needle */
+  /* 9 · works — the tablet goes; the stylus stays and becomes the needle.
+         figM 0: on a phone the needle indexes a row that has been stacked into
+         a column, so there is nothing left for it to point at. */
   { open: 1.00, morph: 1, write: 0.06, erase: 0, flip: 0, work: 0.30,
     yaw: 0.30, pit: 0.70, roll: 0.00, turn: TURN1, fill: 0.60, px: 0.00, py: 0.00,
-    dig: 0.34, dens: 0.68, ink: 0.72, hand: 1 },
+    dig: 0.34, dens: 0.68, ink: 0.72, hand: 1, figM: 0 },
 
-  /* 11 · method — on paper. The markup types itself and is wiped off. Both
-          actions are slowed right down; this room used to hurry. */
-  { open: 1.00, morph: 1, write: 0.00, erase: 0, flip: 0, work: 1.00,
-    yaw: 0.02, pit: 1.00, roll: 0.02, turn: TURN1, fill: 0.66, px: 0.19, py: 0.02,
-    dig: 0.40, dens: 0.58, ink: 0.80,
-    writeTo: 1.00, eraseTo: 1.00, actMs: 13000 },
+  /* 10 · method — on paper.
 
-  /* 12 · studio — the slab up on its edge, well clear of the portrait and the
-          credits, and turning slowly behind the reading. */
+          IT USED TO HURRY, AND IT USED TO FIDGET.  Writing and erasing were
+          both packed into thirteen seconds, which meant the pen crossed the
+          slab six times in the time it takes to read four short steps, and the
+          flip in the middle of it threw the stylus end over end. The erase has
+          gone: what the room does now is write, once, slowly, over twenty
+          seconds — the same gentle single pass the contact room makes — and
+          what it writes is legible and says what the four steps say. The text
+          is CODE, at the top of the figure script. */
+  { open: 1.00, morph: 1, write: 0.00, erase: 0, flip: 0, work: 0.92,
+    yaw: 0.02, pit: 0.94, roll: 0.02, turn: TURN1, fill: 0.72, px: 0.24, py: 0.02,
+    dig: 0.34, dens: 0.58, ink: 0.80, figM: 0,
+    writeTo: 1.00, actMs: 20000 },
+
+  /* 11 · studio — the slab up on its edge behind the reading, and not the
+          apologetic thumbnail it had become. At fill 0.40 and ink 0.56 it was
+          a smudge in the corner; the plate beside it is the loud thing in this
+          room and the figure is allowed to be the quiet one, but quiet is not
+          the same as absent. It stands to the left of the copy, turning. */
   { open: 0.86, morph: 1, write: 0.24, erase: 0, flip: 0, work: 0.30,
-    yaw: 0.42, pit: 0.22, roll: 0.00, turn: TURN1, fill: 0.40, px: -0.30, py: -0.16,
-    dig: 0.36, dens: 0.54, ink: 0.56, spin: 1 },
+    yaw: 0.42, pit: 0.24, roll: 0.00, turn: TURN1, fill: 0.54, px: -0.31, py: -0.08,
+    dig: 0.36, dens: 0.56, ink: 0.72, spin: 1, figM: 0 },
 
-  /* 13 · contact — OPEN, turned toward the reader, the stylus down on the
+  /* 12 · contact — OPEN, turned toward the reader, the stylus down on the
           glass and the caret blinking under it. */
   { open: 1.00, morph: 1, write: 0.06, erase: 0, flip: 0, work: 0.94,
     yaw: 0.26, pit: 0.58, roll: 0.02, turn: TURN1, fill: 0.66, px: 0.24, py: -0.03,
-    dig: 0.46, dens: 0.62, ink: 0.92,
-    writeTo: 0.34, actMs: 5600 }
+    dig: 0.46, dens: 0.62, ink: 0.92, figM: 1,
+    /* a full pass, not a third of one. At writeTo 0.34 over 5.6 seconds the
+       pen wrote four characters and stopped, which reads as a page that has
+       run out rather than as an invitation; the room is the last thing on the
+       site and can afford to finish its sentence. */
+    writeTo: 1.00, actMs: 14000 }
 ];
 
 var KEYS = ['open', 'morph', 'write', 'erase', 'flip', 'work', 'yaw', 'pit', 'roll', 'fill', 'px', 'py',
-            'dig', 'dens', 'ink'];
+            'dig', 'dens', 'ink', 'figM'];
 
 /* the pose at deck position p, with q the local progress of room |p| */
 function stateAt(p, q) {
@@ -2351,11 +2813,32 @@ function stateAt(p, q) {
   /* the timed action belongs to whichever room the reader is actually in */
   var cur = KEY[Math.round(p)];
   if (cur && q > 0) {
-    if (cur.writeTo !== undefined) o.write = Math.max(o.write, lerp(cur.write, cur.writeTo, s01(q * 1.28)));
+    /* THE WRITING.  It used to reach the end of the line at 78% of the room's
+       clock and then sit there. With the erase gone from the method room the
+       pass is the whole of the action, so it runs to the end and the last
+       characters are cut in the last seconds rather than in the middle. */
+    if (cur.writeTo !== undefined) o.write = Math.max(o.write, lerp(cur.write, cur.writeTo, s01(q * 1.08)));
     if (cur.eraseTo !== undefined) {
       var e = s01((q - 0.62) / 0.38);
       o.erase = Math.max(o.erase, lerp(0, cur.eraseTo, e));
       if (e > 0) o.flip = Math.max(o.flip, s01((q - 0.58) / 0.10) - s01((q - 0.97) / 0.06));
+    }
+    /* THE DEFORMATION, ON A CLOCK.
+
+       morph is the one channel that used to be spent entirely on the scroll,
+       and a scroll between two rooms is over in the 780ms the settle takes —
+       so the single most elaborate thing the figure can do was being performed
+       faster than the eye could follow it, every time, and there was no way to
+       slow it down without slowing the whole deck down.
+
+       Given morphTo, the room runs it instead: 0 to 1 across the first 82% of
+       actMs, held for the rest, so it finishes while the reader is still in
+       the room that explains it. The keyframe interpolation is left alone and
+       taken as a floor — max(), not replace — which means a reader who scrolls
+       straight past still gets the change, and no combination of scrolling and
+       waiting can leave the object stuck half wax and half glass. */
+    if (cur.morphTo !== undefined) {
+      o.morph = Math.max(o.morph, lerp(cur.morph, cur.morphTo, s01(q / 0.82)));
     }
   }
   o.hand = lerp(A.hand || 0, B.hand || 0, f);
@@ -2473,14 +2956,6 @@ function poseFor(st, layout) {
   };
 }
 
-/* the stylus alone, swung about a pivot like the hand of a clock.
-   phi = 0 points the tip due left, phi = PI due right, sweeping down. */
-function handMatrix(phi, len) {
-  var k = (len || 1);
-  var M = tMul(tRotZ(phi), tTrans(-STY_BUTT * k, 0, 0));
-  return tMul(tI(), M);
-}
-
 /* camera ---------------------------------------------------------------- */
 function cameraAt(yaw, pit, dist, target) {
   pit = clamp(pit, -0.25, 1.46);
@@ -2507,15 +2982,19 @@ function assemblyAt(t, roll, spin) {
               tRotX(0.020 * Math.sin(t * 0.17 + 2))));
 }
 
+/* THE HANDLE THE OTHER TWO SCRIPTS SEE.  Everything on it is read by name
+   somewhere in the figure or the deck; MODA, MODB, STY, tI, handMatrix and
+   smooth used to be here as well and were read by nothing, which is the sort
+   of thing that turns an interface into an inventory. If a member is added,
+   it should be because something is about to call it. */
 var ENG = {
-  CFG: CFG, MODA: MODA, MODB: MODB, STY: STY, FIELD: FIELD, SCREEN: SCREEN,
+  CFG: CFG, FIELD: FIELD, SCREEN: SCREEN,
   KEY: KEY, STY_TIP: STY_TIP, STY_BUTT: STY_BUTT,
-  buildScene: buildScene, stateAt: stateAt, poseFor: poseFor, handMatrix: handMatrix,
+  buildScene: buildScene, stateAt: stateAt, poseFor: poseFor,
   cameraAt: cameraAt, assemblyAt: assemblyAt,
-  tMul: tMul, tI: tI, tRotZ: tRotZ, tTrans: tTrans, tApply: tApply,
-  clamp: clamp, lerp: lerp, smooth: smooth, s01: s01
+  tMul: tMul, tRotZ: tRotZ, tTrans: tTrans, tApply: tApply,
+  clamp: clamp, lerp: lerp, s01: s01
 };
-if (typeof module !== 'undefined' && module.exports) module.exports = ENG;
 </script>
 <script>
 /* =====================================================================
@@ -2539,15 +3018,26 @@ var ctx = cvs.getContext('2d', { alpha: false });
    capitals survive the glyph resolution. On the glass the same instruction
    returns as markup, inside an editable node. */
 var LATIN = ['SAEPE', 'STILVM', 'VERTAS'];
-var CODE = [
-  '<!-- saepe stilum uertas -->',
-  '<main class="stylos">',
-  '  <p contenteditable',
-  '     spellcheck="false">',
-  '    we design and build',
-  '  </p>',
-  '</main>'
-];
+/* WHAT THE GLASS CARRIES.
+
+   It carried seven lines of markup, and none of it could be read. The reason
+   is worth writing down because it is not obvious: buildTextCloud shrinks the
+   type until the LONGEST line fits the field, so declaring a cap height is
+   only a request. `<!-- saepe stilum uertas -->` is twenty-eight monospaced
+   characters across a field about fourteen wide at the nominal size, so every
+   line was being set at half what it asked for — about nine screen pixels,
+   four lattice cells, which is under any threshold at which a letterform
+   survives. Asking for larger type made no difference at all; the fit simply
+   scaled it back down again.
+
+   Four words fixes it. They are the four steps the room lists, in the order it
+   lists them, written onto the glass by the stylus while the reader reads
+   them — which is the plainest possible version of what this room is for, and
+   the first version of it that can actually be read.
+
+   THE RULE FOR ANY REPLACEMENT: nine characters is the ceiling, not the
+   target. Add a longer line and every line loses size in proportion. */
+var CODE = ['read', 'structure', 'draw', 'keep'];
 
 /* ---- palettes --------------------------------------------------------- */
 /* Ground sampled off the reference plates: flat, one ink, no hue drift.
@@ -2635,8 +3125,24 @@ var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var compact = false;
 
 /* what the deck asks for */
-var deckP = 0, deckQ = 0, inkA = 1;
-var handOn = 0, handPhi = Math.PI * 0.5, handTarget = Math.PI * 0.5, handSectors = 6;
+var deckP = 0, deckQ = 0;
+var handOn = 0, handPhi = Math.PI * 0.5, handSectors = 6;
+/* THE NEEDLE'S TRAVEL.  It used to be an exponential chase on a target — which
+   is smooth in the abstract and stutters in practice, because the target was
+   being rewritten several times a second by the carousel's own scroll handler
+   as a smooth scroll passed over each card in turn. The needle was therefore
+   chasing a value that kept moving, restarting from wherever it had got to,
+   and arrowing through the row made it visibly hunt.
+
+   It is a tween now, one per SECTOR: a move is committed to when the sector
+   changes and is then performed to the end, at a duration that grows with the
+   distance, and intermediate targets during the move are ignored. Smooth
+   within the sector, controlled between them. handSwing is the same tween read
+   as a hump — it draws the needle back a little at the middle of its travel
+   and lets it out again as it lands, which is what turns a value being
+   assigned into an arm being swung. */
+var handSec = -1, handFrom = Math.PI * 0.5, handTo = Math.PI * 0.5;
+var handT0 = -1, handDur = 0.42, handSwing = 0;
 /* the reaction: a soft disc of second-tone that follows the pointer, plus a
    floor the room can raise. hoR is its radius in lattice cells. */
 var hovX = -1e4, hovY = -1e4, hovA = 0, hovAim = 0, hoR = 15, warmBase = 0;
@@ -2653,6 +3159,9 @@ var pxNudge = 0, pyNudge = 0, pxAim = 0, pyAim = 0;
    the figure genuinely re-frames instead of being scaled up as a bitmap. */
 var bloomGrow = 1;
 var stCur = null, dirty = true;
+/* the drawn stylus' tip and butt on screen, in device pixels; see the
+   registration probe in drawFrame */
+var styScr = [0, 0, 0, 0];
 
 /* ordered dither, 8x8 Bayer, normalised to (0,1) */
 var BAYER = (function () {
@@ -2920,9 +3429,13 @@ function buildTexts() {
     px: 4, harvest: 0.95, align: 'center', inset: 4, mono: false,
     y: ENG.FIELD.y - ENG.CFG.INCISE
   });
+  /* cap 6.8 against 4.6, and the leading opened to match: four lines at this
+     size fill the same field the seven small ones did, and each glyph is now
+     about fourteen screen pixels rather than nine — which is the difference
+     between markup that is being read and markup that is being suggested. */
   tCode = buildTextCloud({
-    lines: CODE, field: ENG.SCREEN, cap: 4.6, lead: 8.8, track: 0,
-    px: 9, harvest: 0.42, align: 'left', inset: 6, mono: true,
+    lines: CODE, field: ENG.SCREEN, cap: 9.0, lead: 17.0, track: 0,
+    px: 10, harvest: 0.34, align: 'left', inset: 8, mono: true,
     y: ENG.SCREEN.y + 0.16
   });
   var pa = makePath(tLat, 'script'), pb = makePath(tCode, 'glide');
@@ -3028,9 +3541,59 @@ function prepareCloud(m) {
 var WM = [null, null, null], MV = [null, null, null];
 var o3 = [0, 0, 0], v3 = [0, 0, 0];
 
+/* THE LANDING'S RESTING STATE.
+
+   A still is not a resting state. The landing held the object in one pose and
+   waited, and the only thing moving on the first screen of the site was the
+   assembly's own breath — so the stylus, which is the thing the studio is
+   named after and the thing the reader is being asked to look at, read as a
+   splinter parked on a photograph.
+
+   It writes instead, and wipes it out, and starts again: the loop IS the rest
+   state, and it is the argument of the whole page performed once every twenty
+   seconds without a word of copy. It stops the moment the reader scrolls —
+   FADE is how far into the first movement it has faded to nothing — because
+   from there the choreography has its own ideas and two of them at once is
+   noise.
+
+   CYCLE is the period in seconds. Slow on purpose: at ten seconds it read as
+   a demonstration of a feature, at twenty as somebody working. DEPTH is how
+   much of the line gets cut before it is wiped — a whole line takes too long
+   to be the thing that repeats, and a third of one is a hand still going. */
+var IDLE_CYCLE = 20.0, IDLE_DEPTH = 0.42, IDLE_FADE = 0.55;
+/* the loop is started by the deck when the introduction hands over, not by
+   the render clock. That is not tidiness: the photographic stylus comes to
+   rest at write 0, so if the loop had been running behind the loader the
+   drawing would be a quarter of a line further on at the moment the two are
+   swapped, and the hand-over would show the pen jump. */
+var idleT0 = -1;
+
+function idleAt(st, t) {
+  var u = (t % IDLE_CYCLE) / IDLE_CYCLE;
+  /* cut over the first half, hold, turn the stylus over, wipe, and rest */
+  var w = ENG.s01(ENG.clamp(u / 0.46, 0, 1)) * IDLE_DEPTH;
+  var e = ENG.s01(ENG.clamp((u - 0.62) / 0.26, 0, 1));
+  var fl = ENG.s01((u - 0.56) / 0.06) - ENG.s01((u - 0.90) / 0.05);
+  st.write = Math.max(st.write, w);
+  st.erase = Math.max(st.erase, e);
+  st.flip = Math.max(st.flip, fl);
+}
+
 function drawFrame(t) {
   var i, k, p;
   var st = ENG.stateAt(deckP, deckQ);
+  /* the landing writes while it waits; it is handed over to the scroll as
+     soon as the scroll has anything to say */
+  if (!REDUCED && ENG.KEY[0].idle && idleT0 >= 0 && deckP < IDLE_FADE) {
+    var idleW = 1 - ENG.s01(deckP / IDLE_FADE);
+    if (idleW > 0.004) {
+      var probe = { write: 0, erase: 0, flip: 0 };
+      idleAt(probe, t - idleT0);
+      st.write = Math.max(st.write, probe.write * idleW);
+      st.erase = Math.max(st.erase, probe.erase * idleW);
+      st.flip = Math.max(st.flip, probe.flip * idleW);
+    }
+  }
   stCur = st;
   var hand = handOn > 0.5;
 
@@ -3058,10 +3621,14 @@ function drawFrame(t) {
        swing inside the band above the cards at every aspect ratio the room is
        laid out for. handGeom() in the deck script draws the dial off the same
        two numbers and has to be changed with it. */
-    var len = Math.min(W * 0.19, H * 0.27);
+    /* the needle draws back by a twelfth at the middle of a move and lets out
+       again as it lands (handSwing), and breathes a little while it waits, so
+       it reads as a weighted arm rather than as an indicator being set */
+    var len = Math.min(W * 0.19, H * 0.27) * (1 - 0.085 * handSwing);
     dist = 122 * f / Math.max(1, len);
     target = [0, 0, 0];
-    WM[2] = ENG.tMul(ENG.tRotZ(handPhi), ENG.tTrans(-ENG.STY_BUTT, 0, 0));
+    var sway = REDUCED ? 0 : 0.011 * Math.sin(t * 0.52) + 0.004 * Math.sin(t * 1.13);
+    WM[2] = ENG.tMul(ENG.tRotZ(handPhi + sway), ENG.tTrans(-ENG.STY_BUTT, 0, 0));
     cam = ENG.cameraAt(0, 0, dist, target);
     panX = 0; panY = (HAND_CY - 0.5) * H;
     fitted = false;
@@ -3118,6 +3685,15 @@ function drawFrame(t) {
          figure visibly pump toward its new size. A longer time constant costs
          nothing (the framing is not information) and takes the jerk out. */
       dist += (want - dist) * (fitted ? 0.075 : 0.62);
+      /* A GUARD, AND WHY IT IS WORTH TWO LINES.  Everything above is a ratio,
+         and a ratio taken while the canvas has no size yet — a first frame in
+         a pane that is still being laid out, a tab restored from the back /
+         forward cache — can come back 0/0. clamp() passes NaN straight
+         through (NaN < a is false, NaN > b is false), dist is fed back into
+         itself on the next iteration, and from then on every point in the
+         scene fails its depth test: a silently blank hero, with no error to
+         find. One test, once a frame, and the fit simply starts again. */
+      if (!isFinite(dist)) { dist = 380; fitted = false; }
       dist = ENG.clamp(dist, 140, 1700);
     }
     fitted = true;
@@ -3132,6 +3708,27 @@ function drawFrame(t) {
 
   for (p = 0; p < 3; p++) MV[p] = ENG.tMul(cam.V, WM[p]);
 
+  /* THE REGISTRATION PROBE.  Where the drawn stylus actually lands on screen,
+     tip first, in CSS pixels — read it with STYLOS.stylus() from the console.
+
+     It is here because the loader's photographic stylus has to come to rest in
+     the same place, and that agreement was previously being judged by eye
+     across a page reload, which is how the two of them drifted apart into the
+     doubling on the landing. --sty-r / --sty-s / --sty-x / --sty-y in the
+     stylesheet are set against these numbers: the angle it reports at deck
+     position 0 is the angle the photograph has to hold. Four multiplications
+     a frame, and it answers the one question the hand-over turns on. */
+  if (!hand) {
+    ENG.tApply(MV[2], ENG.STY_TIP, 0, 0, o3);
+    var pz0 = -o3[2];
+    styScr[0] = W * 0.5 + panX + f * o3[0] / (pz0 || 1);
+    styScr[1] = H * 0.5 + panY - f * o3[1] / (pz0 || 1);
+    ENG.tApply(MV[2], ENG.STY_BUTT, 0, 0, o3);
+    var pz1 = -o3[2];
+    styScr[2] = W * 0.5 + panX + f * o3[0] / (pz1 || 1);
+    styScr[3] = H * 0.5 + panY - f * o3[1] / (pz1 || 1);
+  }
+
   var V = cam.V, Lw = [-0.45, 0.82, 0.36];
   var lx = V[0] * Lw[0] + V[1] * Lw[1] + V[2] * Lw[2];
   var ly = V[4] * Lw[0] + V[5] * Lw[1] + V[6] * Lw[2];
@@ -3145,7 +3742,9 @@ function drawFrame(t) {
   var tick = (t * 3.1) | 0;
   var ghosts = OPT.xray && !hand;
   var moving = st.morph > 0.0004 && st.morph < 0.9996;
-  var ink = inkA * (st.ink === undefined ? 1 : st.ink);
+  var ink = (st.ink === undefined ? 1 : st.ink);
+  /* on a phone the figure keeps only the rooms it is the subject of */
+  if (compact) ink *= (st.figM === undefined ? 1 : ENG.clamp(st.figM, 0, 1));
 
   var pos = posCur, nor = norCur, part = scene.part, flag = scene.flag, sd = scene.seed;
   var M, a0, a1, a2, a4, a5, a6, a8, a9, a10;
@@ -3240,8 +3839,20 @@ function drawFrame(t) {
     }
     var warm = wm > 0.004 && hash2(cxk + 7, cyk + 3) < wm;
 
+    /* WHAT IS WRITTEN IS NEVER GRAIN.
+
+       The digit grain claims about a third of the lattice, and it was claiming
+       cells that belonged to the inscription along with everything else — so a
+       third of every letter was being printed as a random numeral and the rest
+       of it dimmed to the infill level. That is why the writing has always
+       read as a denser patch of noise rather than as words: it was being
+       overwritten by the texture at the exact moment it was supposed to be
+       legible. bufF marks the cells the inscription put down (1 wax, 2 glass),
+       and those cells are exempt: they print as full-strength dots, which is
+       the only mark that can carry a letterform at this pitch. The grain is
+       untouched everywhere else, so the field does not change density. */
     var hv = dg > 0 ? hash2(cxk, cyk) : 1;
-    var claimed = dg > 0 && hv < dg;
+    var claimed = dg > 0 && hv < dg && !bufF[k];
     if (claimed && (cxk % DSX) === 0 && (cyk % DSY) === 0) {
       var lv2 = (bufV[k] * (LEVELS - 1) * 1.14 + 0.5) | 0;
       if (lv2 > LEVELS - 1) lv2 = LEVELS - 1; if (lv2 < 0) lv2 = 0;
@@ -3256,21 +3867,36 @@ function drawFrame(t) {
     splat(bufX[k], bufY[k], lev, warm);
   }
 
-  /* the contact mark: a burst of grain on wax, a caret on glass */
+  /* THE CONTACT MARK: a burst of grain on wax, a caret on glass.
+
+     BOTH WERE MEASURED IN LATTICE CELLS, WHICH IS THE ONE UNIT THEY MUST NOT
+     USE.  A cell is a fixed number of screen pixels; the figure is not. So the
+     caret was 11 cells tall whether it stood on a slab filling the screen or
+     on a thumbnail in a phone's top band — which is exactly the complaint: a
+     cursor half the height of the object it is supposedly writing on.
+
+     `mm` is how many screen pixels a millimetre of the model measures at the
+     depth the pen is touching, so both marks are now sized in the object's own
+     units and hold their proportion at every framing and on every screen. The
+     cell floor is kept only so they never fall below one printable mark. */
   if (!hand && pose.touching) {
     var c = pose.contact;
     ENG.tApply(MV[0], c[0], c[1], c[2], o3);
     var dz = -o3[2];
     if (dz > 12) {
       var cxp = W * 0.5 + panX + f * o3[0] / dz, cyp = H * 0.5 + panY - f * o3[1] / dz;
+      var mm = f / dz;                                  /* px per model mm */
       if (mScalar < 0.5) {
+        var rBase = Math.max(cell * 0.55, mm * 1.15);   /* ~1mm of swarf */
         for (i = 0; i < 18; i++) {
-          var an = (i / 18) * Math.PI * 2 + t * 2.2, rr2 = (2 + (i % 4)) * cell * 0.9;
+          var an = (i / 18) * Math.PI * 2 + t * 2.2, rr2 = (2 + (i % 4)) * rBase;
           splatSafe(cxp + Math.cos(an) * rr2, cyp + Math.sin(an) * rr2 * 0.55, i % 3 === 0 ? 4 : 2);
         }
       } else if (((t * 2.4) | 0) % 2 === 0) {
-        var hgt = cell * 5.5;
-        for (i = -hgt; i <= hgt; i += cell * 0.85) splatSafe(cxp, cyp + i, 3);
+        /* the caret is one cap height of the text it is writing, halved */
+        var hgt = Math.max(cell * 2, mm * (tCode ? tCode.cap : 6.8) * 0.62);
+        var stp = Math.max(cell * 0.8, hgt / 7);
+        for (i = -hgt; i <= hgt; i += stp) splatSafe(cxp, cyp + i, 3);
       }
     }
   }
@@ -3346,9 +3972,18 @@ function tickLoop(ms) {
   if (!running) return;
   clock += dt;
 
-  /* the hand eases between sectors rather than snapping */
-  var dphi = handTarget - handPhi;
-  if (Math.abs(dphi) > 1e-4) { handPhi += dphi * Math.min(1, dt * 6.5); dirty = true; }
+  /* the needle performs one committed move per sector (see handSec above) */
+  if (handT0 >= 0) {
+    var hu = ENG.clamp((clock - handT0) / handDur, 0, 1);
+    /* a cubic-out with one small damped swing left in it, so the needle
+       arrives like a weighted arm and not like an assignment */
+    var he = 1 - Math.pow(1 - hu, 3);
+    he += Math.sin(hu * TAU) * 0.055 * (1 - hu) * (1 - hu);
+    handPhi = handFrom + (handTo - handFrom) * he;
+    handSwing = Math.sin(hu * Math.PI);
+    if (hu >= 1) { handT0 = -1; handPhi = handTo; handSwing = 0; }
+    dirty = true;
+  }
   /* the pointer's small parallax */
   if (Math.abs(pxAim - pxNudge) > 1e-4 || Math.abs(pyAim - pyNudge) > 1e-4) {
     pxNudge += (pxAim - pxNudge) * Math.min(1, dt * 3.2);
@@ -3410,11 +4045,27 @@ window.FIGURE = {
     handOn = on ? 1 : 0;
     if (sectors) handSectors = sectors;
     if (sector !== undefined && sector !== null) {
-      handTarget = Math.PI * (sector + 0.5) / handSectors;
+      if (sector !== handSec) {
+        var to = Math.PI * (sector + 0.5) / handSectors;
+        var step = handSec < 0 ? 1 : Math.abs(sector - handSec);
+        /* reduced motion gets the answer, not the gesture: the needle is an
+           indicator, and an indicator that takes half a second to agree with
+           the counter beside it is a decoration */
+        if (REDUCED) { handPhi = to; handTo = to; handSec = sector; handT0 = -1; handSwing = 0; dirty = true; return; }
+        handFrom = handPhi; handTo = to;
+        /* a neighbour takes about a third of a second; a jump across the row
+           takes a little longer, but not proportionally so — a needle that
+           took six times as long to cross six sectors would be a wait */
+        handDur = 0.30 + 0.16 * Math.min(3, step);
+        handT0 = clock;
+        handSec = sector;
+      }
     }
     dirty = true;
   },
-  setInk: function (a) { inkA = a; dirty = true; },
+  /* the landing's write-and-wipe loop starts here, when the introduction has
+     finished handing over — see IDLE_CYCLE */
+  beginIdle: function () { if (idleT0 < 0) idleT0 = clock; dirty = true; },
   /* g is a multiplier on how much of the box the figure is allowed. The deck
      drives it 1 -> 1.16 across the landing as the photograph leaves. */
   setBloom: function (g) {
@@ -3445,7 +4096,20 @@ window.FIGURE = {
   pause: function () { running = false; },
   resume: function () { if (!running) { running = true; last = 0; dirty = true; } },
   resize: function () { resize(); rebuild(); },
-  state: function () { return { p: deckP, q: deckQ, fps: fps, n: scene ? scene.n : 0, dist: dist }; }
+  state: function () { return { p: deckP, q: deckQ, fps: fps, n: scene ? scene.n : 0, dist: dist }; },
+  /* where the drawn stylus is standing, in CSS pixels: tip, butt, the angle
+     of the two in degrees above the horizontal, and its length. This is the
+     measurement the loader's stylus is set against — see --sty-r. */
+  stylus: function () {
+    var x0 = styScr[0] / DPR, y0 = styScr[1] / DPR;
+    var x1 = styScr[2] / DPR, y1 = styScr[3] / DPR;
+    return {
+      tip: [Math.round(x0), Math.round(y0)],
+      butt: [Math.round(x1), Math.round(y1)],
+      deg: +(Math.atan2(y0 - y1, x1 - x0) * 180 / Math.PI).toFixed(1),
+      len: Math.round(Math.hypot(x1 - x0, y1 - y0))
+    };
+  }
 };
 
 /* byte order for the pixel buffer */
@@ -3486,7 +4150,6 @@ function s01(t) { return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t); }
    Change TOTAL and everything else follows. */
 var INTRO = {
   TOTAL:   5000,
-  reveal:   760,   /* the wipe finishes                                 */
   turn0:   1020,   /* first quarter begins                              */
   turn:     480,   /* one quarter turn, hold included                   */
   step0:   3060,   /* the codex arrives; the stylus starts shrinking    */
@@ -3662,8 +4325,7 @@ var Intro = (function () {
       var all = Promise.all([decode(sty), decode(cod)]);
       var ceiling = new Promise(function (r) { setTimeout(r, 4000); });
       Promise.race([all, ceiling]).then(function () { syncLanding(); run(done); });
-    },
-    skip: function () { timers.forEach(clearTimeout); }
+    }
   };
 })();
 
@@ -3673,13 +4335,34 @@ var Intro = (function () {
      [S] status, description, long text, scope, register, image URL — verbatim
          from stylus_1.html
    ITEM V is the exception and is flagged: name, category and status carried
-   from session notes, not from a source file. */
+   from session notes, not from a source file.
+
+   `sections` IS PLACEHOLDER COPY AND IS MEANT TO BE REPLACED.  Every project
+   opens into a room of its own, and a room needs more than the three sentences
+   the carousel caption already carries — so each one has three headed sections
+   under the opening text. The headings are the ones a case study of this kind
+   wants (what the material was, what was built, where it stands); the
+   paragraphs under them are scaffolding written to the right length so the
+   typography can be judged, and every one of them is marked PLACEHOLDER. Say
+   the true thing over the top of them and delete the marker.
+
+   Shape: sections: [ { h: 'Heading', p: ['para', 'para'] }, ... ] */
 var P = [
   { roman: 'I', cat: 'Research platform', status: 'Awaiting public launch',
     title: 'Aphrodisias 3D Epigraphy', client: 'Oxford \u00b7 UKRI',
     desc: 'A public platform for ancient urban spaces, joining interactive 3D models with scholarly object records.',
     longText: 'A public platform for the epigraphy and archaeology of late antique Aphrodisias, built around interactive 3D models of ancient structures. The site joins scholarly object records, visual material and embedded photogrammetric models under one designed interface, and is to be hosted by the Faculty of Classics, Oxford, once the remaining models are complete.',
     scope: 'Design \u00b7 Frontend \u00b7 3D embedding', register: 'Research & heritage',
+    sections: [
+      { h: 'The material', p: [
+        'PLACEHOLDER. Several hundred inscriptions, a site plan, and a growing set of photogrammetric models of standing structures — held until now as folders of files with the argument that joins them living in published articles rather than in the record itself.',
+        'PLACEHOLDER. The first question was not what the site should look like but what an object is: which of the stone, the text, the model and the photograph is the thing being catalogued, and which are its representations.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. A record structure that lets an inscription, its findspot, its images and its 3D model be one thing with four faces, and an interface in which a reader can move between them without losing their place.',
+        'PLACEHOLDER. Models are embedded rather than linked, at a size that holds up on a laptop over a conference wifi, with annotations that address positions on the model and survive its being re-exported.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. The platform is complete and populated; publication waits on the last of the models and on the Faculty\u2019s hosting arrangements.' ] }
+    ],
     img: 'https://res.cloudinary.com/dp3g7dyx9/image/upload/v1778297869/ce41211d-aeec-43da-adf5-8eefe73fb568.png' },
 
   { roman: 'II', cat: 'Academic project', status: 'Launching',
@@ -3687,6 +4370,15 @@ var P = [
     desc: 'A grant-facing research project making complex humanities data navigable, structurally sound and visually credible.',
     longText: 'A public-facing website and research database for a Vienna-based academic project on Roman-era papyri. Stylos designed both the Firebase backend and the public interface \u2014 the landing page, the database structure, and the presentation of project materials \u2014 so that complex humanities data reads as navigable, structurally sound, and visually credible.',
     scope: 'Firebase \u00b7 Database design \u00b7 Frontend', register: 'Research & humanities',
+    sections: [
+      { h: 'The material', p: [
+        'PLACEHOLDER. Roman-era papyri, catalogued by a team across two institutions, with the usual humanities problem underneath: half the fields are certain, half are arguments, and the interface has to be honest about which is which.',
+        'PLACEHOLDER. The project also has two audiences with different needs — specialists who want the apparatus, and a funder who wants to see the shape of the work.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. A Firebase backend the researchers maintain themselves, a schema that carries provenance and confidence alongside every value, and a public site that presents the same data at two depths without keeping two copies of it.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. In final review with the project team ahead of an institutional launch.' ] }
+    ],
     img: 'https://res.cloudinary.com/dp3g7dyx9/image/upload/v1778297980/6a23d57f-6611-4d14-89a8-41803624e916.png' },
 
   { roman: 'III', cat: 'Artist website', status: 'Proposal-stage design',
@@ -3694,6 +4386,15 @@ var P = [
     desc: 'A cinematic portfolio structure for an independent performer, balancing dramatic atmosphere and plain biography.',
     longText: 'A pilot proposal for a London-based performance storyteller: a stylish, editorial, animated portfolio hosted on Vercel, with a functional back office and payment integration. The design balances dramatic atmosphere against plain biography \u2014 a stage presence that still reads as a working professional page.',
     scope: 'Editorial design \u00b7 Motion \u00b7 Back office \u00b7 Payments', register: 'Creative & independent',
+    sections: [
+      { h: 'The brief', p: [
+        'PLACEHOLDER. A performer whose work is theatrical and whose website has to be bookable — atmosphere for an audience, plain facts for a producer, and no sense that the two were designed by different people.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. An editorial structure in which each show is a piece of writing rather than a card, staged reveals timed to reading speed rather than to a scroll position, and a back office in which dates, prices and availability are edited without touching the design.',
+        'PLACEHOLDER. Payment and enquiry flows sit behind the same layer, so a booking never leaves the site.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. Proposal-stage design, shown here as the pilot was presented.' ] }
+    ],
     img: 'https://res.cloudinary.com/dp3g7dyx9/image/upload/v1778298232/d8b76fbe-d726-406e-a735-8c5bafcc39bf.png' },
 
   { roman: 'IV', cat: 'Educational platform', status: 'Pilot proposal',
@@ -3701,6 +4402,14 @@ var P = [
     desc: 'A warm, clear website system built around trust, parent-facing clarity and an elegant information hierarchy.',
     longText: 'A pilot for a small private school in Oxford: an interactive, editorial-style website with carefully structured public-facing content and an administrative back office. The system is designed around trust \u2014 parent-facing clarity, warm tone, and an information hierarchy that answers questions before they are asked.',
     scope: 'Design system \u00b7 Content structure \u00b7 Back office', register: 'Creative & independent',
+    sections: [
+      { h: 'The brief', p: [
+        'PLACEHOLDER. A small bilingual school whose parents arrive with the same six questions and were finding none of them answered above the fold — and a staff of three who would have to keep the site current themselves.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. An information hierarchy built backwards from those six questions, a warm and unfussy type system that survives being edited by non-designers, and an administrative back office sized for the people who actually use it.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. Pilot proposal, awaiting the school\u2019s decision on the next academic year.' ] }
+    ],
     img: 'https://res.cloudinary.com/dp3g7dyx9/image/upload/v1778298829/a3c81450-fa72-4d18-94af-4eb1de62bd50.png' },
 
   /* -- CONFIRM ME: name / category / status carried from session notes ---- */
@@ -3709,6 +4418,14 @@ var P = [
     desc: 'A painter\u2019s site built around the work itself: staged reveals, careful colour, and a lightweight back office.',
     longText: 'A site for an Oxford-based painter working in portraiture and an expressionist register. The design puts the paintings first \u2014 staged reveals, restrained typography and colour handling that lets the work set the temperature of the page \u2014 with a lightweight back office and a managed image pipeline underneath.',
     scope: 'Design \u00b7 Motion \u00b7 Image pipeline \u00b7 Back office', register: 'Creative & independent',
+    sections: [
+      { h: 'The brief', p: [
+        'PLACEHOLDER. A painter in an expressionist register, whose canvases carry their own colour temperature — so any page they sit on has to be quiet enough not to argue with them, and consistent enough that the argument is never accidental.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. A near-monochrome shell with the paintings as the only colour in it, staged reveals that give a work the beat it needs before the next one arrives, and an image pipeline that keeps colour faithful from studio photograph to phone screen.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. In progress; the back office is in place and the catalogue is being photographed.' ] }
+    ],
     img: 'https://res.cloudinary.com/dp3g7dyx9/image/upload/v1783276907/57165232-6940-4dba-9f92-7823b0c5a875.png' },
 
   { roman: 'VI', cat: 'Creative portfolio', status: 'Private commission',
@@ -3716,30 +4433,92 @@ var P = [
     desc: 'A private commission: a monochrome rendered portrait, staged reveals and a lightweight back office.',
     longText: 'A private commission built around a striking monochrome rendered portrait in the hero, animated reveals, and a carefully staged presentation of the work, with hosted imagery and backend functionality. The site is not public; it is shown to prospective clients on request.',
     scope: 'Design \u00b7 Motion \u00b7 Back office \u00b7 Image pipeline', register: 'Creative & independent',
+    sections: [
+      { h: 'The commission', p: [
+        'PLACEHOLDER. A private commission, built around a single rendered portrait and shown to prospective clients on request rather than published.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. A monochrome hero carrying the rendered portrait at full bleed, a staged presentation of the work below it, and hosted imagery with the same back office the other commissions use.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. Delivered. Shown on request \u2014 write if you would like to see it.' ] }
+    ],
+    img: null },
+
+  /* -- FILL ME -------------------------------------------------------------
+     A seventh item, because six with one of them veiled reads thin for a
+     studio page — the row is meant to look like a practice with a back
+     catalogue, and at six the eye finishes it. Every prose field here is
+     marked PLACEHOLDER and the title is a slot, not a claim: replace them with
+     a real commission before this goes anywhere near a client. Set img to a
+     Cloudinary URL to give it a plate, or leave it null and it takes the
+     veiled treatment the private commission uses. -------------------------- */
+  { roman: 'VII', cat: 'PLACEHOLDER — category', status: 'PLACEHOLDER — status',
+    title: 'Project seven', client: 'PLACEHOLDER \u00b7 client',
+    desc: 'PLACEHOLDER. One sentence on what the project is and who it is for, at about the length of the five above it.',
+    longText: 'PLACEHOLDER. Two or three sentences of opening text: what the material was, what was made of it, and what state the work is in. This paragraph sets the measure for the case study room, so keep it to about the length of the others.',
+    scope: 'PLACEHOLDER \u00b7 scope', register: 'PLACEHOLDER — register',
+    sections: [
+      { h: 'The brief', p: [
+        'PLACEHOLDER. What was asked for, and what the real problem underneath it turned out to be.' ] },
+      { h: 'What was built', p: [
+        'PLACEHOLDER. The structure first, then the surface: what the thing is made of and what was done to make it legible.' ] },
+      { h: 'Where it stands', p: [
+        'PLACEHOLDER. Delivered, in progress, or waiting on a launch.' ] }
+    ],
     img: null }
 ];
 
 var track = $('track'), counter = $('counter'), barFill = $('barFill');
 var wIdx = 0, suppress = false;
 
+/* STACKED.  Below 901px the row is laid out as a column (see the works block
+   in the compact stylesheet) and half the machinery in this section has to
+   stand down with it: there is no horizontal scroll to read, no card to centre
+   on, nothing for the needle to index, and a drag would fight the page. One
+   query, asked wherever that matters, rather than a second code path. */
+var STACKED = window.matchMedia('(max-width: 900px)');
+
 P.forEach(function (p, i) {
   var b = document.createElement('button');
   b.className = 'card'; b.type = 'button';
-  b.style.setProperty('--sd', (i * 140) + 'ms');
+  b.style.setProperty('--sd', (i * 150) + 'ms');
   b.setAttribute('aria-label', 'Open case study: ' + p.title);
   b.innerHTML =
     '<div class="shot' + (p.img ? '' : ' veiled') + '">'
-    + (p.img ? '<img loading="lazy" alt="' + p.title + ' \u2014 interface study" src="' + p.img + '"><span class="scan" aria-hidden="true"></span>'
+    + (p.img ? '<img loading="lazy" alt="' + esc(p.title) + ' \u2014 interface study" src="' + p.img + '"><span class="scan" aria-hidden="true"></span>'
              : '<span class="veil mono">Shown on request</span>')
     + '<span class="plus" aria-hidden="true">+</span></div>'
-    + '<div class="card-meta"><div class="row mono"><span>' + p.cat + '</span></div>'
-    + '<h3>' + p.title + '</h3><div class="client mono">' + p.client + '</div></div>';
-  b.addEventListener('click', function () { if (!suppress) openCase(i); });
+    + '<div class="card-meta"><div class="row mono"><span>' + esc(p.cat) + '</span></div>'
+    + '<h3>' + esc(p.title) + '</h3><div class="client mono">' + esc(p.client) + '</div></div>';
   track.appendChild(b);
 });
 var cards = Array.prototype.slice.call(track.children);
 
+/* WHY THE CASE STUDY WOULD NOT OPEN ON A MOUSE.
+
+   Each card had its own click listener, and the drag handler below called
+   track.setPointerCapture() on pointerdown. Pointer capture retargets the
+   compatibility mouse events to the capturing element, so mouseup was
+   delivered to the track rather than to the card — and a click is dispatched
+   at the nearest common ancestor of mousedown's target and mouseup's target,
+   which made the click land on the track, where nothing was listening. Touch
+   was unaffected because a touch pointer is implicitly captured by its own
+   original target, which is why the rooms opened on a phone and nowhere else.
+
+   Two changes. The capture is gone (the drag reads the window instead), and
+   the click is delegated to the track, so it does not matter which descendant
+   of the card the mouse came up on. `moved` is settled at pointerup and read
+   synchronously by the click that follows it — no timer, so no window in which
+   a drag counts as a tap or the other way round. */
+track.addEventListener('click', function (e) {
+  if (suppress) return;
+  var card = e.target.closest && e.target.closest('.card');
+  if (!card) return;
+  var i = cards.indexOf(card);
+  if (i >= 0) openCase(i);
+});
+
 function centerOn(i) {
+  if (STACKED.matches) return;
   var c = cards[clamp(i, 0, cards.length - 1)];
   track.scrollTo({ left: c.offsetLeft - (track.clientWidth - c.clientWidth) / 2, behavior: REDUCED ? 'auto' : 'smooth' });
 }
@@ -3756,11 +4535,12 @@ $('next').addEventListener('click', function () { setWorks(wIdx + 1); });
 
 var sRaf = null;
 track.addEventListener('scroll', function () {
-  if (sRaf) return;
+  if (STACKED.matches || sRaf) return;
   sRaf = requestAnimationFrame(function () { sRaf = null; setWorks(nearestCard(), 'track'); });
 }, { passive: true });
 
 track.addEventListener('wheel', function (e) {
+  if (STACKED.matches) return;
   if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
   var max = track.scrollWidth - track.clientWidth;
   if ((e.deltaY > 0 && track.scrollLeft < max - 2) || (e.deltaY < 0 && track.scrollLeft > 2)) {
@@ -3770,19 +4550,26 @@ track.addEventListener('wheel', function (e) {
 
 var dragging = false, dx0 = 0, sl0 = 0;
 track.addEventListener('pointerdown', function (e) {
+  if (STACKED.matches) return;                 /* a column is not dragged */
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   dragging = true; suppress = false; dx0 = e.clientX; sl0 = track.scrollLeft;
-  track.classList.add('dragging'); track.setPointerCapture(e.pointerId);
+  track.classList.add('dragging');
 });
-track.addEventListener('pointermove', function (e) {
+window.addEventListener('pointermove', function (e) {
   if (!dragging) return;
   var d = e.clientX - dx0;
   if (Math.abs(d) > 6) suppress = true;
   track.scrollLeft = sl0 - d;
 });
-function endDrag() { dragging = false; track.classList.remove('dragging'); setTimeout(function () { suppress = false; }, 60); }
-track.addEventListener('pointerup', endDrag);
-track.addEventListener('pointercancel', endDrag);
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  track.classList.remove('dragging');
+  /* suppress stays as the drag left it until the click that follows has read
+     it; the next pointerdown is what clears it */
+}
+window.addEventListener('pointerup', endDrag);
+window.addEventListener('pointercancel', function () { endDrag(); suppress = false; });
 
 function setWorks(i, src) {
   i = clamp(i, 0, P.length - 1);
@@ -3792,16 +4579,47 @@ function setWorks(i, src) {
   barFill.style.width = (100 / P.length) + '%';
   barFill.style.left = (i / P.length * 100) + '%';
   litTick(i);
+  /* the row says which one it is talking about, and not only the chrome */
+  for (var k = 0; k < cards.length; k++) cards[k].classList.toggle('is-on', k === i && !STACKED.matches);
   if (window.FIGURE && window.FIGURE.ready) window.FIGURE.setHand(handOn, i, P.length);
   if (src !== 'track' && (changed || src === 'hand')) centerOn(i);
 }
 
-var cascaded = false;
+/* THE CASCADE, AND THE TWO DIFFERENT ROOMS IT HAS TO SERVE.
+
+   Across a row, the plates arrive together, one behind another from the right,
+   and it is one gesture — the reader is looking at the whole row and the row is
+   being dealt out. Down a column, the same thing is nonsense: the last card is
+   two screens below the fold, so a staggered entrance would be performed
+   entirely off-screen and the reader would scroll into a set of stills.
+
+   So the column reveals per card as each one arrives, which is the only
+   version of "cascade" a column can honestly have. Same marks, same curve,
+   different trigger. */
+var cascaded = false, cardIO = null;
 function runCascade() {
   if (cascaded) return;
   cascaded = true;
+
+  if (STACKED.matches) {
+    track.classList.add('rested');
+    if (REDUCED || !('IntersectionObserver' in window)) {
+      cards.forEach(function (c) { c.classList.add('in'); });
+      return;
+    }
+    cardIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        cardIO.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -14% 0px' });
+    cards.forEach(function (c) { cardIO.observe(c); });
+    return;
+  }
+
   track.classList.add('cascade');
-  setTimeout(function () { track.classList.add('rested'); }, REDUCED ? 0 : P.length * 140 + 2000);
+  setTimeout(function () { track.classList.add('rested'); }, REDUCED ? 0 : P.length * 150 + 2200);
 }
 
 /* The stylus overhead, and the dial it swings over.
@@ -3873,19 +4691,47 @@ function fillCase(i) {
      old panel. Split on a blank line if the copy has one, otherwise on the
      sentence that introduces the second idea. */
   if (C.dek) C.dek.textContent = p.desc || '';
-  C.long.innerHTML = String(p.longText || '')
+
+  /* the opening text, then the headed sections under it. Both go through esc()
+     \u2014 the copy is ours, but a case study is the one place on the site where an
+     apostrophe or an ampersand typed into the table would otherwise be
+     handed to innerHTML as markup. */
+  var html = String(p.longText || '')
     .split(/\n\s*\n/)
-    .map(function (para) { return '<p>' + para.trim() + '</p>'; })
+    .map(function (para) { return '<p>' + esc(para.trim()) + '</p>'; })
     .join('');
+  (p.sections || []).forEach(function (sec) {
+    html += '<h4>' + esc(sec.h) + '</h4>';
+    (sec.p || []).forEach(function (para) { html += '<p>' + esc(para) + '</p>'; });
+  });
+  C.long.innerHTML = html;
+
   C.status.textContent = p.status;
   C.facts.innerHTML =
     row('Client', p.client) + row('Register', p.register) + row('Scope', p.scope) + row('Status', p.status);
-  
+
+  syncRowTo(i);
+
   C.media.innerHTML = p.img
-    ? '<img src="' + p.img + '" alt="' + p.title + ' \u2014 interface study" loading="lazy">'
+    ? '<img src="' + p.img + '" alt="' + esc(p.title) + ' \u2014 interface study" loading="lazy">'
     : '<div class="ph"><span class="mono cap">Shown on request</span></div>';
-  function row(k, v) { return '<div class="f"><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
+  function row(k, v) { return '<div class="f"><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>'; }
 }
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+/* THE ROW FOLLOWS THE ROOM.  Paging through the case studies used to leave the
+   carousel behind them on whichever card had been clicked, so closing the
+   overlay after reading three of them put the reader back at the first — and
+   the counter in the chrome disagreed with the counter in the room. fillCase is
+   the one place both are set from, so it moves the row, the counter, the bar
+   and the needle with it. */
+function syncRowTo(i) {
+  if (i === wIdx) return;
+  setWorks(i, 'case');
+}
+
 function openCase(i) {
   lastFocus = document.activeElement;
   fillCase(i);
@@ -3959,8 +4805,10 @@ function enterRoom(i) {
   startAct(i);
 
   var inWorks = screens[i].id === 'works';
-  if (inWorks !== handOn) {
-    handOn = inWorks;
+  /* stacked, there is no row for the needle to index and it stays away */
+  var wantHand = inWorks && !STACKED.matches;
+  if (wantHand !== handOn) {
+    handOn = wantHand;
     handEl.classList.toggle('on', handOn);
     if (window.FIGURE && window.FIGURE.ready) window.FIGURE.setHand(handOn, wIdx, P.length);
   }
@@ -3970,17 +4818,19 @@ function enterRoom(i) {
   body.classList.toggle('on-paper', inMethod);
   if (inMethod) runMethod();
 
-  /* the tile field and the carousel are two grids at similar pitch; the
-     inverted room is a third. Only one of them at a time. */
-  if (mosaicEl) mosaicEl.classList.toggle('mute', inWorks || inMethod);
+  /* The inverted room is a grid of its own and the tile field fights it. The
+     carousel used to be muted here too, on the same reasoning — but the mosaic
+     is now spent on the seam INTO the works room (see MARKS), and muting the
+     room it is announcing cancelled it half-way through its own arrival. */
+  if (mosaicEl) mosaicEl.classList.toggle('mute', inMethod);
 
   /* How far back the figure stands is keyframed per room now (KEY[].ink), so
      nothing is hard-coded here. What the room does still choose is how much
-     second tone the lattice carries before anyone touches it: the three
-     opening moves run a little warm, everything else waits for the pointer. */
+     second tone the lattice carries before anyone touches it: the wordless
+     showroom runs a little warm, everything else waits for the pointer. */
   if (window.FIGURE) {
     var id = screens[i].id;
-    var warm = (id === 'm1' || id === 'm2' || id === 'm3') ? 0.10
+    var warm = (id === 's1' || id === 's2' || id === 's3') ? 0.10
              : (id === 'top') ? 0.05 : 0.02;
     window.FIGURE.setWarm(REDUCED ? 0 : warm);
   }
@@ -4097,9 +4947,10 @@ function backplateAt(p) {
      IDLE_TOUCH  the same after touchend, where the release is a real event
      GLIDE       how long the settle itself takes                             */
 var SETTLE = (function () {
-  var IDLE_WHEEL = 460, IDLE_TOUCH = 120, GLIDE = 780, CARRY = 0.085;
+  var IDLE_WHEEL = 460, GLIDE = 780, CARRY = 0.085;
   var quiet = null, raf = 0, from = 0, dest = 0, t0 = 0;
   var dir = 0, lastY = 0, suspendUntil = 0, touching = false;
+  var coastRaf = 0, coastY = 0, coastStill = 0;
 
   function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
   function maxScroll() {
@@ -4114,6 +4965,30 @@ var SETTLE = (function () {
     return clamp(Math.round(p), 0, n - 1);
   }
 
+  /* TALL ROOMS ARE LEFT ALONE.
+
+     A rest state is a room that fits on the screen. The works room stacked for
+     a phone does not, and neither does a long studio room on a short laptop —
+     and for those the settle was actively harmful: the reader scrolls a third
+     of the way down a two-screen room, stops to read, and is dragged either
+     back to the top of it or on to the next one. It felt like being stuck
+     between rooms because it was.
+
+     So: if the room the reader is standing in is taller than the viewport and
+     they are somewhere inside it rather than at either edge, nothing happens.
+     The deck goes back to being an ordinary page for exactly as long as the
+     content needs it to be, and resumes snapping at the next room that fits. */
+  function insideTall() {
+    var y = window.scrollY, vh = window.innerHeight;
+    for (var i = 0; i < tops.length; i++) {
+      var h = hts[i] || 0;
+      if (h <= vh + 8) continue;
+      var top = tops[i], bot = top + h - vh;
+      if (y > top + 8 && y < bot - 8) return true;
+    }
+    return false;
+  }
+
   function step(now) {
     var t = clamp((now - t0) / GLIDE, 0, 1);
     var y = from + (dest - from) * easeOut(t);
@@ -4125,11 +5000,39 @@ var SETTLE = (function () {
   function settle() {
     quiet = null;
     if (touching || performance.now() < suspendUntil || !tops.length) return;
+    if (insideTall()) { dir = 0; return; }
     var y = window.scrollY;
     dest = clamp(tops[targetRoom()], 0, maxScroll());
     if (Math.abs(dest - y) < 2) { dir = 0; return; }
     from = y; t0 = performance.now();
     stop(); raf = requestAnimationFrame(step);
+  }
+
+  /* WAITING FOR MOMENTUM TO ACTUALLY STOP.
+
+     touchend is not the end of a scroll on a phone — it is the beginning of
+     the coast, which on iOS can run for well over a second. Settling 120ms
+     after the finger left the glass therefore started an 780ms animation into
+     a scroll that was still moving under it: two things writing scrollTop, the
+     page stuttering, and the deck coming to rest wherever the fight happened
+     to end. That is the jerkiness, and it is why rooms were being left
+     half-shown.
+
+     This watches the actual scroll position instead and waits for it to be
+     genuinely still — three consecutive frames within half a pixel — before
+     the settle is allowed to run. Deliberate holds are unaffected: the reader
+     stops, the scroll stops, and the settle follows a beat later. */
+  function coast() {
+    coastRaf = 0;
+    var y = window.scrollY;
+    if (Math.abs(y - coastY) < 0.5) { coastStill++; } else { coastStill = 0; coastY = y; }
+    if (coastStill >= 3) { settle(); return; }
+    coastRaf = requestAnimationFrame(coast);
+  }
+  function watchCoast() {
+    if (coastRaf) cancelAnimationFrame(coastRaf);
+    coastY = -1e9; coastStill = 0;
+    coastRaf = requestAnimationFrame(coast);
   }
 
   function poke(d) {
@@ -4146,6 +5049,7 @@ var SETTLE = (function () {
     }, { passive: true });
     window.addEventListener('touchstart', function () {
       touching = true; stop(); clearTimeout(quiet);
+      if (coastRaf) { cancelAnimationFrame(coastRaf); coastRaf = 0; }
     }, { passive: true });
     window.addEventListener('touchmove', function () {
       var y = window.scrollY;
@@ -4155,7 +5059,7 @@ var SETTLE = (function () {
     window.addEventListener('touchend', function () {
       touching = false;
       clearTimeout(quiet);
-      quiet = setTimeout(settle, IDLE_TOUCH);
+      watchCoast();
     }, { passive: true });
     /* a key press is a whole-room instruction, so it is answered at once */
     window.addEventListener('keydown', function (e) {
@@ -4166,8 +5070,11 @@ var SETTLE = (function () {
   }
 
   return {
-    suspend: function (ms) { suspendUntil = performance.now() + ms; stop(); clearTimeout(quiet); },
-    cancel: stop
+    suspend: function (ms) {
+      suspendUntil = performance.now() + ms;
+      stop(); clearTimeout(quiet);
+      if (coastRaf) { cancelAnimationFrame(coastRaf); coastRaf = 0; }
+    }
   };
 })();
 function settleSuspend(ms) { SETTLE.suspend(ms); }
@@ -4184,9 +5091,30 @@ function poseLoop() {
   if (!window.FIGURE || !window.FIGURE.ready) return;
   var target = deckPos();
   if (!posePrimed) { poseP = target; posePrimed = true; }
-  else { poseP += (target - poseP) * (REDUCED ? 1 : 0.16); }
+  /* REDUCED MOTION: ONE SLOW POSE CHANGE PER ROOM.
+
+     It used to snap. poseP was written straight from the scroll, so a reader
+     who had asked for less motion got the most abrupt version of the figure
+     there is — a still that jumps to a new still every time a room changes,
+     which is a worse thing to be shown than a movement, not a better one.
+
+     What reduced motion asks for is not stillness, it is the absence of large
+     fast travel: so the figure crosses to the new room's pose on a long ease,
+     about three and a half seconds, and then stops dead. There is exactly one
+     of them per room and nothing else moves — no breath on the assembly, no
+     landing loop, no timed writing (see q below). The render loop is gated on
+     `dirty`, so when the ease finishes the canvas genuinely stops. */
+  else { poseP += (target - poseP) * (REDUCED ? 0.035 : 0.16); }
   if (Math.abs(target - poseP) < 0.0004) poseP = target;
+  /* and the room's timed action is shown at its end rather than performed.
+     The one room that also wipes what it wrote is held just before the wipe:
+     at q=1 it would be showing an empty tablet, which is the least legible
+     frame of the sequence rather than the most. */
   var q = actMs ? clamp((performance.now() - actT0) / actMs, 0, 1) : 0;
+  if (REDUCED && actMs) {
+    var kr = ENG.KEY[room];
+    q = (kr && kr.eraseTo !== undefined) ? 0.58 : 1;
+  }
   window.FIGURE.setPose(poseP, q);
   backplateAt(poseP);
   overtureAt(poseP);
@@ -4212,7 +5140,9 @@ function overtureAt(p) {
 
 function showIndexAt(p) {
   if (!showIdxEl) return;
-  var on = p > 0.45 && p < 4.55;
+  /* three rooms now, so the index is shown from half way into the first
+     movement to half way out of the third */
+  var on = p > 0.45 && p < 3.55;
   if (on !== showOn) { showOn = on; showIdxEl.classList.toggle('on', on); }
   if (!on) return;
   var k = clamp(Math.round(p) - 1, 0, showTicks.length - 1);
@@ -4315,14 +5245,21 @@ function dressPortrait() {
     var Wc = Math.round(r.width * dpr), Hc = Math.round(r.height * dpr);
     cv.width = Wc; cv.height = Hc;
 
-    var cell = Math.max(3, Math.round(3.4 * dpr));   /* the plate's own pitch */
+    /* PLATE_CELL.  3.4 was the figure's own pitch, which is right for a
+       drawing whose subject is a rectangular object and wrong for a face: at
+       that size the eyes were about four cells across and the plate read as a
+       texture with spectacles in it. 2.4 nearly doubles the cell count over
+       the same area and the face resolves, while staying coarse enough that
+       the lattice is plainly the lattice and not an accident of compression.
+       It moves with the crop above it in the stylesheet. */
+    var cell = Math.max(2, Math.round(2.4 * dpr));
     var cols = Math.ceil(Wc / cell), rows = Math.ceil(Hc / cell);
 
-    /* the source, cropped the way object-fit: cover 50% 22% crops it, then
+    /* the source, cropped the way object-fit: cover 50% 34% crops it, then
        reduced to one pixel per lattice cell */
     var sc = Math.max(Wc / srcW, Hc / srcH);
     var dw = srcW * sc, dh = srcH * sc;
-    var dx = (Wc - dw) * 0.5, dy = (Hc - dh) * 0.22;
+    var dx = (Wc - dw) * 0.5, dy = (Hc - dh) * 0.34;
 
     var small = document.createElement('canvas');
     small.width = cols; small.height = rows;
@@ -4339,7 +5276,10 @@ function dressPortrait() {
     pctx.fillStyle = 'rgb(' + ground.join(',') + ')';
     pctx.fillRect(0, 0, Wc, Hc);
 
-    var LV = 5;
+    /* seven levels, not five. A face is mostly mid-tones and five steps put
+       the whole of a cheek into one of them; the extra two are spent exactly
+       where the modelling is. */
+    var LV = 7;
     for (var y = 0; y < rows; y++) {
       for (var x = 0; x < cols; x++) {
         var o = (y * cols + x) * 4;
@@ -4347,7 +5287,7 @@ function dressPortrait() {
         /* Rec. 709 luminance, lifted a little: the source is a high-key
            black-and-white plate and the shadows close up otherwise */
         var l = (0.2126 * d[o] + 0.7152 * d[o + 1] + 0.0722 * d[o + 2]) / 255;
-        l = Math.pow(l, 0.86);
+        l = Math.pow(l, 0.80);
         var q = l * LV + (B[(y & 7) * 8 + (x & 7)] + 0.5) / 64 - 0.5;
         var lev = q | 0;
         if (lev < 1) continue;
@@ -4470,26 +5410,41 @@ function createMosaic(el) {
     mctx.globalAlpha = 1;
   }
 
-  /* WHERE IT FIRES.  It used to fire on every room change, which made it
-     punctuation rather than emphasis: fifteen identical breakings-up of the
-     ground, none of them meaning anything in particular.
+  /* WHERE IT FIRES.
 
-     It marks one room now, from both sides. MARK is room 4 -- THE TURN, where
-     the wax becomes glass and the wood becomes a cover. That is the hinge the
-     whole page is built around, the one place where the argument actually
-     changes state, and it is worth spending the device on twice: once going
-     in and once coming out. Every other room change is silent.
+     It fired on every room change once, which made it punctuation rather than
+     emphasis: fifteen identical breakings-up of the ground, none of them
+     meaning anything in particular. It was then spent on the deformation
+     instead — which was better, except that the deformation is the one thing
+     on the page that most wants a clear field to be watched in, and a band of
+     tiles rising over the bottom two fifths of the screen was standing in
+     front of it. The deformation has moved rooms and the band did not follow.
 
-     Move it by changing MARK. The two boundaries are MARK-1 -> MARK and
-     MARK -> MARK+1, which is what `floor(p) === MARK - 1 || === MARK` picks
-     out. Set MARK to -1 to switch the mosaic off without removing it. */
-  var MARK = 4;
+     A tile field breaking up the ground is a good mark for a change of SUBJECT
+     and a poor one for a change of pose. So it is spent on the deck's two real
+     seams and on nothing else:
+
+       3 -> 4   the wordless showroom giving way to the first words on the site
+       8 -> 9   the argument giving way to the work
+
+     Both are places where the reader is being asked to change what they are
+     doing, which is what the device is for. Each entry in MARKS is the index
+     of the room being LEFT; add or remove one and nothing else has to change,
+     and an empty array switches the mosaic off without removing it. */
+  var MARKS = [3, 8];
+  /* Compact keeps only the first of them. The deck position between two rooms
+     is measured centre to centre, and the works room stacked for a phone is
+     three screens tall — so the 8 -> 9 seam is spread over about nine hundred
+     pixels of scrolling and the band, which is meant to be a punctuation mark,
+     would stand across the bottom of the screen for most of a swipe. The
+     showroom seam is between two rooms that both fit, and reads correctly. */
+  var MARKS_C = [3];
 
   function update(p) {
     var room = Math.floor(p);
     var frac = p - room;
     var env = 0;
-    if (room === MARK - 1 || room === MARK) {
+    if ((STACKED.matches ? MARKS_C : MARKS).indexOf(room) >= 0) {
       /* a plateau, not a spike. The old sine peaked in the middle of the
          transition and was gone either side of it, so the band was properly
          visible for about a fifth of the scroll; this is up by a sixth of the
@@ -4564,6 +5519,38 @@ function numberMoves() {
   });
 }
 
+/* THE DISCLOSURE THAT FOLDS THE ASIDES AWAY.
+
+   One control per room that has any, inserted after the last of them, so it
+   always reads as belonging to the copy above it rather than to the room. The
+   markup carries no button: a control that does nothing at all above 901px has
+   no business being in the document at that width, and here it is written in
+   once and styled out of the wide layout by the stylesheet.
+
+   Opening a room changes its height, so the deck's measurements are retaken —
+   without that the settle would go on aiming at where the rooms used to be. */
+function dressAsides() {
+  screens.forEach(function (sc) {
+    var asides = sc.querySelectorAll('.aside');
+    if (!asides.length) return;
+    var last = asides[asides.length - 1];
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'aside-more';
+    b.setAttribute('aria-expanded', 'false');
+    b.textContent = 'More';
+    b.addEventListener('click', function () {
+      var on = !sc.classList.contains('told');
+      sc.classList.toggle('told', on);
+      b.setAttribute('aria-expanded', String(on));
+      b.textContent = on ? 'Less' : 'More';
+      measure();
+      onScroll();
+    });
+    last.parentNode.insertBefore(b, last.nextSibling);
+  });
+}
+
 function dressReveals() {
   /* the wordmark on the landing, letter by letter */
   splitInto($('oMark'), 'char');
@@ -4594,7 +5581,7 @@ function setSheet(on) {
     sheetFocus = document.activeElement;
     sheetEl.removeAttribute('inert');
     sheetEl.classList.add('open');
-    root.classList.add('locked');
+    root.classList.add('locked', 'sheet-open');
     burger.setAttribute('aria-expanded', 'true');
     burger.setAttribute('aria-label', 'Close menu');
     var first = sheetEl.querySelector('a');
@@ -4602,7 +5589,7 @@ function setSheet(on) {
   } else {
     sheetEl.classList.remove('open');
     sheetEl.setAttribute('inert', '');
-    root.classList.remove('locked');
+    root.classList.remove('locked', 'sheet-open');
     burger.setAttribute('aria-expanded', 'false');
     burger.setAttribute('aria-label', 'Open menu');
     if (sheetFocus && sheetFocus.focus) sheetFocus.focus({ preventScroll: true });
@@ -4701,6 +5688,7 @@ window.addEventListener('resize', function () {
 /* ---------------------------------------------------------------- 6 · initialise */
 function initialise() {
   dressReveals();
+  dressAsides();
   numberMoves();
   Portrait = dressPortrait();
   syncLanding();
@@ -4738,6 +5726,7 @@ function initialise() {
     /* the photograph is not dismissed, only handed down a layer */
     backLive = true; backO = -1; backB = -1; backplateAt(deckPos());
     startBloom();
+    if (window.FIGURE && window.FIGURE.beginIdle) window.FIGURE.beginIdle();
     room = -1;
     measure();
     onScroll();
@@ -4747,6 +5736,7 @@ function initialise() {
 
   window.STYLOS = {
     figure: function () { return window.FIGURE.state(); },
+    stylus: function () { return window.FIGURE.stylus(); },
     room: function () { return room; },
     goto: function (i) { goTo(screens[clamp(i, 0, screens.length - 1)]); }
   };
