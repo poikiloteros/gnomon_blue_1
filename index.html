@@ -25,6 +25,179 @@
    One self-contained file, no build step. The figure is generated in the
    browser; the two introductory plates come from Cloudinary.
    ---------------------------------------------------------------------------
+   REVISION 12.1 — the review, answered; and three things that were wrong.
+
+     THE STYLUS           it was 1,884 points against 27,546 in each leaf —
+                          three per cent of the cloud spread down a thin rod —
+                          so from the overhead cameras it foreshortened into a
+                          sparse diagonal streak and was reported, reasonably,
+                          as a rendering artefact. Sampled three times as
+                          finely (tube2's du/dth, now sp*0.30 / sp*0.26) and
+                          eased back off the vertical (dW), so it stays on the
+                          leaf it is writing on. It is an object now.
+     the landing halo     --back-scale 1.46 -> 1.22 and the opacity 0.80 ->
+                          0.52 in backplateAt. At half again the drawing's size
+                          and brighter than the loader's own halo, the reader
+                          saw a large soft rectangle with a smaller, differently
+                          shaped point cloud floating inside it: two objects,
+                          not one object and its glow.
+     the loader wordmark  clamp(24px, 2.5vw, 38px), was clamp(17, 1.5vw, 24).
+                          A thirtieth of the plate's width read as a credit
+                          line, and this is the first time the name is said.
+     the showroom index   lit in --accent again. Taking it off the warm ink in
+                          11.1 was right; setting it in bone was not, because
+                          bone is what the whole drawing above it is made of.
+                          The accent is the cool companion and is the page's
+                          own way of saying "you are here".
+     the nav             it was standing on the drawing. The scrim runs below
+                          the bar rather than stopping at its edge, is carried
+                          at .55 at all times rather than only once scrolled,
+                          and the pill has a ground of its own.
+     THE STUDIO ROOM      KEY[11].px was -0.31 — a third left of centre, which
+                          in a copy-left/portrait-right grid is ON the copy,
+                          not beside it. The longest stretch of prose on the
+                          site was being read through a moving lattice. Out to
+                          the margin: px -0.52, fill 0.40, ink 0.50, and the
+                          scrim is `left` rather than `full`.
+     the contact room     KEY[12].py -0.03 -> -0.20. The figure sat across the
+                          two right-hand footer columns; raising it clears them
+                          AND fills the empty band the room had in its middle.
+     the registers        the three-column grid held up to 500px open in the
+                          centre for a figure that is drawn on a fixed canvas
+                          and takes no space in the flow. Two columns, and the
+                          measure goes from 44ch to 52ch.
+     the reveals          1000ms -> 680 (and the wipe, cut and word-rise in
+                          proportion). The ladder is unchanged, so the ORDER is
+                          exactly as it was; only the waiting is shorter.
+     the footer           the address and the email were running about 3:1.
+                          Full ink. Likewise .o-pass, which was the faintest
+                          mark on the first screen a reader ever sees.
+     the nav's current    a lit rule rather than an inverted slab — the same
+                          device .cap-rule and the show-index already use.
+     THE SEVENTH WORK     deleted. It was a placeholder in a live carousel,
+                          which is a claim to have done work that has not been
+                          done, and the last item in a row is the one people
+                          click. Six, and honest. See OPEN-ITEMS.
+     the ink, remembered  localStorage, restored by six lines in the head
+                          before first paint. With a light ground in the row a
+                          forgotten choice costs the reader a whole page.
+     the mosaic           PROPOSED AND WITHDRAWN. Four seams instead of two was
+                          right about the choreography and wrong about the
+                          layout: the band is 40vh of the bottom of the screen
+                          and it landed across the studio room's credit table.
+                          Back to [3, 8], with the reasoning written down at
+                          MARKS so it is not re-proposed as if new.
+   ---------------------------------------------------------------------------
+   REVISION 12 — THE COPY LEAVES THE MARKUP.
+
+   A change of shape rather than a refinement, which is why it is a whole
+   number. Every sentence on the deck except the landing's now arrives from
+   Firestore at run time; the markup carries empty slots with `data-copy`
+   paths on them, and one seed object in the deck script is both what you
+   paste into Firestore to fill it and what stands if Firestore cannot be
+   reached.
+
+     THE SHAPE          three collections, twenty documents.
+
+                        rooms/   one document per room that carries copy.
+                                 The document id is the room's own id, the
+                                 fields are its named slots. This is the unit
+                                 a person editing the site actually thinks in
+                                 — "the studio room's second paragraph" — and
+                                 it is small enough to edit in the console.
+
+                        works/   one document per project, the shape of the
+                                 old P[] table exactly. It is its own
+                                 collection because it is a LIST THAT CHANGES
+                                 LENGTH, and because each item opens into a
+                                 room of its own.
+
+                        site/    four singletons for the things that are not
+                                 a room: meta, nav, contact, footer.
+
+     THE BINDING        data-copy="path.to.field" on the element, resolved by
+                        renderCopy(). Plain slots take textContent. A rich
+                        slot (data-copy-rich) is an array of blocks, each a
+                        string or { t, cls }, and becomes paragraphs.
+
+     TWO EMBEDDED       copy is escaped before it is written, so the two
+     CONTROLS           places where a sentence contains markup are tokens
+                        rather than HTML: {ink|press one} becomes the ink
+                        switch, {b|Arkadiy Avdokhin} becomes a <strong>. Add
+                        a token to TOKENS, never HTML to the copy.
+
+     THE LOADING        THE INTRODUCTION IS THE LOADING STATE. The fetch is
+     STATE              raced against the same 2.6s ceiling the fonts have,
+                        and initialise() waits for both — so a Firestore read
+                        that lands inside two seconds is completely hidden
+                        behind the five seconds of the loader, and there is
+                        never a frame of the page with empty slots in it.
+
+     IF IT FAILS        nothing happens. COPY is the fallback and it is
+                        complete. A blocked CDN, an offline reader, a project
+                        that has not been created yet: the page reads exactly
+                        as it did at 11.2.
+
+     WHAT IS NOT IN     the landing (agreed: burnt in), the loader, every
+     THE BACKEND        aria-label and control label, the console warnings,
+                        and the works PLACEHOLDER prose — which is in the
+                        backend but is still marked, so it cannot ship
+                        unnoticed. See OPEN-ITEMS A1/A2.
+
+     THE CONFIG         FB_CONFIG at the top of the module script. It ships
+                        with projectId 'REPLACE-ME' and the whole fetch is
+                        skipped while it says so, which is why this file runs
+                        with no Firebase project at all.
+   ---------------------------------------------------------------------------
+   REVISION 11.2 — five tweaks, and the one number to reach for in each case.
+
+     the case masthead    the plate was under four treatments at once and the
+                          reader could see about a fifth of it. --mast-b and
+                          --mast-sat are the resting exposure (.86 / .62,
+                          against .60 / .38); the veil now LIFTS on hover and
+                          on the first line of scrolling (.case-mast.lit), and
+                          the legibility ramp under the title is split out on
+                          ::before so it can stay when the veil goes.
+     the loader           it stopped dead seven times in five seconds: every
+                          move finished before the next began, and every one
+                          used --ease-s, which decelerates. INTRO.turn is now
+                          both the interval and the duration, the middle two
+                          quarters are LINEAR so velocity carries across the
+                          beat, and the three-step descent is one move
+                          (INTRO.step, 1680ms). The codex arrives on its own
+                          beat (INTRO.cod) rather than on the descent's. The
+                          ladder is walked by one rAF instead of nine timers.
+     the loader, again    the figure was rendering at full rate behind an
+                          OPAQUE loader for the whole introduction. It now
+                          draws until the hand-over is registered and is then
+                          held until finish() wakes it. That is several
+                          hundred frames of invisible work, on the busiest
+                          five seconds of the page.
+     the third ink        :root.t-wax — a light ground, and not a negative:
+                          the green theme turned over, wax below and the cut
+                          above. What changes sign with it is documented in
+                          place: --scrim (a role, not a place on the ramp),
+                          --plate-blend / --halo-b / --back-b, the grain's
+                          blend, the Method room's inversion, the faded-text
+                          ladder, and PAL.wax's `op` and `glow` — the numerals
+                          are additive over a dark ground and cannot be over
+                          a light one.
+     works, on a phone    the stacked column had no gesture that would take
+                          the lattice off a screenshot, because it had only
+                          hover. The plate crossing the middle of the screen
+                          unmasks: .card.is-mid, written by watchMid() off an
+                          observer with a hairline band at the centre.
+     the mobile jerk      four causes, all measured rather than guessed. The
+                          browser chrome collapsing fired `resize`, which
+                          rebuilt the entire figure mid-scroll (CHROME_BAND).
+                          onScroll read up to twenty-six bounding rects a
+                          frame with a class write between them, which forces
+                          a re-flow per read; it is arithmetic off tops[] now.
+                          The figure drew a full invisible frame in every room
+                          where figM is 0 — the four tall ones — and now bails
+                          before the print. And the grain layer, a full-screen
+                          blend for a texture no phone can resolve, is off.
+   ---------------------------------------------------------------------------
    REVISION 11.1 — eight decisions, and an audit.
 
      the showroom index   lit in bone rather than in the warm ink, and gone
@@ -194,6 +367,23 @@
      palette instead of beside it. sepia lands near hue 40deg; the rotation is
      what carries it to the ground's own hue. */
   --plate-mask:  grayscale(1) sepia(.92) hue-rotate(178deg) saturate(1.30) brightness(1.06) contrast(1.03);
+  /* THE PLATE ADDS LIGHT, WHICH IS ONLY TRUE ON A DARK GROUND.  The backplate
+     and its halo are screen-blended so the lattice can be drawn over an opaque
+     canvas and still have something behind it — the photograph can only add,
+     so the drawing keeps its silhouette. On a light ground adding light to
+     something already near white does nothing at all, and the halo would
+     simply disappear. The blend and the two exposures are therefore tokens,
+     and the wax theme turns all three over. */
+  --plate-blend: screen;
+  --halo-b:      .62;   /* the loader's standing halo   */
+  --back-b:      .74;   /* the landing's, behind the lattice */
+
+  /* THE SCRIM'S COLOUR IS A ROLE, NOT A PLACE ON THE RAMP.  A scrim exists to
+     put distance between the type and the lattice, which on a dark ground
+     means darkening the field and on a light one means lightening it. On the
+     two dark themes that is --ground-deep and the two were the same token;
+     they are not the same thing, and on wax they part company. */
+  --scrim:      var(--ground-deep);
 
   /* the Method room turns the whole field over with one blend layer */
   --invert-c:   rgb(226,240,255);
@@ -237,10 +427,14 @@
      the scale is 227 / 441 element-px, and the offsets carry its midpoint from
      the stage's centre to the drawn stylus's.
 
-     RE-SOLVING THEM.  Change KEY[0] (work, yaw, pit, fill) or the plate, load
-     the page, read STYLOS.stylus(), and redo those three sums. Do not nudge
-     one of the four on its own: they describe one line, and moving an end of
-     it without the other is how they came apart in the first place.
+     THEY ARE THE FALLBACK NOW, NOT THE MECHANISM.  registerStylus() in the
+     deck script solves all four at run time from the drawn stylus's own
+     reported position, while the loader is still on its first beat, and writes
+     them back over these — so the hand-over is exact at every window size
+     rather than at the one it was reconciled at. What is left here is what
+     stands if the figure has not framed itself in time, and it is close.
+     Nudging them by hand is therefore no longer how this is tuned: change
+     PNG_TIP / PNG_BUTT if the asset is re-cut, and nothing else.
 
      AND READ IT AT THE RIGHT MOMENT.  The landing writes in a loop, so the
      drawn stylus is only in the pose the photograph has to match at the START
@@ -256,10 +450,10 @@
      expressed as percentages of THIS, so it has to scale with the drawing. */
   --sty-w:   calc(var(--plate-w) * .5);
   --sty-spin: .62;   /* the stylus is smaller while it turns                */
-  --sty-x:   49.5%;  /* it steps up and to the right, onto the writing leaf  */
-  --sty-y:  -15.5%;
-  --sty-s:    .51;
-  --sty-r:   42deg;  /* the resting tilt, reached on the LAST quarter turn   */
+  --sty-x:     37%;  /* it steps up and to the right, onto the writing leaf  */
+  --sty-y:  -17.5%;
+  --sty-s:    .510;
+  --sty-r:   43deg;  /* the resting tilt, reached on the LAST quarter turn   */
   --sty-end:    1;
   --fig-x:   3vw;
   --fig-y:  -7vh;
@@ -273,7 +467,14 @@
      bloom of the same photograph rather than on top of an exact copy of it.
      That is the relation in the dithered-eye reference: a soft colour field
      that overruns the marks on every side. 1.46 is about the ratio there. */
-  --back-scale: 1.46;
+  /* 1.22, NOT 1.46.  The halo is meant to be the photograph the drawing was
+     measured against, still faintly present under it — a bloom the lattice
+     sits inside. At 1.46 it was half again the size of the drawing, so what
+     the reader saw was a large soft rectangle of light with a smaller,
+     differently-shaped point cloud floating in the middle of it: two objects,
+     not one object and its own glow. The outline has to be recognisably the
+     SAME outline, a little over-run, which is what 1.22 gives. */
+  --back-scale: 1.22;
 
   /* written by the script once it knows the timings; declared here so the
      document is never briefly styled with an invalid duration. */
@@ -306,6 +507,93 @@
   --invert-c:    rgb(238,255,236);
   --paper:       #d8cfae;
   --paper-ink:   #171a12;
+}
+
+/* ------------------------------------------------ 1b · the wax
+   THE THIRD INK, AND WHY IT IS NOT SIMPLY "LIGHT MODE".
+
+   A light theme on a page like this is usually the dark one with the ramp run
+   backwards, and it always looks like a negative of something rather than a
+   thing in its own right. This one has an argument. The whole site is a wax
+   tablet, and the two dark themes are the tablet READ — a lit object standing
+   in a dark room. The wax theme is the tablet ITSELF: the ground is the colour
+   of the wax and the drawing is the colour of the cut in it. Turn the stylus
+   over, and the same two gestures still hold.
+
+   It is not a fourth palette either — it is the green one turned over. The ink
+   here is very nearly the green theme's ground and the ground is very nearly
+   its bone, which is why the three sit together: two of them are the same pair
+   seen from opposite sides, and the blue is the odd one out on purpose.
+
+   Everything below is a token the rest of the sheet already reads. What DOES
+   need saying separately is what changes sign when the ground gets lighter:
+   the scrims, the plate blends, the grain's blend mode, and the Method room's
+   inversion, which now goes the other way — see each in place. */
+:root.t-wax {
+  color-scheme: light;
+  --ground:      #ece6d6;   /* the wax                                    */
+  --ground-lift: #f3efe3;   /* lit, at the centre of the field            */
+  --ground-deep: #ded6c1;   /* the fall-off at the edges, and image beds  */
+  /* the scrim goes the other way: it lifts the field away from dark type
+     instead of dropping it away from pale type */
+  --scrim:       #fbf8f1;
+  /* THE INK IS THE GREEN THEME'S GROUND, lifted a step. A dark mark on a light
+     field reads heavier than a light mark on a dark one at the same contrast —
+     the same reason a serif cuts its hairlines thinner in the ink than in the
+     counter — so this is two or three steps off black rather than at it. */
+  --bone:        #10312b;
+  /* the cool reaction. On the dark themes the accent is a pale tint, because
+     that is what stands out against a dark ground; here it has to be a
+     SATURATED MID, and a verdigris is the one this ground carries. */
+  --accent:      #14655a;
+  /* and the warm one, deepened. #e8674c on wax is about 2.6:1 — fine for a
+     100px numeral and not fine for anything else — so the Fourth-Style red is
+     taken down to where it will still carry a line of text. */
+  --warm:        #ab412a;
+
+  /* THE PLATES INVERT.  On the dark themes the mask lifts the photograph into
+     the ground's own hue and leaves it pale; here it has to leave it DARK, so
+     the inversion goes in before the tint and the exposure comes down after
+     it. This is the one value in the theme that is a photographic judgement
+     rather than a token: nudge the brightness, not the hue. */
+  --plate-mask:  grayscale(1) invert(1) sepia(.86) hue-rotate(112deg) saturate(1.24) brightness(.58) contrast(1.12);
+  --plate-blend: multiply;   /* the halo takes light away, not adds it */
+  --halo-b:      1.24;
+  --back-b:      1.16;
+
+  /* THE METHOD ROOM STILL TURNS OVER — into night rather than into paper.
+     The room is the one inversion on the deck, and on a page that is already
+     paper the inversion cannot be more paper. --invert-c is solved against the
+     ground so the difference layer lands on a deep ink: |236 - 216| and so on
+     across the field, which comes out near black with a little life left at
+     the centre where the ground is lightest. --paper is that dark ground and
+     --paper-ink the pale type standing on it: the token names describe their
+     ROLE in the room, and on wax the roles swap ends. */
+  --invert-c:    rgb(216,212,200);
+  --paper:       #12211c;
+  --paper-ink:   #ece7d8;
+
+  /* THE FADED RAMP HAS TO BE DEEPER, and this is the one thing about a light
+     theme that cannot be got right by swapping two colours.
+
+     Every secondary tone on the site is the ink mixed toward transparency —
+     72% for soft, 42% for faint, 24% and 14% for the two rules — and that
+     ladder was set against a dark ground. Mixing toward transparency over a
+     DARK ground moves a pale ink toward the dark: contrast falls, but it falls
+     from a very high starting point. Over a LIGHT ground it moves a dark ink
+     toward the light, and it falls from a much lower one. The same 42% that
+     gives the strapline about 3.9:1 on the green ground gives it about 2.5 on
+     the wax — the same instruction, a third of the contrast, and a line nobody
+     over forty can read.
+
+     So the ladder is re-cut for this ground rather than inherited. The steps
+     keep their relation to each other — soft is still clearly above faint,
+     both rules are still hairlines — and every one of them lands at or above
+     where its opposite number lands on the dark themes. */
+  --fg-soft:  color-mix(in srgb, var(--bone) 82%, transparent);
+  --fg-faint: color-mix(in srgb, var(--bone) 60%, transparent);
+  --rule:     color-mix(in srgb, var(--bone) 34%, transparent);
+  --rule-soft:color-mix(in srgb, var(--bone) 19%, transparent);
 }
 
 /* ------------------------------------------------ 2 · base */
@@ -394,6 +682,11 @@ body.on-paper .invert { opacity: 1; }
   opacity: .05; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
 }
+/* the noise is white, which under `overlay` reads as a scatter of light on a
+   dark ground and as very nearly nothing on a light one. Inverted and
+   multiplied it is the same scatter cut the other way — tooth in the wax
+   rather than dust in the air — and the weight comes out about the same. */
+:root.t-wax .grain { filter: invert(1); mix-blend-mode: multiply; opacity: .055; }
 
 /* the photographic plate does not leave when the loader does: it stays
    standing exactly where it stood, masked into the palette and blurred, and
@@ -410,10 +703,10 @@ body.on-paper .invert { opacity: 1; }
   transition: opacity 500ms linear;
   will-change: opacity, filter;
 }
-@supports (mix-blend-mode: screen) { .backplate { mix-blend-mode: screen; } }
+@supports (mix-blend-mode: screen) { .backplate { mix-blend-mode: var(--plate-blend); } }
 .backplate img {
   width: 100%; height: auto;
-  filter: var(--plate-mask) brightness(.74) contrast(1.10) blur(var(--back-blur));
+  filter: var(--plate-mask) brightness(var(--back-b)) contrast(1.10) blur(var(--back-blur));
   /* a wider, softer falloff than before: the halo has to run out past the
      lattice on every side rather than stopping just outside it */
   -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 46%, rgba(0,0,0,.55) 74%, transparent 100%);
@@ -467,26 +760,26 @@ body.on-paper .invert { opacity: 1; }
 .screen.live[data-scrim]::before { opacity: 1; }
 .screen[data-scrim="left"]::before {
   background: linear-gradient(100deg,
-    color-mix(in srgb, var(--ground-deep) 88%, transparent) 0%,
-    color-mix(in srgb, var(--ground-deep) 62%, transparent) 34%,
+    color-mix(in srgb, var(--scrim) 88%, transparent) 0%,
+    color-mix(in srgb, var(--scrim) 62%, transparent) 34%,
     transparent 62%);
 }
 .screen[data-scrim="right"]::before {
   background: linear-gradient(260deg,
-    color-mix(in srgb, var(--ground-deep) 88%, transparent) 0%,
-    color-mix(in srgb, var(--ground-deep) 62%, transparent) 34%,
+    color-mix(in srgb, var(--scrim) 88%, transparent) 0%,
+    color-mix(in srgb, var(--scrim) 62%, transparent) 34%,
     transparent 62%);
 }
 .screen[data-scrim="bottom"]::before {
   background: linear-gradient(to top,
-    color-mix(in srgb, var(--ground-deep) 90%, transparent) 0%,
-    color-mix(in srgb, var(--ground-deep) 46%, transparent) 40%,
+    color-mix(in srgb, var(--scrim) 90%, transparent) 0%,
+    color-mix(in srgb, var(--scrim) 46%, transparent) 40%,
     transparent 72%);
 }
 .screen[data-scrim="full"]::before {
   background: radial-gradient(120% 100% at 50% 50%,
-    color-mix(in srgb, var(--ground-deep) 74%, transparent) 0%,
-    color-mix(in srgb, var(--ground-deep) 58%, transparent) 60%,
+    color-mix(in srgb, var(--scrim) 74%, transparent) 0%,
+    color-mix(in srgb, var(--scrim) 58%, transparent) 60%,
     transparent 100%);
 }
 
@@ -509,12 +802,19 @@ body.on-paper .invert { opacity: 1; }
    letters settling out of a wide track, as though the stylus had just been
    drawn across), or it RISES out of the wax, or it simply lifts. Nothing
    fades in on its own — a fade is what a page does, not what a stylus does. */
+/* 680ms, NOT 1000.  A reveal is only ever seen when its room becomes current,
+   which on this deck means the reader has just arrived and is waiting to read.
+   A full second of travel on a line that is already in position is a second of
+   waiting, and with four things on the delay ladder the last of them was
+   finishing 1.64 seconds after the room did. Shortened here and on the wipe
+   and the cut in proportion; the ladder itself is unchanged, so the ORDER
+   things arrive in is exactly as it was — only the wait is shorter. */
 .rv { opacity: 0; transform: translateY(16px); }
-.js .rv { transition: opacity 1000ms var(--ease) var(--d, 0ms), transform 1000ms var(--ease) var(--d, 0ms); }
+.js .rv { transition: opacity 680ms var(--ease) var(--d, 0ms), transform 680ms var(--ease) var(--d, 0ms); }
 .js .screen.live .rv, .js .rv.in { opacity: 1; transform: none; }
 
 .rv-wipe { clip-path: inset(0 100% -24% 0); }
-.js .rv-wipe { transition: clip-path 1240ms var(--ease-w) var(--d, 0ms); }
+.js .rv-wipe { transition: clip-path 860ms var(--ease-w) var(--d, 0ms); }
 .js .screen.live .rv-wipe, .js .rv-wipe.in { clip-path: inset(0 0 -24% 0); }
 
 /* the cut: a stroke drawn left to right, the line arriving behind it */
@@ -523,8 +823,8 @@ body.on-paper .invert { opacity: 1; }
   transform: translateX(-11px); opacity: .001;
 }
 .js .rv-cut {
-  transition: clip-path 1020ms var(--ease-w) var(--d, 0ms),
-              transform 1240ms var(--ease) var(--d, 0ms),
+  transition: clip-path 720ms var(--ease-w) var(--d, 0ms),
+              transform 860ms var(--ease) var(--d, 0ms),
               opacity 140ms linear var(--d, 0ms);
 }
 .js .screen.live .rv-cut, .js .rv-cut.in { clip-path: inset(0 -5% -22% -3%); transform: none; opacity: 1; }
@@ -542,7 +842,7 @@ body.on-paper .invert { opacity: 1; }
   transform: translateY(108%) rotate(2.4deg); transform-origin: 0 100%;
 }
 .js .wsplit > i {
-  transition: transform 980ms var(--ease-i) calc(var(--d, 0ms) + var(--wd, 0ms));
+  transition: transform 700ms var(--ease-i) calc(var(--d, 0ms) + var(--wd, 0ms));
 }
 .js .screen.live .wsplit > i, .js .wsplit.in > i { transform: none; }
 
@@ -599,14 +899,42 @@ html:not(.js) .wsplit > i { transform: none; }
 .plate-halo {
   width: calc(100% * var(--back-scale));
   opacity: 0;
-  filter: var(--plate-mask) brightness(.62) contrast(1.1) blur(26px);
+  filter: var(--plate-mask) brightness(var(--halo-b)) contrast(1.1) blur(26px);
   -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 54%, rgba(0,0,0,.58) 80%, transparent 100%);
   mask-image: radial-gradient(closest-side at 50% 50%, #000 54%, rgba(0,0,0,.58) 80%, transparent 100%);
 }
-.loader.k1 .plate-halo, .loader.k2 .plate-halo, .loader.k3 .plate-halo {
+.loader.cod .plate-halo {
   opacity: .72; transition: opacity 1200ms var(--ease);
 }
 
+/* WHY IT WAS JERKY, AND WHAT THE SEVEN STOPS WERE.
+
+   The stylus travelled through seven separate CSS transitions — four quarter
+   turns and three steps down — and each of them FINISHED BEFORE THE NEXT ONE
+   STARTED. --turn was set to 74% of the 480ms interval and --shrink to 82% of
+   the 560ms one, so between every pair of moves there was a dead beat of
+   125ms and then 100ms with the stylus standing still; and every one of the
+   seven used --ease-s, which is slow-in and slow-out, so each move arrived at
+   zero velocity and left at zero velocity. Seven accelerations and seven
+   stops in five seconds is not a clock hand, it is a stutter.
+
+   The reading was always meant to be one continuous sweep with four beats in
+   it. Three changes make it that:
+
+     1. each move now lasts exactly as long as the interval before the next —
+        --turn and --shrink are set from INTRO.turn and INTRO.step with no
+        fraction taken off — so there is no dead time anywhere;
+     2. the timing function is chosen per beat rather than shared. The first
+        quarter eases IN from rest, the middle two are LINEAR so the velocity
+        carries across the boundary unbroken, and the fourth eases out onto
+        the resting tilt. The classes are cumulative and the rules are in
+        cascade order, so the later class always wins;
+     3. the descent is one move, not three. k1 and k2 no longer touch the
+        stylus at all — they are left carrying the codex and the halo, which
+        is what they were always really for — and the whole travel from the
+        turned attitude to the resting one is a single eased tween.
+
+   That is four beats and one descent, against seven stops. */
 .plate-sty {
   width: var(--sty-w);
   opacity: 0;
@@ -619,35 +947,39 @@ html:not(.js) .wsplit > i { transform: none; }
   opacity: 1; clip-path: inset(0 0 0 0); filter: var(--plate-mask) blur(.15px);
   transition: opacity 420ms linear, clip-path 720ms var(--ease-w), filter 520ms linear;
 }
-.loader.s2 .plate-sty { transition: transform var(--turn) var(--ease-s); }
-.loader.q1 .plate-sty { transform: translate(-50%, -50%) rotate(90deg)  scale(var(--sty-spin)); }
+.loader.s2 .plate-sty { transition: transform var(--turn) linear; }
+/* out of rest, then two beats that hand their velocity straight on */
+.loader.q1 .plate-sty {
+  transform: translate(-50%, -50%) rotate(90deg)  scale(var(--sty-spin));
+  transition-timing-function: cubic-bezier(.42, 0, .78, 1);
+}
 .loader.q2 .plate-sty { transform: translate(-50%, -50%) rotate(180deg) scale(var(--sty-spin)); }
 .loader.q3 .plate-sty { transform: translate(-50%, -50%) rotate(270deg) scale(var(--sty-spin)); }
-/* the fourth quarter overshoots to the resting tilt and stops there */
+/* the fourth quarter carries on to the resting tilt and settles there */
 .loader.q4 .plate-sty {
   transform: translate(-50%, -50%) rotate(calc(360deg + var(--sty-r))) scale(var(--sty-spin));
+  transition-timing-function: cubic-bezier(.18, .52, .30, 1);
 }
-/* three steps down onto the tablet: scale and rise, nothing else */
-.loader.s3 .plate-sty { transition: transform var(--shrink) var(--ease-s), opacity 320ms linear; }
-.loader.k1 .plate-sty {
-  transform: translate(-50%, -50%) translate(calc(var(--sty-x) * .34), calc(var(--sty-y) * .34))
-             rotate(calc(360deg + var(--sty-r)))
-             scale(calc(var(--sty-spin) + (var(--sty-s) - var(--sty-spin)) * .34));
+/* ONE DESCENT, NOT THREE STEPS.  Smaller, and up onto the tablet, on a single
+   long curve. k1 and k2 are still set — the codex and the halo come up on
+   them — but the stylus is unmoved by them and only k3 carries it. */
+.loader.s3 .plate-sty {
+  transition: transform var(--shrink) cubic-bezier(.30, .04, .22, 1), opacity 320ms linear;
 }
-.loader.k2 .plate-sty {
-  transform: translate(-50%, -50%) translate(calc(var(--sty-x) * .70), calc(var(--sty-y) * .70))
-             rotate(calc(360deg + var(--sty-r)))
-             scale(calc(var(--sty-spin) + (var(--sty-s) - var(--sty-spin)) * .70));
-}
-.loader.k3 .plate-sty {
+.loader.k .plate-sty {
   transform: translate(-50%, -50%) translate(var(--sty-x), var(--sty-y))
              rotate(calc(360deg + var(--sty-r))) scale(var(--sty-s));
   opacity: var(--sty-end);
 }
 
-/* the tablet arrives under it */
+/* THE TABLET ARRIVES BEFORE THE STYLUS COMES DOWN, not with it.
+   Both used to happen on the same beat — the codex materialised at the exact
+   moment the stylus began its descent — which is two events in one frame and
+   reads as a jump however smoothly each of them is drawn. The codex now fades
+   up under the stylus's last quarter turn, so by the time the stylus starts
+   down there is something for it to be coming down ONTO. */
 .plate-cod { opacity: 0; transform: translate(-50%, -50%) scale(.965); }
-.loader.k1 .plate-cod, .loader.k2 .plate-cod, .loader.k3 .plate-cod {
+.loader.cod .plate-cod {
   opacity: 1; transform: translate(-50%, -50%) scale(1);
   transition: opacity 900ms var(--ease), transform 1400ms var(--ease);
 }
@@ -662,7 +994,13 @@ html:not(.js) .wsplit > i { transform: none; }
   top: calc(50% + var(--fig-y) + var(--plate-h) * .5 + clamp(22px, 3.8vh, 46px));
   display: flex; gap: .42em; margin-left: .21em; overflow: hidden;
   transform: translate(calc(-50% + var(--fig-x)), 0);
-  font-family: var(--font-d); font-size: clamp(17px, 1.5vw, 24px);
+  /* THE NAME UNDER THE PLATE WAS SET AS A CAPTION.  At 24px under a 720px
+     codex it was about a thirtieth of the object's width, which reads as a
+     credit line rather than as the studio's name — and this is the first and
+     for five seconds the ONLY time the name is said. It is also the mark the
+     landing's giant wordmark has to feel like a continuation of. Half again
+     as large, and the tracking opens with it. */
+  font-family: var(--font-d); font-size: clamp(24px, 2.5vw, 38px);
   font-variation-settings: 'wdth' 112, 'wght' 620;
   line-height: 1; color: var(--fg-soft); text-transform: uppercase;
   white-space: nowrap; pointer-events: none;
@@ -705,10 +1043,27 @@ html:not(.js) .wsplit > i { transform: none; }
 .js .nav { transition: color 620ms linear, opacity 700ms var(--ease), transform 700ms var(--ease); }
 .nav.shown { opacity: 1; transform: none; }
 body.on-paper .nav { color: var(--paper-ink); }
+/* THE NAV WAS STANDING ON THE DRAWING.
+
+   In the showroom the object is framed at up to 0.88 of the viewport and
+   centred, so its top edge comes up under the chrome — and the pill has a
+   hairline border and no ground at all, so the lattice printed straight
+   through the five destinations. Eleven-pixel mono letterforms over a field
+   of moving dots is the least legible combination on the site.
+
+   Two changes. The scrim runs BELOW the bar rather than stopping at its
+   bottom edge (inset -1px 0 -34px), so there is a soft foot to it instead of
+   a hard horizontal cut across the choreography; and it is carried at a low
+   opacity at all times rather than only once the reader has scrolled, because
+   the object is under the chrome in the very first room too. `.stuck` still
+   takes it the rest of the way. */
 .nav::before {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--ground) 92%, transparent) 8%, color-mix(in srgb, var(--ground) 54%, transparent) 58%, transparent 100%);
-  opacity: 0; transition: opacity 400ms linear;
+  content: ""; position: absolute; inset: -1px 0 -34px 0; z-index: -1;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--ground) 94%, transparent) 22%,
+    color-mix(in srgb, var(--ground) 60%, transparent) 62%,
+    transparent 100%);
+  opacity: .55; transition: opacity 400ms linear;
 }
 body.on-paper .nav::before { background: linear-gradient(to bottom, color-mix(in srgb, var(--paper) 92%, transparent) 8%, color-mix(in srgb, var(--paper) 54%, transparent) 58%, transparent 100%); }
 .nav.stuck::before { opacity: 1; }
@@ -717,9 +1072,13 @@ body.on-paper .nav::before { background: linear-gradient(to bottom, color-mix(in
   font-size: 16px; letter-spacing: .05em; text-transform: uppercase;
   text-decoration: none; display: inline-flex; gap: 2px; line-height: 1; justify-self: start;
 }
+/* and the pill carries a ground of its own, so the five destinations are
+   never read through the lattice whatever the room does behind them */
 .nav-pill {
   display: flex; gap: clamp(8px, 1.6vw, 22px);
   border: 1px solid var(--rule-soft); padding: 8px clamp(12px, 1.8vw, 22px); justify-self: center;
+  background: color-mix(in srgb, var(--ground) 72%, transparent);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
 body.on-paper .nav-pill { border-color: color-mix(in srgb, var(--paper-ink) 18%, transparent); }
 .nav-link {
@@ -728,9 +1087,20 @@ body.on-paper .nav-pill { border-color: color-mix(in srgb, var(--paper-ink) 18%,
   transition: opacity 260ms, background-color 300ms, color 300ms;
 }
 .nav-link:hover { opacity: 1; }
-.nav-link[aria-current="true"] { background: currentColor; opacity: 1; }
-.nav-link[aria-current="true"] > span { color: var(--ground); }
-body.on-paper .nav-link[aria-current="true"] > span { color: var(--paper); }
+/* A LIT RULE, NOT A SOLID BLOCK.  Inverting the current link filled a slab of
+   ink behind eleven-pixel mono set at .15em — the heaviest mark in the chrome,
+   spent on a wayfinding cue that only has to be noticed, and it fought the
+   ink-pair swatches at the other end of the same bar for being the loudest
+   thing up there. The rule under the word is the same device the eyebrows use
+   (.cap-rule) and the showroom index uses, in the same accent, so the page now
+   says "here" one way rather than three. */
+.nav-link { position: relative; }
+.nav-link[aria-current="true"] { opacity: 1; }
+.nav-link[aria-current="true"]::after {
+  content: ""; position: absolute; left: 9px; right: 9px; bottom: 1px;
+  height: 1px; background: var(--accent);
+}
+body.on-paper .nav-link[aria-current="true"]::after { background: var(--paper-ink); }
 
 /* the palette pair */
 .swatches { justify-self: end; display: flex; align-items: center; gap: 8px; }
@@ -744,6 +1114,9 @@ body.on-paper .nav-link[aria-current="true"] > span { color: var(--paper); }
 .sw[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 1px var(--accent); }
 .sw-blue  { background: #07264c; }
 .sw-green { background: #092c2a; }
+/* the third chip is the only pale one in the row, which is the whole of what
+   it has to say: this is the ground turned over */
+.sw-wax   { background: #ece6d6; }
 body.on-paper .swatches .lab { color: color-mix(in srgb, var(--paper-ink) 55%, transparent); }
 
 /* ------------------------------------------------ 8c · the compact menu */
@@ -891,10 +1264,15 @@ html.sheet-open .nav { z-index: 490; }
    the faintest weight on the page: it is not an invitation, it is a courtesy
    for the reader who already knows what they came for. It leaves with the rest
    of the overture on the first scroll. */
+/* IT IS A COURTESY, BUT IT IS ALSO THE ONLY LINK ON THE LANDING.  At
+   --fg-faint it was the quietest mark on the first screen a reader ever sees,
+   which is a strange thing to do to the one way past three wordless rooms.
+   --fg-soft is still well below the name and the strapline and is now
+   actually legible at 11px. */
 .o-pass {
   position: absolute; right: var(--gutter);
   bottom: calc(clamp(30px, 5vh, 64px) + 9px);
-  color: var(--fg-faint); text-decoration: none;
+  color: var(--fg-soft); text-decoration: none;
   padding-bottom: 4px; border-bottom: 1px solid transparent;
   transition: color 320ms var(--ease), border-color 320ms var(--ease);
 }
@@ -940,7 +1318,16 @@ html:not(.js) .o-pass { opacity: 1; transform: none; }
    it on a progress mark made the one piece of furniture in the wordless
    stretch the loudest thing on the screen. Bone at twice the weight says the
    same thing in the drawing's own ink. */
-.show-index i.on { background: var(--fg-soft); transform: scaleY(2.6); }
+/* THE ACCENT COMES BACK, AND THE EARLIER REASONING WAS WRONG ABOUT WHICH
+   TONE THIS IS.  It was taken off the warm ink in 11.1 on the grounds that
+   the second tone is the page's reaction and is never structural — which is
+   true of --warm, and this was then set in bone. But the index is not warm
+   and never was: it is --accent, the COOL companion, which lights the live
+   rule and the current destination in the menu and is the page's own way of
+   saying "you are here". That is exactly what three ticks at the foot of a
+   wordless stretch are for. Bone said nothing, because bone is what the whole
+   drawing above it is already made of. */
+.show-index i.on { background: var(--accent); transform: scaleY(2.6); }
 
 @keyframes cue { 0%,100% { transform: scaleY(.3); opacity: .35; } 50% { transform: scaleY(1); opacity: 1; } }
 
@@ -1016,24 +1403,36 @@ html:not(.js) .o-pass { opacity: 1; transform: none; }
 
 /* ------------------------------------------------ 11 · the three registers
    The figure holds the middle of the room; the reading goes round it. */
+/* THE EMPTY MIDDLE COLUMN WAS BUYING NOTHING.
+
+   Three columns, with up to 500px held open in the centre for a figure that
+   is drawn on a fixed canvas behind the whole page and takes no space in the
+   flow at all. So the column was not making room for anything — it was simply
+   a third of the room that no content could enter, and it pushed the reading
+   into a 44ch measure hard against the gutter while the drawing filled the
+   right. The composition read as a column of text with a hole beside it.
+
+   Two columns. The card gets a real measure, and the space that was being
+   held open goes to the figure by simply not being claimed — which is what it
+   was always doing in practice. */
 .reg .inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(240px, 30vw, 500px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
   grid-template-rows: auto minmax(0, 1fr);
-  column-gap: clamp(14px, 2vw, 34px); row-gap: clamp(16px, 3.5vh, 40px);
+  column-gap: clamp(20px, 4vw, 72px); row-gap: clamp(16px, 3.5vh, 40px);
   min-height: min(64svh, 580px); align-items: center;
 }
 .reg-title { grid-column: 1; grid-row: 1; align-self: start; }
 .reg-title .h2 { margin: 12px 0 0; max-width: 13ch; font-size: clamp(1.45rem, 2.3vw, 2.1rem); }
 .reg-card { align-self: center; }
 .reg-card[data-place="left"]  { grid-column: 1; grid-row: 2; }
-.reg-card[data-place="right"] { grid-column: 3; grid-row: 2; }
+.reg-card[data-place="right"] { grid-column: 2; grid-row: 2; }
 .reg-card h3 {
   font-variation-settings: 'wdth' 104, 'wght' 600;
   font-size: clamp(1.36rem, 2.2vw, 2rem);
   line-height: 1.08; letter-spacing: -.02em; margin: 12px 0 12px;
 }
-.reg-card .body-w { max-width: 44ch; font-size: 15.5px; line-height: 1.62; }
+.reg-card .body-w { max-width: 52ch; font-size: 16px; line-height: 1.64; }
 .reg-card .tags { margin-top: 16px; padding-top: 13px; font-size: 10.5px; }
 .reg-num { color: var(--fg-faint); display: block; margin-top: 4px; }
 /* THE NUMERAL, MOVED.  It used to run down the showcase rooms, where it was
@@ -1321,7 +1720,12 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 .foot { border-top: 1px solid var(--rule-soft); padding-top: 20px; max-width: var(--maxw); margin: 0 auto; width: 100%; }
 .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 22px 34px; margin-bottom: 18px; }
 .foot-col h4 { margin-bottom: 8px; }
-.foot-col p, .foot-col a { color: var(--fg-soft); font-size: 14px; text-decoration: none; line-height: 1.7; }
+/* THE ADDRESS IS NOT A FOOTNOTE.  At --fg-soft over a lit part of the ground
+   this was running about 3:1 — under the 4.5:1 a 14px face needs, and it is
+   the studio's own address and email, which is the single most consequential
+   line in the footer. It goes to full ink. Everything that is genuinely
+   secondary down here is already carrying --fg-faint by name. */
+.foot-col p, .foot-col a { color: var(--fg); font-size: 14px; text-decoration: none; line-height: 1.7; }
 .foot-col a:hover { color: var(--accent); }
 .foot-bottom {
   display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap;
@@ -1358,20 +1762,85 @@ html:not(.js) .cred { opacity: 1; transform: none; }
    sizes -- a room the reader has chosen to open can ask for more attention
    than a room they are scrolling past. */
 .case-mast { position: relative; }
-.case-media { position: relative; aspect-ratio: 21 / 8; overflow: hidden; background: var(--ground-deep); }
+/* z-index 0 IS LOad-BEARING, and it is not obvious why.
+
+   The plate carries transform: scale(1.02). A transformed element is painted
+   in the same pass as the positioned descendants and ordered against them by
+   TREE ORDER, not by being content — so ::before, which comes first in tree
+   order, was painting UNDER the screenshot and the legibility ramp was doing
+   nothing at all. Ordering the two pseudo-elements explicitly is the fix, and
+   ordering them explicitly is only safe if this element is a stacking context
+   of its own: otherwise a z-index on ::before would raise it out of here and
+   over the title in .case-mast-in, which is exactly what it exists to hold up.
+   z-index on a positioned element is what makes one. */
+.case-media {
+  position: relative; z-index: 0;
+  aspect-ratio: 21 / 8; overflow: hidden; background: var(--ground-deep);
+}
+/* THE VEIL WAS SHOWING THE READER NOTHING.
+
+   It was three treatments stacked on one plate: the luminance taken down to
+   0.60, the saturation to 0.38, a line grid at one-in-five, and a ground-
+   coloured gradient running from opaque at the foot to nothing only at 78% of
+   the height. Together they left about a fifth of the photograph visible, in
+   the top corners, where there is never anything to see. The masthead is the
+   one place on the site where the WORK is meant to be looked at rather than
+   alluded to, and it was the most heavily masked image in the file.
+
+   Two things changed. The default is much lighter — 0.86 and 0.62, a grid at
+   a third of its old contrast and one-in-six rather than one-in-five, and a
+   veil that clears by not quite half way up. And the veil now LIFTS: hovering
+   the plate, or scrolling a line into the reading, takes it off entirely and
+   the photograph comes up to full luminance. The reader who has opened a case
+   study has already said they want to see it.
+
+   --mast-b / --mast-sat are the two numbers. They are custom properties rather
+   than a second filter declaration so the lift interpolates: a filter list
+   only transitions against a list of the same shape. */
 .case-media img {
   width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%;
-  display: block; filter: saturate(.38) contrast(1.06) brightness(.60);
+  display: block;
+  filter: saturate(var(--mast-sat, .62)) contrast(1.04) brightness(var(--mast-b, .86));
   transform: scale(1.02);
+  transition: filter 900ms var(--ease);
 }
-/* the same two treatments the carousel plate carries, at a coarser pitch so
-   the masthead reads as a printed ground rather than as a second screenshot */
+/* THE LEGIBILITY RAMP IS NOT PART OF THE VEIL, and does not leave with it.
+   The title stands on the plate's lower edge, so something has to hold it
+   there whatever the photograph turns out to be — a pale screenshot with the
+   veil lifted would take the project's name with it. This is short, it is only
+   where the words are, and it is the one thing here that never moves.
+
+   IT HAD TO GET STRONGER WHEN THE VEIL GOT WEAKER, and that is the whole
+   trade of this change stated in one place: the old masthead could set an
+   eyebrow at --fg-soft over a plate held at 0.60 luminance and get away with
+   it, because there was nothing under the type bright enough to argue. At
+   0.86, and at 1.00 once the veil lifts, a screenshot of somebody's white
+   landing page runs straight up behind the words. So the ramp is two thirds
+   of the height rather than a little over a half, it reaches its middle value
+   sooner, and the eyebrow is set in full ink instead of the soft one — which
+   it should arguably always have been, over a photograph. */
+.case-media::before {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 66%; z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top,
+    var(--ground) 0%,
+    color-mix(in srgb, var(--ground) 88%, transparent) 22%,
+    color-mix(in srgb, var(--ground) 52%, transparent) 52%,
+    transparent 100%);
+}
+.case-mast-in .cap { color: var(--fg); }
+/* the line grid and what is left of the luminance veil: the two that lift */
 .case-media::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background:
-    repeating-linear-gradient(90deg, color-mix(in srgb, var(--ground) 62%, transparent) 0 1px, transparent 1px 5px),
-    linear-gradient(to top, var(--ground) 2%, color-mix(in srgb, var(--ground) 72%, transparent) 34%, transparent 78%);
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--ground) 34%, transparent) 0 1px, transparent 1px 6px),
+    linear-gradient(to top, color-mix(in srgb, var(--ground) 30%, transparent) 0%, transparent 46%);
+  opacity: 1; transition: opacity 900ms var(--ease);
 }
+.case-mast:hover .case-media::after,
+.case-mast.lit  .case-media::after { opacity: 0; }
+.case-mast:hover .case-media img,
+.case-mast.lit  .case-media img { --mast-b: 1; --mast-sat: .95; }
 .case-media .ph {
   position: absolute; inset: 0; display: grid; place-items: center;
   background: repeating-linear-gradient(90deg, var(--rule-soft) 0 1px, transparent 1px 6px);
@@ -1473,8 +1942,6 @@ html:not(.js) .cred { opacity: 1; transform: none; }
        --sty-y is not overridden because it lands on the same figure at both
        sizes. Re-measure these together with the desktop set. */
     --sty-w: calc(var(--plate-w) * .59);
-    --sty-s: .53;
-    --sty-x: 36.5%;
   }
   body { font-size: 16px; }
 
@@ -1591,6 +2058,16 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .foot { padding-bottom: env(safe-area-inset-bottom); }
   .mosaic { height: clamp(150px, 28vh, 300px); }
 
+  /* THE GRAIN STANDS DOWN ON A PHONE.  It is a full-viewport fixed layer with
+     mix-blend-mode: overlay on it, which means the compositor blends the whole
+     screen against the canvas underneath on every frame the page moves — and
+     what it is blending is a noise texture at five per cent opacity, over a
+     display at two or three device pixels to the CSS pixel, where it is below
+     the threshold at which anything can be seen. A cost paid on every frame
+     for a texture nobody on that device is looking at. It is one line to put
+     back if a future screen makes it worth having. */
+  .grain { display: none; }
+
   /* the showcase caption, and the numeral that moved to the registers */
   .reg-fig { font-size: clamp(46px, 16vw, 96px); }
   .reg-card[data-place="right"] .reg-fig { text-align: left; }
@@ -1646,16 +2123,55 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .card { width: 100%; }
   /* stacked, the cards arrive from below rather than from the right: sideways
      travel in a column reads as a mistake, and the clip goes with it. .in is
-     written per card by the observer in runCascade as each one comes up. */
-  .card { transform: translate3d(0, 38px, 0); clip-path: none; }
+     written per card by the observer in runCascade as each one comes up.
+
+     AND NO STANDING will-change.  The wide layout declares it on .card so the
+     cascade across the row is composited rather than painted, and drops it
+     again on .rested. Down a column that promise is held from the moment the
+     document parses until the reader reaches the works room, which may be
+     never — seven full-width layers kept alive on the device with the least
+     memory to keep them in, for an entrance that has not started. The
+     transitions here promote themselves while they run, which is all that was
+     wanted. */
+  .card { transform: translate3d(0, 38px, 0); clip-path: none; will-change: auto; }
   .js .track .card.in, .js .track.cascade .card {
     opacity: 1; transform: none;
     transition: opacity 620ms var(--ease), transform 900ms var(--ease-i);
   }
   .js .track.rested .card:hover, .js .track.rested .card:focus-visible { transform: none; }
   .shot { aspect-ratio: 16 / 10; }
-  .shot .scan { opacity: .55 !important; }
-  .card-meta { opacity: 1; }
+
+  /* THE PLATE THE READER IS LOOKING AT COMES OUT FROM UNDER THE LATTICE.
+
+     On a wide screen the scrim lifts on hover — that is the mouse saying
+     "this one", and it is how the work gets to be seen at all. A thumb has no
+     hover. So the stacked column was six full-width screenshots, every one of
+     them behind a line grid at .55 and desaturated, with no gesture anywhere
+     on a phone that would take it off. The reader could see that there was
+     work; they could not see the work.
+
+     Scrolling is the gesture. Whichever plate is crossing the middle of the
+     screen is the one being looked at, and it unmasks — the grid goes, the
+     colour comes back, the outline lights — and it masks again as the next
+     one takes its place. The column reads as one plate at a time being drawn
+     out from under the lattice and put back, which is the same sentence the
+     hover makes, said in the only vocabulary a phone has.
+
+     .is-mid is written by watchMid() in the works section, off an observer
+     watching a hairline band at the viewport's centre rather than off the
+     scroll — nothing runs per frame for this.
+
+     The !important is not decoration. .card:hover .scan sits later in the
+     sheet than .shot .scan at equal specificity, so without it a phantom
+     :hover left behind by a tap would beat the resting state; both rules here
+     carry it so the pair stay comparable. */
+  .shot .scan { opacity: .58 !important; transition: opacity 560ms var(--ease); }
+  .card.is-mid .shot .scan { opacity: 0 !important; }
+  .card.is-mid .shot img { filter: none; }
+  .card.is-mid .shot { outline-color: var(--rule); }
+
+  .card-meta { opacity: .62; }
+  .card.is-mid .card-meta { opacity: 1; }
   .track-ui, .hand { display: none; }
 
   /* the case study, as one column */
@@ -1690,11 +2206,146 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   .card { transition: none; }
   .js .track.cascade .card, .js .track .card.in { transition: none; opacity: 1; transform: none; clip-path: none; }
   .js .track.cascade .shot .scan { transition: none; opacity: .9; }
+  /* the masthead's veil still lifts — it is a change of state, not a movement
+     — but it arrives at the new state rather than travelling to it */
+  .case-media img, .case-media::after { transition: none; }
+  /* and the centred card in the stacked column is answered at once */
+  .card .shot img, .card .scan { transition: none; }
 }
 </style>
+<!-- THE REMEMBERED INK, RESTORED BEFORE THE FIRST PAINT.
+
+     It has to be here — in the head, inline, blocking — and not with the rest
+     of the chrome at the foot of the document. The <html> element ships with
+     t-green on it so that there is never a flash of unstyled ground; restoring
+     a saved choice any later than this simply moves the flash rather than
+     removing it, and the one it would move it to is worse, because going from
+     a dark ground to a light one mid-load is a flash of the whole page.
+
+     Six lines, no dependencies, and it fails silently: Safari throws on
+     storage access in private browsing, and the document's own class is the
+     right answer in that case anyway. -->
+<script>
+(function () {
+  try {
+    var k = localStorage.getItem('stylos-ink');
+    if (k !== 'blue' && k !== 'green' && k !== 'wax') return;
+    var r = document.documentElement;
+    r.classList.remove('t-green', 't-wax');
+    if (k !== 'blue') r.classList.add('t-' + k);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', k === 'wax' ? '#ece6d6' : k === 'green' ? '#092c2a' : '#07264c');
+  } catch (err) {}
+})();
+</script>
 </head>
 <body>
-<script>document.documentElement.classList.add('js', 'intro-locked');</script>
+<script>document.documentElement.classList.add('js', 'intro-locked');
+
+/* ==========================================================================
+   THE COPY PROMISE.
+
+   This has to be a classic script and it has to be here, at the top of the
+   body, for one reason: a `type="module"` script is deferred to after the
+   document has parsed, and the deck script at the foot of this file is not.
+   So the module cannot create the thing the deck waits on — it would not
+   exist yet. The promise is created here, resolved by the module when the
+   read comes back, and awaited by the deck.
+
+   THE CEILING IS THE POINT, and it is 2200ms because that is the fonts'.
+   The deck waits for both and the two races run in parallel, so matching them
+   makes the wait the longer of the two rather than the sum — this revision
+   starts the introduction at exactly the moment the last one did. Past the
+   ceiling the read is abandoned and the seed copy in the deck script stands.
+   There is no third case: the page is never left waiting on a network.
+   ========================================================================== */
+window.COPY_READY = (function () {
+  var settle, done = false;
+  var p = new Promise(function (r) { settle = r; });
+  window.__copyDone = function (v) { if (!done) { done = true; settle(v || null); } };
+  setTimeout(function () { window.__copyDone(null); }, 2200);
+  return p;
+})();
+</script>
+
+<!-- ==================================================== the backend
+     THE ONE PLACE THE PROJECT IS NAMED.
+
+     Replace the six values below with the ones the Firebase console gives you
+     under Project settings → Your apps → Web app → SDK setup and configuration.
+     Until projectId stops saying REPLACE-ME the whole of this script does
+     nothing at all — no import, no network, no error — and the page runs on
+     the seed copy in the deck script. That is deliberate: this file has to be
+     openable from a finder window by somebody with no project of their own.
+
+     NONE OF THIS IS A SECRET.  A Firebase web config is public by design; it
+     identifies the project, it does not authorise anything. What decides who
+     can read and write is the security rules, and the rules this site wants
+     are: everybody may read, nobody may write. The console's own default
+     ("allow read, write: if false") locks reading too, so it has to be
+     changed — the walkthrough says how.
+
+     WHY firestore-lite.  The full Firestore SDK carries the realtime
+     listener machinery, the local cache and the offline queue, and it is
+     several times the size. This site reads twenty documents once, at load,
+     and never listens. The lite build is the honest dependency.
+
+     THE VERSION IS PINNED.  10.14.1, not "latest": a CDN import that follows
+     a moving tag is a third party silently shipping into a page with no build
+     step and no lockfile to catch it. -->
+<script type="module">
+const FB_CONFIG = {
+  apiKey:            'REPLACE-ME',
+  authDomain:        'REPLACE-ME.firebaseapp.com',
+  projectId:         'REPLACE-ME',
+  storageBucket:     'REPLACE-ME.appspot.com',
+  messagingSenderId: 'REPLACE-ME',
+  appId:             'REPLACE-ME'
+};
+
+const SDK = 'https://www.gstatic.com/firebasejs/10.14.1/';
+
+(async function () {
+  if (!FB_CONFIG.projectId || FB_CONFIG.projectId === 'REPLACE-ME') {
+    window.__copyDone(null);
+    return;
+  }
+  try {
+    /* dynamic imports, so a blocked or slow CDN is a caught rejection rather
+       than a module that never evaluates */
+    const [app, fs] = await Promise.all([
+      import(SDK + 'firebase-app.js'),
+      import(SDK + 'firebase-firestore-lite.js')
+    ]);
+    const db = fs.getFirestore(app.initializeApp(FB_CONFIG));
+
+    /* three reads, one per collection, in parallel. Twenty documents in
+       total, which is well inside a day's free quota at any traffic this
+       site will ever see. */
+    const [rooms, works, site] = await Promise.all([
+      fs.getDocs(fs.collection(db, 'rooms')),
+      fs.getDocs(fs.collection(db, 'works')),
+      fs.getDocs(fs.collection(db, 'site'))
+    ]);
+
+    /* the transport's only job is to hand over what it read. Ordering the
+       works row is applyRemote's, so that a list arriving by any other route
+       is ordered by the same rule. */
+    const out = { rooms: {}, site: {}, works: [] };
+    rooms.forEach(d => { out.rooms[d.id] = d.data(); });
+    site.forEach(d => { out.site[d.id] = d.data(); });
+    works.forEach(d => { out.works.push(Object.assign({ id: d.id }, d.data())); });
+
+    window.__copyDone(out);
+  } catch (err) {
+    /* the seed copy is complete, so this is a quiet failure on purpose. It is
+       logged and not thrown: a reader should never be shown a broken page
+       because a content backend was unreachable. */
+    console.warn('[stylos] copy: falling back to the seed —', err && err.message);
+    window.__copyDone(null);
+  }
+})();
+</script>
 
 <a class="skip" href="#main">Skip to content</a>
 
@@ -1733,17 +2384,21 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 
 <nav class="nav" id="nav" aria-label="Main">
   <a href="#top" class="wordmark">Stylos</a>
+  <!-- the five labels are copy; the five destinations are not. data-nav is the
+       key into site/nav AND the key enterRoom() sets aria-current from, so a
+       renamed label cannot break the highlighting. -->
   <div class="nav-pill">
-    <a class="nav-link" href="#practice" data-nav="practice"><span>Practice</span></a>
-    <a class="nav-link" href="#registers" data-nav="registers"><span>What we do</span></a>
-    <a class="nav-link" href="#works" data-nav="works"><span>Work</span></a>
-    <a class="nav-link" href="#method" data-nav="studio"><span>Studio</span></a>
-    <a class="nav-link" href="#contact" data-nav="contact"><span>Contact</span></a>
+    <a class="nav-link" href="#practice" data-nav="practice"><span data-copy="site.nav.practice"></span></a>
+    <a class="nav-link" href="#registers" data-nav="registers"><span data-copy="site.nav.registers"></span></a>
+    <a class="nav-link" href="#works" data-nav="works"><span data-copy="site.nav.works"></span></a>
+    <a class="nav-link" href="#method" data-nav="studio"><span data-copy="site.nav.studio"></span></a>
+    <a class="nav-link" href="#contact" data-nav="contact"><span data-copy="site.nav.contact"></span></a>
   </div>
   <div class="swatches">
     <span class="lab" aria-hidden="true">Ink</span>
     <button class="sw sw-blue" data-theme="blue" aria-pressed="false" aria-label="Blue ground"></button>
     <button class="sw sw-green" data-theme="green" aria-pressed="true" aria-label="Green ground"></button>
+    <button class="sw sw-wax" data-theme="wax" aria-pressed="false" aria-label="Wax ground, light"></button>
   </div>
   <button class="burger" id="burger" aria-expanded="false" aria-controls="sheet" aria-label="Open menu">
     <span aria-hidden="true"></span><span aria-hidden="true"></span>
@@ -1761,19 +2416,20 @@ html:not(.js) .cred { opacity: 1; transform: none; }
          carries an idea; a menu is a list of destinations, and borrowing the
          numbering for it would spend the device on furniture. -->
     <nav class="sheet-nav" aria-label="Sections">
-      <a href="#practice" data-nav="practice"><span class="i" aria-hidden="true"></span><span>Practice</span></a>
-      <a href="#registers" data-nav="registers"><span class="i" aria-hidden="true"></span><span>What we do</span></a>
-      <a href="#works" data-nav="works"><span class="i" aria-hidden="true"></span><span>Work</span></a>
-      <a href="#method" data-nav="studio"><span class="i" aria-hidden="true"></span><span>Studio</span></a>
-      <a href="#contact" data-nav="contact"><span class="i" aria-hidden="true"></span><span>Contact</span></a>
+      <a href="#practice" data-nav="practice"><span class="i" aria-hidden="true"></span><span data-copy="site.nav.practice"></span></a>
+      <a href="#registers" data-nav="registers"><span class="i" aria-hidden="true"></span><span data-copy="site.nav.registers"></span></a>
+      <a href="#works" data-nav="works"><span class="i" aria-hidden="true"></span><span data-copy="site.nav.works"></span></a>
+      <a href="#method" data-nav="studio"><span class="i" aria-hidden="true"></span><span data-copy="site.nav.studio"></span></a>
+      <a href="#contact" data-nav="contact"><span class="i" aria-hidden="true"></span><span data-copy="site.nav.contact"></span></a>
     </nav>
     <div class="sheet-foot">
       <div class="swatches sheet-sw">
         <span class="lab" aria-hidden="true">Ink</span>
         <button class="sw sw-blue" data-theme="blue" aria-pressed="false" aria-label="Blue ground"></button>
         <button class="sw sw-green" data-theme="green" aria-pressed="true" aria-label="Green ground"></button>
+        <button class="sw sw-wax" data-theme="wax" aria-pressed="false" aria-label="Wax ground, light"></button>
       </div>
-      <a class="sheet-mail" href="mailto:office@stylos.co">office@stylos.co</a>
+      <a class="sheet-mail" href="#" data-copy="site.contact.email" data-copy-mail></a>
     </div>
     <button class="sheet-close" id="sheetClose" type="button">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -1846,15 +2502,19 @@ html:not(.js) .cred { opacity: 1; transform: none; }
     <span class="gigaword rv-wipe" aria-hidden="true">Stylos</span>
   </div>
   <div class="inner">
-    <span class="mono cap cap-rule rv" style="--d:140ms">The name</span>
-    <p class="practice-lede rv" style="--d:430ms">A stylus is a plain tool. One end cuts the letter into the wax; turn it over and the flat end wipes it away. Write, read, change your mind, write it again &mdash; that is most of the job.</p>
+    <span class="mono cap cap-rule rv" style="--d:140ms" data-copy="practice.eyebrow"></span>
+    <p class="practice-lede rv" style="--d:430ms" data-copy="practice.lede"></p>
     <!-- Horace, moved here from the showroom, where it was set over a moving
          figure at a size nobody could read. It is the studio's motto and it
-         deserves a line of its own, a translation, and a proper citation. -->
+         deserves a line of its own, a translation, and a proper citation.
+
+         The citation is three slots rather than one because the work's title
+         is italic and the rest is not, and copy is escaped on the way in — a
+         backend field is never allowed to carry markup. -->
     <blockquote class="motto rv aside" style="--d:660ms">
-      <p class="motto-la"><em>Saepe stilum uertas, iterum quae digna legi sint scripturus.</em></p>
-      <p class="motto-en">Turn the stylus often, if you mean to write something worth a second reading.</p>
-      <cite class="mono">Horace, <i>Sermones</i> 1.10.72&ndash;73</cite>
+      <p class="motto-la"><em data-copy="practice.mottoLa"></em></p>
+      <p class="motto-en" data-copy="practice.mottoEn"></p>
+      <cite class="mono"><span data-copy="practice.citeAuthor"></span> <i data-copy="practice.citeWork"></i> <span data-copy="practice.citeRef"></span></cite>
     </blockquote>
   </div>
 </section>
@@ -1867,21 +2527,17 @@ html:not(.js) .cred { opacity: 1; transform: none; }
      surface is being changed behind the line. -->
 <section class="screen practice-2" id="practice2" data-room="5" data-nav="practice" data-scrim="left" data-fig>
   <div class="inner">
-    <span class="mono cap cap-rule rv">The work</span>
-    <h2 class="h2 rv-wipe" style="--d:140ms">Structure first. Then the surface.</h2>
-    <div class="body-w rv" style="--d:430ms">
-      <p>We make websites for people whose material is complicated &mdash; a collection, an archive, a research programme, a body of work built up over years.</p>
-      <p class="aside">That means settling the structure before anything is styled: what the thing is, who has to read it, and how it is meant to last. The design follows from that, and is the better for it.</p>
-      <p class="hand-over">And then it is handed over properly. Whatever ought to be yours to change ends up yours to change &mdash; including how the thing looks.</p>
-      <!-- "on this page", not "in the corner of this page": the ink pair is in
-           the corner of the nav on a wide screen and inside the menu on a
-           phone, and the sentence has to be true in both — it is folded behind
-           the disclosure on a phone, not hidden, so it will be read there. -->
-      <p class="hand-over aside">The two inks on this page are not a demonstration: <button type="button" class="ink-nudge" id="inkNudge">press one</button> and the whole site turns, drawing and all. Every commission leaves with controls of its own.</p>
-    </div>
-    <div class="tags mono rv" style="--d:640ms">
-      <span>Structure before decoration</span><span>Multilingual by default</span><span>Built to be kept</span>
-    </div>
+    <span class="mono cap cap-rule rv" data-copy="practice2.eyebrow"></span>
+    <h2 class="h2 rv-wipe" style="--d:140ms" data-copy="practice2.heading"></h2>
+    <!-- data-copy-rich: an array of blocks rather than a string. Each block is
+         either a sentence or { t, cls }, and the class is what carries .aside
+         (folded on a phone) and .hand-over. The ink switch lives inside the
+         fourth block as the token {ink|press one} — "on this page", not "in
+         the corner of this page", because the pair is in the nav on a wide
+         screen and inside the menu on a phone and the sentence has to be true
+         in both. -->
+    <div class="body-w rv" style="--d:430ms" data-copy="practice2.body" data-copy-rich></div>
+    <div class="tags mono rv" style="--d:640ms" data-copy="practice2.tags" data-copy-tags></div>
   </div>
 </section>
 
@@ -1894,19 +2550,17 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <section class="screen reg" id="registers" data-room="6" data-nav="registers" data-scrim="left">
   <div class="inner">
     <div class="reg-title">
-      <span class="mono cap cap-rule rv">What we do</span>
-      <h2 class="h2 rv-wipe" style="--d:140ms">Three kinds of commission.</h2>
+      <span class="mono cap cap-rule rv" data-copy="registers.eyebrow"></span>
+      <h2 class="h2 rv-wipe" style="--d:140ms" data-copy="registers.heading"></h2>
     </div>
+    <!-- the numeral is NOT a copy slot: numberMoves() writes it from the cards'
+         document order, so adding a fourth register renumbers itself -->
     <div class="reg-card" data-place="left">
       <span class="reg-fig rv" style="--d:170ms" aria-hidden="true">01</span>
-      <span class="mono reg-num rv" style="--d:200ms">Research &amp; humanities</span>
-      <h3 class="rv-wipe" style="--d:300ms">Project sites, archives and databases</h3>
-      <div class="body-w rv" style="--d:520ms">
-        <p>Grant outputs, structured databases, digital editions and project platforms &mdash; built to be cited, and to hold up under scholarly scrutiny. Designed from inside research: what a work package, an advisory board and a funder each need to see, and how a database earns a reader&rsquo;s trust.</p>
-      </div>
-      <div class="tags mono rv" style="--d:700ms">
-        <span>Grant platforms</span><span>Databases</span><span>Digital editions</span>
-      </div>
+      <span class="mono reg-num rv" style="--d:200ms" data-copy="registers.label"></span>
+      <h3 class="rv-wipe" style="--d:300ms" data-copy="registers.cardHeading"></h3>
+      <div class="body-w rv" style="--d:520ms" data-copy="registers.body" data-copy-rich></div>
+      <div class="tags mono rv" style="--d:700ms" data-copy="registers.tags" data-copy-tags></div>
     </div>
   </div>
 </section>
@@ -1916,14 +2570,10 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   <div class="inner">
     <div class="reg-card" data-place="right">
       <span class="reg-fig rv" aria-hidden="true">02</span>
-      <span class="mono reg-num rv" style="--d:60ms">Heritage &amp; visualisation</span>
-      <h3 class="rv-wipe" style="--d:140ms">3D models, photogrammetry and digital exhibitions</h3>
-      <div class="body-w rv" style="--d:430ms">
-        <p>Photogrammetric models of ancient structures, annotated and embedded; visual archives and spatial evidence made legible for scholars, funders and the public. Drawn from years of archaeological visualisation and current work with Oxford galleries, libraries, archives and museums.</p>
-      </div>
-      <div class="tags mono rv" style="--d:640ms">
-        <span>Photogrammetry</span><span>3D embedding</span><span>GLAM interfaces</span>
-      </div>
+      <span class="mono reg-num rv" style="--d:60ms" data-copy="reg2.label"></span>
+      <h3 class="rv-wipe" style="--d:140ms" data-copy="reg2.cardHeading"></h3>
+      <div class="body-w rv" style="--d:430ms" data-copy="reg2.body" data-copy-rich></div>
+      <div class="tags mono rv" style="--d:640ms" data-copy="reg2.tags" data-copy-tags></div>
     </div>
   </div>
 </section>
@@ -1933,15 +2583,11 @@ html:not(.js) .cred { opacity: 1; transform: none; }
   <div class="inner">
     <div class="reg-card" data-place="left">
       <span class="reg-fig rv" aria-hidden="true">03</span>
-      <span class="mono reg-num rv" style="--d:60ms">Creative &amp; independent</span>
-      <h3 class="rv-wipe" style="--d:140ms">Portfolios, studios and small institutions</h3>
-      <div class="body-w rv" style="--d:430ms">
-        <p>Editorial sites for artists, performers, schools and independent professionals &mdash; design that catches the tone of a practice, with working machinery underneath: content systems, back offices, payments, and images handled with care.</p>
-      </div>
-      <div class="tags mono rv" style="--d:640ms">
-        <span>Editorial design</span><span>Motion</span><span>Back office</span><span>Payments</span>
-      </div>
-      <p class="aside-note aside rv" style="--d:760ms">The surface keeps changing. The tool barely has.</p>
+      <span class="mono reg-num rv" style="--d:60ms" data-copy="reg3.label"></span>
+      <h3 class="rv-wipe" style="--d:140ms" data-copy="reg3.cardHeading"></h3>
+      <div class="body-w rv" style="--d:430ms" data-copy="reg3.body" data-copy-rich></div>
+      <div class="tags mono rv" style="--d:640ms" data-copy="reg3.tags" data-copy-tags></div>
+      <p class="aside-note aside rv" style="--d:760ms" data-copy="reg3.note"></p>
     </div>
   </div>
 </section>
@@ -1950,10 +2596,10 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <section class="screen works" id="works" data-room="9" data-nav="works" data-scrim="bottom">
   <div class="works-head">
     <div>
-      <span class="mono cap cap-rule rv">Selected work</span>
-      <h2 class="h2 rv-wipe" style="--d:140ms">Sites, platforms and digital environments.</h2>
+      <span class="mono cap cap-rule rv" data-copy="works.eyebrow"></span>
+      <h2 class="h2 rv-wipe" style="--d:140ms" data-copy="works.heading"></h2>
     </div>
-    <p class="works-note rv" style="--d:430ms">Made for cultural, educational and independent projects. Much of the work is commissioned privately or waits on an institutional launch, so each item is shown as far as its status allows.</p>
+    <p class="works-note rv" style="--d:430ms" data-copy="works.note"></p>
   </div>
 
   <div>
@@ -1971,55 +2617,48 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <section class="screen method inverted" id="method" data-room="10" data-nav="studio" data-scrim="left">
   <div class="inner">
     <div>
-      <span class="mono cap cap-rule rv">Method</span>
-      <h2 class="h2 rv-wipe" style="--d:140ms">How a commission runs.</h2>
-      <div class="method-steps" id="methodSteps">
-        <div class="step" data-step="0">
-          <span class="n mono">I</span>
-          <div><h3>Read</h3><p>It starts with your material: the sources, the audiences, and what the institution or the stage actually requires.</p></div>
-        </div>
-        <div class="step" data-step="1">
-          <span class="n mono">II</span>
-          <div><h3>Structure</h3><p>Architecture before decoration. Data models, provenance and navigation that will still make sense in ten years.</p></div>
-        </div>
-        <div class="step" data-step="2">
-          <span class="n mono">III</span>
-          <div><h3>Draw</h3><p>Typography, colour, pace and atmosphere, set to the register of the work &mdash; scholarly, civic or theatrical.</p></div>
-        </div>
-        <div class="step" data-step="3">
-          <span class="n mono">IV</span>
-          <div><h3>Keep</h3><p>Documentation, handover, hosting advice and quiet maintenance. Sites built to be kept, not rebuilt.</p></div>
-        </div>
-      </div>
+      <span class="mono cap cap-rule rv" data-copy="method.eyebrow"></span>
+      <h2 class="h2 rv-wipe" style="--d:140ms" data-copy="method.heading"></h2>
+      <!-- THE FOUR STEPS ARE BUILT, NOT WRITTEN.  They were four hand-kept
+           blocks with a numeral, a heading and a sentence apiece, and the
+           numeral had to be kept in step with the position by hand. The
+           backend supplies { n, h, p } and renderCopy writes the rest, so a
+           fifth step is one document field and nothing else — including
+           data-step, which runMethod() reads to light them in order.
+
+           The four words here are also the four the glass carries: CODE in
+           the figure script is ['read','structure','draw','keep']. If these
+           change, that changes with them, and nine characters is the ceiling
+           for any line on the glass. -->
+      <div class="method-steps" id="methodSteps" data-copy="method.steps" data-copy-steps></div>
     </div>
     <div aria-hidden="true"></div>
   </div>
 </section>
 
 <!-- ==================================================== 11 · studio -->
-<section class="screen studio" id="studio" data-room="11" data-nav="studio" data-scrim="full">
+<!-- data-scrim is `left`, not `full`. A radial scrim lifts the middle of the
+     field and leaves the edges, which is the wrong shape for a room whose copy
+     is a single tall left column — the paragraphs sat outside the lift. -->
+<section class="screen studio" id="studio" data-room="11" data-nav="studio" data-scrim="left">
   <div class="inner">
-    <span class="mono cap cap-rule rv">Studio</span>
-    <h2 class="h2 rv-wipe" style="--d:140ms">A practice rooted in classics, built for the present.</h2>
+    <span class="mono cap cap-rule rv" data-copy="studio.eyebrow"></span>
+    <h2 class="h2 rv-wipe" style="--d:140ms" data-copy="studio.heading"></h2>
     <div class="studio-grid">
-      <div class="body-w rv" style="--d:430ms">
-        <p>Stylos is a one-person practice led by <strong>Arkadiy Avdokhin</strong>, a classicist and archaeologist at the University of Oxford and Wolfson College &mdash; a doctorate in Classics from King&rsquo;s College London, a Marie Sk&#322;odowska-Curie Fellowship at the Oxford Faculty of Classics, and current work towards a digital 3D and visualisation lab with the Ashmolean Museum.</p>
-        <p class="aside">The design work grew out of the research: a public platform for the inscriptions and 3D-modelled structures of late antique Aphrodisias, and a scholarly database for a Vienna-based project on Roman-era papyri. The same habits &mdash; structure, provenance, longevity, multilingual and accessible by default &mdash; shape every site, whether it serves a grant or a stage.</p>
-        <p class="studio-tail aside">Engagements are small and scoped &mdash; comfortable with grant timelines and work-package deliverables, and corresponding by email.</p>
-      </div>
+      <!-- the name in the first sentence is set in the display weight, and it
+           reaches the page through the {b|…} token rather than as markup in a
+           backend field. See TOKENS in the deck script. -->
+      <div class="body-w rv" style="--d:430ms" data-copy="studio.body" data-copy-rich></div>
       <div class="studio-media">
         <figure class="portrait rv" id="portrait" style="--d:300ms" tabindex="0" role="button" aria-pressed="false" aria-label="Portrait of Arkadiy Avdokhin — activate to resolve the dithered plate">
           <img src="https://res.cloudinary.com/dp3g7dyx9/image/upload/v1784828602/8f213190-623f-4ce7-b794-79ea0c5c621e.png" alt="Arkadiy Avdokhin at an archaeological site, with the colonnade and ancient remains visible" loading="lazy">
         </figure>
         <div class="plate-cap mono rv" style="--d:420ms">
-          <b>Arkadiy Avdokhin</b><span class="cue" id="plateCue">Resolve &#8599;</span>
+          <b data-copy="studio.plateName"></b><span class="cue" id="plateCue">Resolve &#8599;</span>
         </div>
-        <div class="creds">
-          <div class="cred mono" style="--ci:0ms"><b>Ph.D, Classics</b><span>King&rsquo;s College London</span></div>
-          <div class="cred mono" style="--ci:110ms"><b>MSCA Fellow</b><span>Faculty of Classics, Oxford</span></div>
-          <div class="cred mono" style="--ci:220ms"><b>Fellow</b><span>Wolfson College, Oxford</span></div>
-          <div class="cred mono" style="--ci:330ms"><b>3D &amp; visualisation</b><span>Photogrammetry &middot; GLAM</span></div>
-        </div>
+        <!-- four rows of { b, span }, built by renderCopy: the --ci stagger is
+             written with them, so a fifth qualification arrives in step -->
+        <div class="creds" data-copy="studio.creds" data-copy-creds></div>
       </div>
     </div>
   </div>
@@ -2029,26 +2668,28 @@ html:not(.js) .cred { opacity: 1; transform: none; }
 <section class="screen contact" id="contact" data-room="12" data-nav="contact" data-scrim="left" data-fig>
   <div class="inner">
     <div class="contact-body">
-      <span class="mono cap cap-rule rv">Correspondence</span>
-      <h2 class="h2 rv-wipe" style="--d:140ms">Start a commission.</h2>
-      <div class="body-w rv" style="--d:430ms">
-        <p>Write a few lines about the project &mdash; what it is, who it is for, and where it stands. A reply follows within a few days.</p>
-      </div>
-      <a class="email rv" style="--d:560ms" href="mailto:office@stylos.co">office@stylos.co</a>
-      <div class="avail mono rv" style="--d:700ms">Commissions open for 2026</div>
+      <span class="mono cap cap-rule rv" data-copy="contact.eyebrow"></span>
+      <h2 class="h2 rv-wipe" style="--d:140ms" data-copy="contact.heading"></h2>
+      <div class="body-w rv" style="--d:430ms" data-copy="contact.body" data-copy-rich></div>
+      <!-- the address is written into BOTH the label and the href, in three
+           places on the page (here, the footer, the compact menu), from one
+           field: site.contact.email. data-copy-mail is what does it. -->
+      <a class="email rv" style="--d:560ms" href="#" data-copy="site.contact.email" data-copy-mail></a>
+      <div class="avail mono rv" style="--d:700ms" data-copy="site.contact.availability"></div>
     </div>
   </div>
 
+  <!-- THE FOOTER IS BUILT FROM ONE DOCUMENT.  Four columns, each a heading and
+       either a set of lines or a set of links, plus the copyright. It is a
+       list rather than four hand-kept blocks because the fourth column
+       restates the three registers and the second restates the address, and
+       three copies of a fact in the markup is three chances to change two of
+       them. site/footer is the single place. -->
   <footer class="foot rv" style="--d:820ms">
-    <div class="foot-grid">
-      <div class="foot-col"><h4 class="mono cap">Studio</h4><p>Beaumont Street<br>Oxford OX1 2LZ<br>United Kingdom</p></div>
-      <div class="foot-col"><h4 class="mono cap">Inquiries</h4><p><a href="mailto:office@stylos.co">office@stylos.co</a></p></div>
-      <div class="foot-col"><h4 class="mono cap">Elsewhere</h4><p><a href="#">Are.na</a><br><a href="#">ORCID</a></p></div>
-      <div class="foot-col"><h4 class="mono cap">Registers</h4><p>Research &amp; humanities<br>Heritage &amp; visualisation<br>Creative &amp; independent</p></div>
-    </div>
+    <div class="foot-grid" data-copy="site.footer.columns" data-copy-foot></div>
     <div class="foot-bottom mono">
-      <span>&copy; 2026 Stylos &mdash; Oxford</span>
-      <button type="button" id="toTop">Top &#8593;</button>
+      <span data-copy="site.footer.copyright"></span>
+      <button type="button" id="toTop" data-copy="site.footer.toTop"></button>
     </div>
   </footer>
 </section>
@@ -2587,7 +3228,26 @@ function buildScene(sp) {
   B.map = null;
   modernOnly(B, spe);
 
-  tube2(B, STY, MSTY, sp * 0.62, sp * 0.55, 2, F_METAL);  // part 2 — the stylus
+  /* THE STYLUS IS SAMPLED THREE TIMES AS FINELY AS THE LEAVES, and that is
+     not a luxury — it is what stops it reading as an artefact.
+
+     Measured: at the old 0.62/0.55 the stylus was 1,884 points against 27,546
+     in each leaf. Three per cent of the cloud, spread down a rod 122mm long
+     and 5mm thick — so on screen it was a THIN SCATTER rather than an object,
+     and from the overhead cameras (rooms 3 and 4, where the wax is being cut)
+     it foreshortens into a long diagonal streak running off past the tablet's
+     edge. A sparse streak that rotates with the camera does not read as a
+     tool. It reads as a bug, which is exactly what it was reported as.
+
+     The leaves can afford to be coarse because they are broad flat planes and
+     the eye reconstructs them from very little. A rod cannot: every point it
+     loses comes straight out of a silhouette that is only a few cells wide to
+     begin with. 0.30/0.26 puts it near 9,000 points, which is the density at
+     which it stops being a suggestion of a stylus and starts being one.
+
+     It costs about 7,000 points on a 55,000-point cloud — under an eighth —
+     and they are spent on the object the studio is named after. */
+  tube2(B, STY, MSTY, sp * 0.30, sp * 0.26, 2, F_METAL);  // part 2 — the stylus
   /* two highlight lines down the stylus, to firm up its silhouette */
   var n = Math.max(2, Math.round(116 / (spe * 1.3)));
   for (var s = -1; s <= 1; s += 2) {
@@ -2776,19 +3436,46 @@ var KEY = [
     dig: 0.34, dens: 0.58, ink: 0.80, figM: 0,
     writeTo: 1.00, actMs: 20000 },
 
-  /* 11 · studio — the slab up on its edge behind the reading, and not the
-          apologetic thumbnail it had become. At fill 0.40 and ink 0.56 it was
-          a smudge in the corner; the plate beside it is the loud thing in this
-          room and the figure is allowed to be the quiet one, but quiet is not
-          the same as absent. It stands to the left of the copy, turning. */
+  /* 11 · studio — AND IT WAS STANDING IN THE MIDDLE OF THE READING.
+
+          px -0.31 puts the object a third of the way left of centre. The
+          studio grid is copy-left, portrait-right — so a third left of centre
+          is not "beside the copy", it is ON it, and at fill 0.54 and ink 0.72
+          the second and third paragraphs were being read through a moving
+          lattice. That is the worst thing the figure does anywhere on the
+          site, because this is the longest single stretch of prose on it.
+
+          There is no clear column to move it to: both are occupied, and this
+          is also the one room with a photograph of its own, so two images were
+          competing for the same argument in any case. So it goes to the
+          MARGIN. Hard left and low, smaller, and at a little over half the
+          ink — a presence at the edge of the page rather than a texture behind
+          the sentence. The portrait is the image in this room; the figure is
+          the watermark, and a watermark belongs off the measure.
+
+          The three numbers move together: push px further out without taking
+          fill down and it simply leaves the screen, which is not quiet, it is
+          absent — see the note about the smudge this replaced. */
   { open: 0.86, morph: 1, write: 0.24, erase: 0, flip: 0, work: 0.30,
-    yaw: 0.42, pit: 0.24, roll: 0.00, turn: TURN1, fill: 0.54, px: -0.31, py: -0.08,
-    dig: 0.36, dens: 0.56, ink: 0.72, spin: 1, figM: 0 },
+    yaw: 0.42, pit: 0.24, roll: 0.00, turn: TURN1, fill: 0.40, px: -0.52, py: 0.20,
+    dig: 0.36, dens: 0.56, ink: 0.50, spin: 1, figM: 0 },
 
   /* 12 · contact — OPEN, turned toward the reader, the stylus down on the
           glass and the caret blinking under it. */
+  /* AND IT IS LIFTED CLEAR OF THE FOOTER.  py -0.03 is the middle of the
+     screen, and the contact room is space-between: copy at the top, a full-
+     width footer at the bottom, and the figure sat straight across the two
+     right-hand footer columns — "Elsewhere" and "Registers" were being read
+     through the lattice. The scrim could not help, because it is a left scrim
+     and this is the right side of the page.
+
+     Raising it to -0.20 puts it in the band between the availability line and
+     the footer rule, which is also the one part of this room that was empty
+     (the copy stops two thirds of the way up the left column). One move
+     answers both: the footer gets a clear ground and the room stops having a
+     hole in the middle of it. */
   { open: 1.00, morph: 1, write: 0.06, erase: 0, flip: 0, work: 0.94,
-    yaw: 0.26, pit: 0.58, roll: 0.02, turn: TURN1, fill: 0.66, px: 0.24, py: -0.03,
+    yaw: 0.26, pit: 0.58, roll: 0.02, turn: TURN1, fill: 0.62, px: 0.27, py: -0.20,
     dig: 0.46, dens: 0.62, ink: 0.92, figM: 1,
     /* a full pass, not a third of one. At writeTo 0.34 over 5.6 seconds the
        pen wrote four characters and stopped, which reads as a page that has
@@ -2925,8 +3612,19 @@ function poseFor(st, layout) {
      propped at roughly 28 rather than nothing. Combined with the raised `work`
      column in KEY, the stylus is visible and recognisably upright in every
      room rather than in three of them. */
-  var dW = nrm3([0.32, 0.88, 0.36]);       // writing attitude, steepened
-  var dE = nrm3([0.44, 0.78, 0.45]);       // erasing attitude (a little shallower)
+  /* AND EASED BACK OFF THE VERTICAL.  dW at [0.32, 0.88, 0.36] stood the
+     stylus about 63 degrees off the wax, which is right for a hand seen from
+     the side and wrong for the two rooms that matter most: from directly
+     overhead a near-vertical rod projects its whole 122mm length across the
+     leaf as a single diagonal, running out past the tablet's own edge. That
+     projection is the streak — a real object, drawn correctly, in the one
+     attitude where the camera cannot tell it from a stray mark.
+
+     0.50/0.76/0.40 is about 50 degrees: still plainly a tool being held
+     rather than a splinter lying down, and short enough in plan that it stays
+     on the leaf it is writing on. dE follows it down. */
+  var dW = nrm3([0.50, 0.76, 0.40]);       // writing attitude
+  var dE = nrm3([0.58, 0.68, 0.46]);       // erasing attitude (a little shallower)
   var dR = nrm3([0.86, 0.46, -0.11]);      // at rest beside the tablet, propped up
 
   var fw = clamp(st.flip, 0, 1);
@@ -3046,16 +3744,80 @@ var CODE = ['read', 'structure', 'draw', 'keep'];
    the reaction — it appears under the pointer, and nowhere else unless the
    room asks for it. Warm marks are never load-bearing, so the figure still
    reads correctly for anyone who cannot separate the two hues. */
+/* `op` and `glow` are what a light ground costs the printer, and they are
+   carried by the palette because they are properties of the ink and not of the
+   drawing. See the note over the wax palette. */
 var PAL = {
   blue: {
     bg: [7, 38, 76], bgHi: [13, 52, 98], bgLo: [3, 25, 54],
     dim: [52, 74, 112], mid: [148, 176, 214], hot: [252, 250, 246],
-    wDim: [92, 48, 44], wMid: [214, 104, 84], wHot: [255, 190, 158]
+    wDim: [92, 48, 44], wMid: [214, 104, 84], wHot: [255, 190, 158],
+    op: 'lighter', glow: 1
   },
   green: {
     bg: [9, 44, 42], bgHi: [15, 60, 55], bgLo: [4, 29, 28],
     dim: [58, 86, 72], mid: [156, 186, 156], hot: [250, 252, 232],
-    wDim: [84, 44, 34], wMid: [204, 92, 68], wHot: [252, 182, 142]
+    wDim: [84, 44, 34], wMid: [204, 92, 68], wHot: [252, 182, 142],
+    op: 'lighter', glow: 1
+  },
+
+  /* THE WAX, AND THE TWO THINGS THAT CHANGE SIGN WITH IT.
+
+     The ramp itself is the easy half — the ground goes light, the ink goes
+     dark, and splat() lerps the destination toward the ink either way, so the
+     dots need nothing but new numbers. bgHi is the lit centre of the field and
+     bgLo the fall-off at its edges, exactly as on the dark pair; the vignette
+     does not invert, because paper is also brightest where the light is.
+
+     The DIGITS are the hard half, and they are the reason this palette carries
+     two extra fields.
+
+     `op` — the numerals are drawn from a pre-rendered atlas with the composite
+     operation set to `lighter`, which is additive. Additive is exactly right
+     over a dark ground: a digit lands ON TOP of whatever dots are already
+     there and the two sum into one luminous mark, which is what makes the
+     grain read as one field rather than as glyphs pasted over dots. Over a
+     light ground it is a disaster — adding anything to something already near
+     white produces white, so every numeral would print as a slightly brighter
+     patch of nothing. `source-over` is the honest operation on paper: the
+     glyph is laid on the surface, because that is what ink does.
+
+     `glow` — for the same reason the atlas is rendered with a shadow in the
+     hot ink behind each numeral, which is a bloom. Ink does not bloom. At 0
+     the shadow blur is switched off and the numerals print clean.
+
+     Both of these are read at build time (buildAtlas) and at print time, so a
+     theme change re-renders the atlas and the next frame has them. */
+  /* AND THE RAMP IS DARKER THAN THE ARITHMETIC WANTED.  The first cut of this
+     was the green ramp reflected about the middle grey, which is the correct
+     answer and the wrong drawing: the field came out visibly thinner than the
+     dark themes' at the same dens and dig. Two reasons, and both of them are
+     about how the marks are made rather than about the colours.
+
+     The dots are laid down with a per-pixel alpha off an antialiased disc, so
+     a level-2 mark is mostly a partial coverage of the ground — and a partial
+     coverage of a DARK ink over a light ground loses contrast much faster than
+     the same coverage of a light ink over a dark one, because the eye is
+     reading the darker of the two as the figure either way. And the numerals,
+     which on the dark themes are drawn additively and therefore always gain,
+     are laid on flat here at the ramp's own alpha and can only ever be as
+     strong as the colour they are printed in.
+
+     So the ink is carried two steps deeper than the reflection asks for. The
+     object then holds the same weight against its ground as it does on the
+     other two, which is the thing that actually has to match. */
+  wax: {
+    bg: [236, 230, 214], bgHi: [243, 239, 227], bgLo: [222, 214, 193],
+    /* dim taken down again (it was [158,156,138], and [176,172,152] before
+       that). Dark ink on a light ground needs MORE separation at the bottom of
+       the ramp than pale ink on a dark one, not less: a light mark on black is
+       lifted by everything around it, and there is no such help here — the
+       faintest fifth of the lattice was simply dropping out, which is what made
+       the wax figure read dustier and less structural than the same drawing on
+       the dark pair. */
+    dim: [138, 138, 120], mid: [56, 80, 66], hot: [8, 36, 28],
+    wDim: [190, 158, 140], wMid: [158, 78, 52], wHot: [104, 30, 16],
+    op: 'source-over', glow: 0
   }
 };
 
@@ -3159,6 +3921,11 @@ var pxNudge = 0, pyNudge = 0, pxAim = 0, pyAim = 0;
    the figure genuinely re-frames instead of being scaled up as a bitmap. */
 var bloomGrow = 1;
 var stCur = null, dirty = true;
+/* true while the canvas is showing nothing but its ground — see the ink
+   early-out in drawFrame. It has to be cleared by anything that repaints the
+   background buffer under it, or the next blank room would keep the old
+   theme's ground. */
+var blankOn = false;
 /* the drawn stylus' tip and butt on screen, in device pixels; see the
    registration probe in drawFrame */
 var styScr = [0, 0, 0, 0];
@@ -3254,12 +4021,15 @@ function sheet(css, glowRGB) {
   c.width = aw * 10; c.height = ah * LEVELS;
   var a = c.getContext('2d');
   var fs = Math.max(6, cell * DSY * 1.00);
+  /* zero on the wax: a numeral printed in ink does not bloom, and a shadow in
+     the hot colour behind a dark glyph on a light ground is a smudge */
+  var gm = P().glow === undefined ? 1 : P().glow;
   a.textAlign = 'center'; a.textBaseline = 'middle';
   a.font = '600 ' + fs.toFixed(1) + 'px ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace';
   for (var L = 0; L < LEVELS; L++) {
     a.fillStyle = css[L];
     a.shadowColor = 'rgba(' + glowRGB.join(',') + ',0.85)';
-    a.shadowBlur = GLOW[L] * DPR;
+    a.shadowBlur = GLOW[L] * DPR * gm;
     for (var g = 0; g < 10; g++) a.fillText(String(g), g * aw + aw / 2, L * ah + ah / 2);
   }
   a.shadowBlur = 0;
@@ -3454,10 +4224,30 @@ function buildTexts() {
 /* ====================================================================== */
 /* resize                                                                 */
 /* ====================================================================== */
+/* WHAT A RESIZE ACTUALLY COSTS, AND THE GUARD THAT STOPS IT BEING PAID TWICE.
+
+   Everything below reallocates: six typed arrays at the lattice's full cell
+   count, an ImageData at the viewport's pixel count, the background gradient
+   computed per pixel, and the digit atlas re-rendered. On a large screen that
+   is a few million writes and it is worth doing when the viewport has really
+   changed. It is worth nothing at all when it has not — and on a phone this
+   was being called on every collapse of the browser chrome, because the deck
+   forwards `resize` and the canvas is sized in percentages of a viewport that
+   the chrome does not, in the end, alter.
+
+   The signature covers everything the buffers depend on, so degradation (which
+   moves grain and spacing) still gets through. The return value tells the
+   caller whether the point cloud has to be rebuilt with it. */
+var lastSig = '';
 function resize() {
-  DPR = Math.min(OPT.DPR_CAP, window.devicePixelRatio || 1);
-  W = Math.max(320, Math.round(cvs.clientWidth * DPR));
-  H = Math.max(240, Math.round(cvs.clientHeight * DPR));
+  var dpr = Math.min(OPT.DPR_CAP, window.devicePixelRatio || 1);
+  var w = Math.max(320, Math.round(cvs.clientWidth * dpr));
+  var h = Math.max(240, Math.round(cvs.clientHeight * dpr));
+  var sig = w + 'x' + h + '/' + dpr + '/' + OPT.grain + '/' + OPT.spacing;
+  if (sig === lastSig && img) return false;
+  lastSig = sig;
+
+  DPR = dpr; W = w; H = h;
   cvs.width = W; cvs.height = H;
 
   compact = window.innerWidth < 901;
@@ -3474,7 +4264,8 @@ function resize() {
   buf32 = new Uint32Array(img.data.buffer);
   buildBG();
   buildAtlas();
-  fitted = false; dirty = true;
+  fitted = false; dirty = true; blankOn = false;
+  return true;
 }
 
 /* ====================================================================== */
@@ -3734,6 +4525,36 @@ function drawFrame(t) {
   var ly = V[4] * Lw[0] + V[5] * Lw[1] + V[6] * Lw[2];
   var lz = V[8] * Lw[0] + V[9] * Lw[1] + V[10] * Lw[2];
 
+  var ink = (st.ink === undefined ? 1 : st.ink);
+  /* on a phone the figure keeps only the rooms it is the subject of */
+  if (compact) ink *= (st.figM === undefined ? 1 : ENG.clamp(st.figM, 0, 1));
+
+  /* AND WHERE THERE IS NO INK THERE IS NOTHING TO PRINT.
+
+     figM says the figure is not the subject of this room on a phone, and it
+     was doing that by multiplying every mark's value by nought — which draws
+     an invisible drawing. Everything below this line still ran: fifty-five
+     thousand points projected, forty thousand lattice cells resolved, a
+     million pixels copied out of the background buffer and a million uploaded
+     to the canvas, sixty times a second, to produce a frame that is exactly
+     the ground. Four of the five rooms it happens in are the tall ones — the
+     registers, works, method and studio — which is to say the rooms a reader
+     is scrolling THROUGH, on the device with the least to spend. That is the
+     larger half of the mobile jerkiness and none of the work was ever seen.
+
+     The camera fit above is deliberately left running, and that is the whole
+     subtlety here: the pose keeps being solved and tracked while the figure is
+     invisible, so when the ink comes back up between the studio and the
+     invitation to write, the drawing is already standing where it belongs
+     instead of easing into place over half a second in front of the reader.
+     What is skipped is only the printing, and the ground is painted once
+     rather than once a frame. */
+  if (ink < 0.004) {
+    if (!blankOn) { buf32.set(bgBuf); ctx.putImageData(img, 0, 0); blankOn = true; }
+    return;
+  }
+  blankOn = false;
+
   buf32.set(bgBuf);
 
   var N = gw * gh;
@@ -3742,9 +4563,6 @@ function drawFrame(t) {
   var tick = (t * 3.1) | 0;
   var ghosts = OPT.xray && !hand;
   var moving = st.morph > 0.0004 && st.morph < 0.9996;
-  var ink = (st.ink === undefined ? 1 : st.ink);
-  /* on a phone the figure keeps only the rooms it is the subject of */
-  if (compact) ink *= (st.figM === undefined ? 1 : ENG.clamp(st.figM, 0, 1));
 
   var pos = posCur, nor = norCur, part = scene.part, flag = scene.flag, sd = scene.seed;
   var M, a0, a1, a2, a4, a5, a6, a8, a9, a10;
@@ -3904,7 +4722,8 @@ function drawFrame(t) {
   ctx.putImageData(img, 0, 0);
 
   if (digits.length) {
-    ctx.globalCompositeOperation = 'lighter';
+    /* additive over a dark ground, laid on over a light one — see PAL.wax */
+    ctx.globalCompositeOperation = P().op || 'lighter';
     for (i = 0; i < digits.length; i += 5) drawGlyph(digits[i], digits[i + 1], digits[i + 2], digits[i + 3], digits[i + 4]);
     ctx.globalCompositeOperation = 'source-over';
   }
@@ -4086,6 +4905,9 @@ window.FIGURE = {
     if (!PAL[k]) return;
     OPT.theme = k;
     buildRamp(); buildKernels(); buildAtlas(); buildBG();
+    /* the ground has just changed underneath a blank frame; it has to be put
+       down again even though nothing else about the room has moved */
+    blankOn = false;
     dirty = true;
   },
   nudge: function (x, y) { pxAim = x; pyAim = y; },
@@ -4095,7 +4917,8 @@ window.FIGURE = {
   refit: function () { fitted = false; dirty = true; },
   pause: function () { running = false; },
   resume: function () { if (!running) { running = true; last = 0; dirty = true; } },
-  resize: function () { resize(); rebuild(); },
+  /* the point cloud is only rebuilt if the buffers under it actually moved */
+  resize: function () { if (resize()) rebuild(); },
   state: function () { return { p: deckP, q: deckQ, fps: fps, n: scene ? scene.n : 0, dist: dist }; },
   /* where the drawn stylus is standing, in CSS pixels: tip, butt, the angle
      of the two in degrees above the horizontal, and its length. This is the
@@ -4143,6 +4966,347 @@ function pad2(n) { return String(n).padStart(2, '0'); }
 function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 function s01(t) { return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t); }
 
+/* ==========================================================================
+   0b · THE COPY
+
+   THE SEED IS THREE THINGS AT ONCE, and it is worth being clear which:
+
+     1. it is what you PASTE INTO FIRESTORE to fill the collections. Every
+        document below is exactly the document the console expects, field for
+        field, so seeding is copy and paste rather than transcription;
+     2. it is the FALLBACK. If the project has not been created, or the CDN is
+        blocked, or the reader is on a train, the page reads exactly as it did
+        before the backend existed;
+     3. it is the SCHEMA, written in the one notation that cannot go stale,
+        because renderCopy() reads it.
+
+   IT IS ALSO DELETABLE, and that is the trade to understand before deleting
+   it. Cut everything between COPY = { and its closing brace, put {} in its
+   place, and the copy genuinely lives only in Firestore. What you lose is two
+   things and both matter: the page becomes blank until a network round trip
+   comes back, which is bad for a reader on a slow connection and worse for a
+   crawler that does not run scripts; and a Firestore outage is a blank site
+   rather than a slightly stale one. My recommendation is to leave it and
+   treat it as the printed proof — update it when the backend copy settles.
+
+   THE SHAPE MIRRORS THE COLLECTIONS EXACTLY:
+     COPY.rooms.<roomId>  ->  the `rooms` collection, one document per room
+     COPY.site.<docId>    ->  the `site` collection, four singletons
+     COPY.works           ->  the `works` collection, one document per project
+
+   A `data-copy` path is resolved against COPY.rooms first and then against
+   the root, which is why a room slot is "studio.heading" and a site slot is
+   "site.nav.practice". Rooms are the common case and get the short path.
+   ========================================================================== */
+var COPY = {
+
+  rooms: {
+    /* ---- 4 · the name ------------------------------------------------- */
+    practice: {
+      eyebrow: 'The name',
+      lede: 'A stylus is a plain tool. One end cuts the letter into the wax; turn it over and the flat end wipes it away. Write, read, change your mind, write it again — that is most of the job.',
+      mottoLa: 'Saepe stilum uertas, iterum quae digna legi sint scripturus.',
+      mottoEn: 'Turn the stylus often, if you mean to write something worth a second reading.',
+      citeAuthor: 'Horace,',
+      citeWork: 'Sermones',
+      citeRef: '1.10.72–73'
+    },
+
+    /* ---- 5 · the work ------------------------------------------------- */
+    practice2: {
+      eyebrow: 'The work',
+      heading: 'Structure first. Then the surface.',
+      body: [
+        'We make websites for people whose material is complicated — a collection, an archive, a research programme, a body of work built up over years.',
+        { cls: 'aside', t: 'That means settling the structure before anything is styled: what the thing is, who has to read it, and how it is meant to last. The design follows from that, and is the better for it.' },
+        { cls: 'hand-over', t: 'And then it is handed over properly. Whatever ought to be yours to change ends up yours to change — including how the thing looks.' },
+        { cls: 'hand-over aside', t: 'The three inks on this page are not a demonstration: {ink|press one} and the whole site turns, drawing and all. Every commission leaves with controls of its own.' }
+      ],
+      tags: ['Structure before decoration', 'Multilingual by default', 'Built to be kept']
+    },
+
+    /* ---- 6-8 · the three registers ------------------------------------ */
+    registers: {
+      eyebrow: 'What we do',
+      heading: 'Three kinds of commission.',
+      label: 'Research & humanities',
+      cardHeading: 'Project sites, archives and databases',
+      body: ['Grant outputs, structured databases, digital editions and project platforms — built to be cited, and to hold up under scholarly scrutiny. Designed from inside research: what a work package, an advisory board and a funder each need to see, and how a database earns a reader’s trust.'],
+      tags: ['Grant platforms', 'Databases', 'Digital editions']
+    },
+    reg2: {
+      label: 'Heritage & visualisation',
+      cardHeading: '3D models, photogrammetry and digital exhibitions',
+      body: ['Photogrammetric models of ancient structures, annotated and embedded; visual archives and spatial evidence made legible for scholars, funders and the public. Drawn from years of archaeological visualisation and current work with Oxford galleries, libraries, archives and museums.'],
+      tags: ['Photogrammetry', '3D embedding', 'GLAM interfaces']
+    },
+    reg3: {
+      label: 'Creative & independent',
+      cardHeading: 'Portfolios, studios and small institutions',
+      body: ['Editorial sites for artists, performers, schools and independent professionals — design that catches the tone of a practice, with working machinery underneath: content systems, back offices, payments, and images handled with care.'],
+      tags: ['Editorial design', 'Motion', 'Back office', 'Payments'],
+      note: 'The surface keeps changing. The tool barely has.'
+    },
+
+    /* ---- 9 · works ---------------------------------------------------- */
+    works: {
+      eyebrow: 'Selected work',
+      heading: 'Sites, platforms and digital environments.',
+      note: 'Made for cultural, educational and independent projects. Much of the work is commissioned privately or waits on an institutional launch, so each item is shown as far as its status allows.'
+    },
+
+    /* ---- 10 · method -------------------------------------------------- */
+    method: {
+      eyebrow: 'Method',
+      heading: 'How a commission runs.',
+      steps: [
+        { n: 'I',   h: 'Read',      p: 'It starts with your material: the sources, the audiences, and what the institution or the stage actually requires.' },
+        { n: 'II',  h: 'Structure', p: 'Architecture before decoration. Data models, provenance and navigation that will still make sense in ten years.' },
+        { n: 'III', h: 'Draw',      p: 'Typography, colour, pace and atmosphere, set to the register of the work — scholarly, civic or theatrical.' },
+        { n: 'IV',  h: 'Keep',      p: 'Documentation, handover, hosting advice and quiet maintenance. Sites built to be kept, not rebuilt.' }
+      ]
+    },
+
+    /* ---- 11 · studio -------------------------------------------------- */
+    studio: {
+      eyebrow: 'Studio',
+      heading: 'A practice rooted in classics, built for the present.',
+      body: [
+        'Stylos is a one-person practice led by {b|Arkadiy Avdokhin}, a classicist and archaeologist at the University of Oxford and Wolfson College — a doctorate in Classics from King’s College London, a Marie Skłodowska-Curie Fellowship at the Oxford Faculty of Classics, and current work towards a digital 3D and visualisation lab with the Ashmolean Museum.',
+        { cls: 'aside', t: 'The design work grew out of the research: a public platform for the inscriptions and 3D-modelled structures of late antique Aphrodisias, and a scholarly database for a Vienna-based project on Roman-era papyri. The same habits — structure, provenance, longevity, multilingual and accessible by default — shape every site, whether it serves a grant or a stage.' },
+        { cls: 'studio-tail aside', t: 'Engagements are small and scoped — comfortable with grant timelines and work-package deliverables, and corresponding by email.' }
+      ],
+      plateName: 'Arkadiy Avdokhin',
+      creds: [
+        { b: 'Ph.D, Classics',     v: 'King’s College London' },
+        { b: 'MSCA Fellow',        v: 'Faculty of Classics, Oxford' },
+        { b: 'Fellow',             v: 'Wolfson College, Oxford' },
+        { b: '3D & visualisation', v: 'Photogrammetry · GLAM' }
+      ]
+    },
+
+    /* ---- 12 · contact ------------------------------------------------- */
+    contact: {
+      eyebrow: 'Correspondence',
+      heading: 'Start a commission.',
+      body: ['Write a few lines about the project — what it is, who it is for, and where it stands. A reply follows within a few days.']
+    }
+  },
+
+  /* ---- the four singletons -------------------------------------------- */
+  site: {
+    /* the document's own title and description. They are set on <head> as
+       well as being seeded there, so a change here reaches the tab and the
+       search result — with the caveat in OPEN-ITEMS about crawlers that do
+       not run scripts. */
+    meta: {
+      title: 'Stylos — web design studio, Oxford',
+      description: 'Stylos is a one-person web design studio in Oxford. Websites, research platforms, digital exhibitions and portfolios for research, heritage and creative practice.'
+    },
+    nav: {
+      practice: 'Practice', registers: 'What we do', works: 'Work',
+      studio: 'Studio', contact: 'Contact'
+    },
+    /* CONFIRM BEFORE PUBLISHING — see OPEN-ITEMS A4. The address is written
+       into three places on the page from this one field. */
+    contact: {
+      email: 'office@stylos.co',
+      availability: 'Commissions open for 2026'
+    },
+    footer: {
+      columns: [
+        { h: 'Studio',    lines: ['Beaumont Street', 'Oxford OX1 2LZ', 'United Kingdom'] },
+        { h: 'Inquiries', links: [{ label: 'office@stylos.co', href: 'mailto:office@stylos.co' }] },
+        /* PLACEHOLDER HREFS — real URLs needed, or drop the column (A4) */
+        { h: 'Elsewhere', links: [{ label: 'Are.na', href: '#' }, { label: 'ORCID', href: '#' }] },
+        { h: 'Registers', lines: ['Research & humanities', 'Heritage & visualisation', 'Creative & independent'] }
+      ],
+      copyright: '© 2026 Stylos — Oxford',
+      toTop: 'Top ↑'
+    }
+  },
+
+  /* ---- the works collection -------------------------------------------
+     Filled from P[] further down, which is still where the table is written.
+     P[] is the seed for this collection in exactly the way the object above
+     is the seed for the other two; the assignment is at the foot of the works
+     section, once P has been declared. ------------------------------------ */
+  works: null
+};
+
+/* THE TWO TOKENS.
+
+   Copy is escaped on the way in, without exception: a field in a database is
+   text, and text that can become markup is an injection waiting for somebody
+   to paste the wrong thing into a console. But two sentences on the deck
+   genuinely contain a control — the ink switch the practice room is talking
+   about, and the studio's own name in the display weight — and taking them
+   out would make both sentences worse.
+
+   So the copy carries a token, the token is expanded AFTER escaping, and the
+   expansion is from this table and no other source. {ink|press one} and
+   {b|Arkadiy Avdokhin}: the part after the bar is the label, escaped. Adding
+   a third means adding it here, which is the point — the set of things a
+   sentence may contain is closed and is visible in one place. */
+var TOKENS = {
+  ink: function (label) {
+    return '<button type="button" class="ink-nudge" id="inkNudge">' + esc(label) + '</button>';
+  },
+  b: function (label) { return '<strong>' + esc(label) + '</strong>'; }
+};
+
+function expand(text) {
+  return esc(String(text == null ? '' : text))
+    .replace(/\{(\w+)\|([^}]*)\}/g, function (all, name, label) {
+      return TOKENS[name] ? TOKENS[name](label) : all;
+    });
+}
+
+/* AN HREF FROM A BACKEND IS UNTRUSTED, however friendly the backend is.
+   `javascript:` in a link is a script the page runs on the reader's behalf,
+   and a content field is exactly the wrong place to be able to write one. The
+   allow-list is what this site actually uses and nothing else. */
+function safeHref(h) {
+  h = String(h == null ? '' : h).trim();
+  return /^(https?:\/\/|mailto:|#|\/)/i.test(h) ? h : '#';
+}
+
+/* ---------------------------------------------------------------- 0c · rendering it
+   A path is resolved against COPY.rooms first and against the root second, so
+   a room slot is "studio.heading" and a site slot is "site.nav.practice".
+   Rooms are the common case and get the short path. */
+function copyAt(path, src) {
+  var parts = String(path).split('.'), i, node;
+  node = src.rooms;
+  for (i = 0; node != null && i < parts.length; i++) node = node[parts[i]];
+  if (node !== undefined && node !== null) return node;
+  node = src;
+  for (i = 0; node != null && i < parts.length; i++) node = node[parts[i]];
+  return node;
+}
+
+/* A RICH SLOT IS AN ARRAY OF BLOCKS.  Each block is either a sentence or
+   { t, cls } — and the class is the whole reason the array is not just a
+   string with blank lines in it, because .aside decides what folds away on a
+   phone and .hand-over decides what is set tight to the line above. Those are
+   editorial decisions about a paragraph and they belong beside it. */
+function fillRich(el, blocks) {
+  if (!blocks || !blocks.length) return;
+  var html = '';
+  blocks.forEach(function (b) {
+    var t = (typeof b === 'string') ? b : (b && b.t);
+    if (t == null) return;
+    var cls = (b && b.cls) ? ' class="' + esc(b.cls) + '"' : '';
+    html += '<p' + cls + '>' + expand(t) + '</p>';
+  });
+  el.innerHTML = html;
+}
+function fillTags(el, arr) {
+  if (!arr || !arr.length) return;
+  el.innerHTML = arr.map(function (s) { return '<span>' + esc(s) + '</span>'; }).join('');
+}
+/* data-step is written from the position, not stored: runMethod() reads it to
+   light the steps in order, and a stored index that disagreed with the order
+   would light them out of sequence with no way to see why */
+function fillSteps(el, steps) {
+  if (!steps || !steps.length) return;
+  el.innerHTML = steps.map(function (s, i) {
+    return '<div class="step" data-step="' + i + '">'
+         + '<span class="n mono">' + esc(s.n) + '</span>'
+         + '<div><h3>' + esc(s.h) + '</h3><p>' + esc(s.p) + '</p></div></div>';
+  }).join('');
+}
+/* the --ci stagger is written with the rows for the same reason: it is a
+   position, and a fifth qualification should arrive in step without anybody
+   having to type 440ms */
+function fillCreds(el, rows) {
+  if (!rows || !rows.length) return;
+  el.innerHTML = rows.map(function (r, i) {
+    return '<div class="cred mono" style="--ci:' + (i * 110) + 'ms">'
+         + '<b>' + esc(r.b) + '</b><span>' + esc(r.v) + '</span></div>';
+  }).join('');
+}
+function fillFoot(el, cols) {
+  if (!cols || !cols.length) return;
+  el.innerHTML = cols.map(function (c) {
+    var inner = (c.links && c.links.length)
+      ? c.links.map(function (l) {
+          return '<a href="' + esc(safeHref(l.href)) + '">' + esc(l.label) + '</a>';
+        }).join('<br>')
+      : (c.lines || []).map(esc).join('<br>');
+    return '<div class="foot-col"><h4 class="mono cap">' + esc(c.h) + '</h4><p>' + inner + '</p></div>';
+  }).join('');
+}
+
+function renderCopy(src) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function (el) {
+    var v = copyAt(el.getAttribute('data-copy'), src);
+    if (v === undefined || v === null) return;
+    var d = el.dataset;
+    if ('copyRich'  in d) { fillRich(el, v);  return; }
+    if ('copyTags'  in d) { fillTags(el, v);  return; }
+    if ('copySteps' in d) { fillSteps(el, v); return; }
+    if ('copyCreds' in d) { fillCreds(el, v); return; }
+    if ('copyFoot'  in d) { fillFoot(el, v);  return; }
+    /* one field, written into both the label and the destination, in the
+       three places the address appears */
+    if ('copyMail'  in d) { el.textContent = v; el.setAttribute('href', 'mailto:' + v); return; }
+    el.textContent = v;
+  });
+
+  /* the tab and the search result. This reaches a crawler that runs scripts
+     and not one that does not — see the note in OPEN-ITEMS. */
+  var meta = copyAt('site.meta', src);
+  if (meta) {
+    if (meta.title) document.title = meta.title;
+    var m = document.querySelector('meta[name="description"]');
+    if (m && meta.description) m.setAttribute('content', meta.description);
+  }
+}
+
+/* MERGING IS PER FIELD, NOT PER DOCUMENT, and that is deliberate. A room
+   document in Firestore that carries only a heading keeps the seed's body,
+   so the copy can be migrated a field at a time rather than a room at a time
+   and the page is never half empty in the meanwhile. An empty string is
+   treated as "not set" for the same reason: a field cleared by accident in
+   the console should not blank a paragraph on a live site.
+
+   P is mutated in place rather than reassigned, because the works section
+   holds a reference to it. */
+function mergeDoc(seed, live) {
+  var o = {}, k;
+  for (k in seed) if (Object.prototype.hasOwnProperty.call(seed, k)) o[k] = seed[k];
+  for (k in live) {
+    if (!Object.prototype.hasOwnProperty.call(live, k)) continue;
+    if (live[k] === undefined || live[k] === null || live[k] === '') continue;
+    o[k] = live[k];
+  }
+  return o;
+}
+/* whether the backend answered, and with what. Read it in the console as
+   STYLOS.live() — null means the seed is what you are looking at. */
+var copyLive = null;
+
+function applyRemote(r) {
+  copyLive = r || null;
+  if (!r) return;
+  var k;
+  if (r.rooms) for (k in r.rooms) if (r.rooms[k]) COPY.rooms[k] = mergeDoc(COPY.rooms[k] || {}, r.rooms[k]);
+  if (r.site)  for (k in r.site)  if (r.site[k])  COPY.site[k]  = mergeDoc(COPY.site[k]  || {}, r.site[k]);
+  if (r.works && r.works.length) {
+    /* SORTED HERE, not where it was fetched. `order` is a number on each work
+       document and it is what the row is sorted by — never the document id,
+       which would make renaming a project reorder the portfolio and would put
+       'VII' before 'ii'. The sort belongs to whatever CONSUMES the list, so
+       that a second source of works (a paste into the console, a test, a
+       different transport) cannot arrive unordered. */
+    var w = r.works.slice().sort(function (a, b) {
+      return (a.order === undefined ? 999 : a.order) - (b.order === undefined ? 999 : b.order);
+    });
+    P.length = 0; Array.prototype.push.apply(P, w);
+  }
+}
+
 /* ---------------------------------------------------------------- 1 · the introduction
    Five seconds, and every beat of it is on this ladder. The stylus is
    revealed, turns through four quarters like the hand of a clock, then steps
@@ -4151,10 +5315,15 @@ function s01(t) { return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t); }
 var INTRO = {
   TOTAL:   5000,
   turn0:   1020,   /* first quarter begins                              */
-  turn:     480,   /* one quarter turn, hold included                   */
-  step0:   3060,   /* the codex arrives; the stylus starts shrinking    */
-  step:     560,   /* one step down                                     */
-  word:    3260,   /* the wordmark rises                                */
+  /* NO HOLD IN IT ANY MORE.  This used to be the INTERVAL between quarters
+     while --turn was set to 74% of it, so the stylus stopped dead for 125ms
+     four times running. It is now both the interval and the duration: the
+     quarters run into each other and the velocity carries across. */
+  turn:     480,   /* one quarter turn, and the beat it occupies        */
+  cod:     2620,   /* the codex fades up, under the last quarter        */
+  step0:   3060,   /* the stylus begins its descent onto it             */
+  step:    1680,   /* the descent, in ONE move (it was 3 x 560)         */
+  word:    3300,   /* the wordmark rises                                */
   fade:     900    /* the loader lifts                                  */
 };
 
@@ -4234,6 +5403,9 @@ function syncLanding() {
   var figY = small ? LANDING.dyM : LANDING.dy;
   root.style.setProperty('--fig-x', (figX * 100) + 'vw');
   root.style.setProperty('--fig-y', (figY * 100) + 'vh');
+  /* the same point in pixels, for registerStylus to solve against */
+  figPx = vw / 2 + figX * vw;
+  figPy = vh / 2 + figY * vh;
 
   if (!(window.ENG && ENG.KEY)) return;
   var K = ENG.KEY[0];
@@ -4253,6 +5425,90 @@ function syncLanding() {
     K.fill = fill; K.fillY = fill;
     K.px = figX; K.py = figY;
   }
+}
+
+/* ---------------------------------------------------------------- 1b · the hand-over
+   REGISTERING THE PHOTOGRAPH ONTO THE DRAWING, AT RUN TIME.
+
+   The loader's stylus and the landing's drawn stylus are both on screen for
+   most of a second while the one fades into the other, so any disagreement
+   between them is seen as a doubled object — and they were disagreeing,
+   because the photograph's position was four hand-set constants and the
+   drawing's was a camera fit solved against a measured plate. Two different
+   ways of deciding where a thing goes will agree at exactly the window size
+   they were reconciled at and nowhere else.
+
+   So the constants are a fallback now and this is the mechanism. The drawn
+   stylus reports where it is standing (FIGURE.stylus(), in CSS pixels); the
+   PNG's own landmarks are known; and the transform that carries one onto the
+   other is four numbers, solved here and written back as the same four custom
+   properties. It runs while the loader is still on its first beat, and it runs
+   again on resize, so the hand-over is exact at every size rather than at one.
+
+   PNG_TIP / PNG_BUTT are where the point and the butt sit inside the image, as
+   fractions of its width and height. They were measured off the file once (the
+   stylus is drawn vertically in it, point at the foot) and they are the only
+   thing here that has to change if the asset is ever re-cut. */
+var PNG_TIP = [0.49583, 0.96563], PNG_BUTT = [0.48750, 0.04688];
+
+var figPx = 0, figPy = 0;          /* the stage's centre, written by syncLanding */
+
+function registerStylus() {
+  var el = $('plateSty');
+  /* the loader has already gone: there is no photograph left to register, and
+     that counts as done rather than as failed */
+  if (!el) return true;
+  if (!window.FIGURE || !window.FIGURE.ready) return false;
+
+  var s = window.FIGURE.stylus();
+  /* a degenerate reading means the figure has not framed itself yet; the
+     fallback constants are close and the next call will do better */
+  if (!s || !isFinite(s.len) || s.len < 24) return false;
+
+  var cs = getComputedStyle(el);
+  var ew = parseFloat(cs.width), eh = parseFloat(cs.height);
+  if (!(ew > 0) || !(eh > 0)) return false;
+
+  /* the two landmarks as offsets from the element's centre, in CSS pixels
+     before the rotation and the scale are applied */
+  var tx = (PNG_TIP[0]  - 0.5) * ew, ty = (PNG_TIP[1]  - 0.5) * eh;
+  var bx = (PNG_BUTT[0] - 0.5) * ew, by = (PNG_BUTT[1] - 0.5) * eh;
+
+  var alen = Math.hypot(bx - tx, by - ty);
+  if (!(alen > 1)) return false;
+  var adeg = Math.atan2(by - ty, bx - tx) * 180 / Math.PI;
+
+  var wdeg = Math.atan2(s.butt[1] - s.tip[1], s.butt[0] - s.tip[0]) * 180 / Math.PI;
+  var rot = wdeg - adeg;
+  var scale = s.len / alen;
+
+  /* where the element's centre has to end up for the two midpoints to sit on
+     each other, after the same rotation and scale have been applied to the
+     landmarks' own midpoint */
+  var mx = (tx + bx) / 2, my = (ty + by) / 2;
+  var r = rot * Math.PI / 180, cr = Math.cos(r), sr = Math.sin(r);
+  var ox = scale * (mx * cr - my * sr), oy = scale * (mx * sr + my * cr);
+  var cx = (s.tip[0] + s.butt[0]) / 2 - ox;
+  var cy = (s.tip[1] + s.butt[1]) / 2 - oy;
+
+  root.style.setProperty('--sty-r', rot.toFixed(2) + 'deg');
+  root.style.setProperty('--sty-s', scale.toFixed(4));
+  root.style.setProperty('--sty-x', ((cx - figPx) / ew * 100).toFixed(2) + '%');
+  root.style.setProperty('--sty-y', ((cy - figPy) / eh * 100).toFixed(2) + '%');
+  return true;
+}
+
+/* THE FIRST FRAME MAY NOT HAVE HAPPENED YET.  Both plates can decode in a
+   microtask when they are already in cache, which resolves the introduction's
+   promise before the figure has drawn once — and before it has drawn once it
+   has nothing to report. So the solve is attempted on the frame and retried
+   until the reading is real, with a ceiling of about half a second; the
+   introduction runs for five. */
+function registerStylusSoon(tries, then) {
+  if (registerStylus()) { if (then) then(true); return; }
+  var n = (tries || 0) + 1;
+  if (n > 32) { if (then) then(false); return; }
+  requestAnimationFrame(function () { registerStylusSoon(n, then); });
 }
 
 /* The measurement is taken from a SECOND, cross-origin request for the same
@@ -4284,6 +5540,10 @@ var Intro = (function () {
   }
 
   function finish(done) {
+    /* the drawing is about to be looked at, so it starts drawing again — see
+       the note on the pause in play(). It is given the whole of the fade to
+       get its first frame up, which at 900ms is about a hundred of them. */
+    if (window.FIGURE && window.FIGURE.resume) window.FIGURE.resume();
     /* the photographic plate is left standing for a moment, blurs away, and
        the identical dithered pose is already behind it */
     handoff.classList.add('on');
@@ -4296,26 +5556,54 @@ var Intro = (function () {
     at(REDUCED ? 200 : 1500, function () { if (handoff.parentNode) handoff.parentNode.removeChild(handoff); });
   }
 
+  /* THE LADDER IS RUN OFF ONE rAF, NOT OFF NINE TIMERS.
+
+     Every beat used to be its own setTimeout, and a setTimeout fires on the
+     task queue rather than on the frame: under load — and the introduction is
+     the most loaded five seconds on the site, with two images decoding, two
+     fonts resolving and the point cloud being built — a timer can be several
+     frames late, and each one is late independently of the others. The
+     quarters then arrive at uneven intervals and the sweep visibly limps.
+
+     One rAF walking a table of marks fixes both halves of that. Every beat is
+     tested against the SAME elapsed time, so nothing drifts relative to
+     anything else; and a class is only ever added on a frame boundary, which
+     is the only moment a transition can actually begin. If a frame is dropped
+     the ladder catches up inside it rather than queueing the backlog. */
   function run(done) {
-    el.style.setProperty('--turn', INTRO.turn * 0.74 + 'ms');
-    el.style.setProperty('--shrink', INTRO.step * 0.82 + 'ms');
+    el.style.setProperty('--turn', INTRO.turn + 'ms');
+    el.style.setProperty('--shrink', INTRO.step + 'ms');
 
     if (REDUCED) {
-      el.classList.add('s1', 'q4', 'k3', 'word');
+      el.classList.add('s1', 'q4', 'cod', 'k', 'word');
       at(320, function () { finish(done); });
       return;
     }
+
+    /* s1 is set here rather than on the first frame: the element has just been
+       laid out, and a transition needs the initial style to have been computed
+       before the target one is set. */
     el.classList.add('s1');
-    at(INTRO.turn0 - 40, function () { el.classList.add('s2'); });
-    for (var i = 1; i <= 4; i++) {
-      (function (k) { at(INTRO.turn0 + (k - 1) * INTRO.turn, function () { el.classList.add('q' + k); }); })(i);
-    }
-    at(INTRO.step0 - 40, function () { el.classList.add('s3'); });
-    for (var j = 1; j <= 3; j++) {
-      (function (k) { at(INTRO.step0 + (k - 1) * INTRO.step, function () { el.classList.add('k' + k); }); })(j);
-    }
-    at(INTRO.word, function () { el.classList.add('word'); });
-    at(INTRO.TOTAL, function () { finish(done); });
+
+    var marks = [
+      [INTRO.turn0 - 40,                's2'],   /* arm the turn            */
+      [INTRO.turn0,                     'q1'],
+      [INTRO.turn0 + INTRO.turn,        'q2'],
+      [INTRO.turn0 + INTRO.turn * 2,    'q3'],
+      [INTRO.turn0 + INTRO.turn * 3,    'q4'],
+      [INTRO.cod,                       'cod'],  /* the tablet arrives      */
+      [INTRO.step0 - 40,                's3'],   /* arm the descent         */
+      [INTRO.step0,                     'k'],
+      [INTRO.word,                      'word']
+    ];
+    var t0 = performance.now(), m = 0;
+
+    (function frame(now) {
+      var e = now - t0;
+      while (m < marks.length && e >= marks[m][0]) el.classList.add(marks[m++][1]);
+      if (m < marks.length) { requestAnimationFrame(frame); return; }
+      at(Math.max(0, INTRO.TOTAL - e), function () { finish(done); });
+    })(performance.now());
   }
 
   return {
@@ -4324,7 +5612,32 @@ var Intro = (function () {
       played = true;
       var all = Promise.all([decode(sty), decode(cod)]);
       var ceiling = new Promise(function (r) { setTimeout(r, 4000); });
-      Promise.race([all, ceiling]).then(function () { syncLanding(); run(done); });
+      Promise.race([all, ceiling]).then(function () {
+        syncLanding();
+        /* THE FIGURE STOPS DRAWING WHILE IT CANNOT BE SEEN.
+
+           The loader is opaque and sits at z-index 500; the canvas is at 0.
+           So for the whole five seconds of the introduction the point cloud
+           was being resolved, dithered and printed at full size and full rate
+           behind a solid rectangle — several hundred wasted frames, on the one
+           stretch of the page where the main thread is also decoding two
+           images, resolving two fonts and building the atlas. That is most of
+           the jerkiness, and none of it was visible work.
+
+           It cannot simply be stopped before it starts: the hand-over is
+           registered against a pose the figure has to have DRAWN at least once
+           to be able to report. So it draws until the registration lands — a
+           handful of frames — and is then held until finish() wakes it, which
+           it does with the whole 900ms of the fade to spare.
+
+           The drawn stylus has not begun its write-and-wipe loop yet
+           (beginIdle is called at the hand-over), so what it reports here is
+           the pose the photograph has to come to rest in. */
+        registerStylusSoon(0, function () {
+          if (window.FIGURE && window.FIGURE.pause) window.FIGURE.pause();
+        });
+        run(done);
+      });
     }
   };
 })();
@@ -4441,31 +5754,30 @@ var P = [
       { h: 'Where it stands', p: [
         'PLACEHOLDER. Delivered. Shown on request \u2014 write if you would like to see it.' ] }
     ],
-    img: null },
-
-  /* -- FILL ME -------------------------------------------------------------
-     A seventh item, because six with one of them veiled reads thin for a
-     studio page — the row is meant to look like a practice with a back
-     catalogue, and at six the eye finishes it. Every prose field here is
-     marked PLACEHOLDER and the title is a slot, not a claim: replace them with
-     a real commission before this goes anywhere near a client. Set img to a
-     Cloudinary URL to give it a plate, or leave it null and it takes the
-     veiled treatment the private commission uses. -------------------------- */
-  { roman: 'VII', cat: 'PLACEHOLDER — category', status: 'PLACEHOLDER — status',
-    title: 'Project seven', client: 'PLACEHOLDER \u00b7 client',
-    desc: 'PLACEHOLDER. One sentence on what the project is and who it is for, at about the length of the five above it.',
-    longText: 'PLACEHOLDER. Two or three sentences of opening text: what the material was, what was made of it, and what state the work is in. This paragraph sets the measure for the case study room, so keep it to about the length of the others.',
-    scope: 'PLACEHOLDER \u00b7 scope', register: 'PLACEHOLDER — register',
-    sections: [
-      { h: 'The brief', p: [
-        'PLACEHOLDER. What was asked for, and what the real problem underneath it turned out to be.' ] },
-      { h: 'What was built', p: [
-        'PLACEHOLDER. The structure first, then the surface: what the thing is made of and what was done to make it legible.' ] },
-      { h: 'Where it stands', p: [
-        'PLACEHOLDER. Delivered, in progress, or waiting on a launch.' ] }
-    ],
     img: null }
+
+  /* -- THE SEVENTH ITEM IS GONE, AND SIX IS THE ANSWER. ---------------------
+     It was added in 11.1 on the reasoning that six items with one of them
+     veiled reads thin for a studio page. That reasoning was about the SHAPE of
+     the row, and it was answered with a project that does not exist: title
+     "Project seven", every prose field prefixed PLACEHOLDER, and a case-study
+     room three headed sections deep that a reader could open and read.
+
+     A placeholder in a table is a note to oneself. A placeholder in a carousel
+     on a live studio page is a claim to have done work that has not been done,
+     and it is the first thing a prospective client clicks -- the last item in
+     a row is the one people check. Nothing else on this site is allowed to be
+     plausible-sounding rather than true, and this was.
+
+     If the row wants a seventh, the seventh is a real commission. Until then
+     it is six, and the row is honest. The alternative raised at the time and
+     never taken -- a "selected" label or a date column, so that six reads as a
+     selection rather than as everything there is -- is in OPEN-ITEMS.md and is
+     still available. ------------------------------------------------------ */
 ];
+
+/* the works collection's seed is the table above, not a second copy of it */
+COPY.works = P;
 
 var track = $('track'), counter = $('counter'), barFill = $('barFill');
 var wIdx = 0, suppress = false;
@@ -4477,21 +5789,34 @@ var wIdx = 0, suppress = false;
    query, asked wherever that matters, rather than a second code path. */
 var STACKED = window.matchMedia('(max-width: 900px)');
 
-P.forEach(function (p, i) {
-  var b = document.createElement('button');
-  b.className = 'card'; b.type = 'button';
-  b.style.setProperty('--sd', (i * 150) + 'ms');
-  b.setAttribute('aria-label', 'Open case study: ' + p.title);
-  b.innerHTML =
-    '<div class="shot' + (p.img ? '' : ' veiled') + '">'
-    + (p.img ? '<img loading="lazy" alt="' + esc(p.title) + ' \u2014 interface study" src="' + p.img + '"><span class="scan" aria-hidden="true"></span>'
-             : '<span class="veil mono">Shown on request</span>')
-    + '<span class="plus" aria-hidden="true">+</span></div>'
-    + '<div class="card-meta"><div class="row mono"><span>' + esc(p.cat) + '</span></div>'
-    + '<h3>' + esc(p.title) + '</h3><div class="client mono">' + esc(p.client) + '</div></div>';
-  track.appendChild(b);
-});
-var cards = Array.prototype.slice.call(track.children);
+/* THE ROW IS BUILT ON DEMAND, not on parse.
+
+   It used to be a P.forEach at the top level of this script, which was right
+   while P was a literal in the file and is wrong now that it may arrive from
+   Firestore a second later. So the building is a function, called from
+   initialise() after the copy has been resolved \u2014 by which time P is either
+   the seed table below or the works collection, and nothing downstream can
+   tell the difference. `cards` is filled by the same call; everything that
+   reads it runs after initialise. */
+var cards = [];
+function buildCards() {
+  track.innerHTML = '';
+  P.forEach(function (p, i) {
+    var b = document.createElement('button');
+    b.className = 'card'; b.type = 'button';
+    b.style.setProperty('--sd', (i * 150) + 'ms');
+    b.setAttribute('aria-label', 'Open case study: ' + p.title);
+    b.innerHTML =
+      '<div class="shot' + (p.img ? '' : ' veiled') + '">'
+      + (p.img ? '<img loading="lazy" alt="' + esc(p.title) + ' \u2014 interface study" src="' + esc(safeHref(p.img)) + '"><span class="scan" aria-hidden="true"></span>'
+               : '<span class="veil mono">Shown on request</span>')
+      + '<span class="plus" aria-hidden="true">+</span></div>'
+      + '<div class="card-meta"><div class="row mono"><span>' + esc(p.cat) + '</span></div>'
+      + '<h3>' + esc(p.title) + '</h3><div class="client mono">' + esc(p.client) + '</div></div>';
+    track.appendChild(b);
+  });
+  cards = Array.prototype.slice.call(track.children);
+}
 
 /* WHY THE CASE STUDY WOULD NOT OPEN ON A MOUSE.
 
@@ -4622,6 +5947,46 @@ function runCascade() {
   setTimeout(function () { track.classList.add('rested'); }, REDUCED ? 0 : P.length * 150 + 2200);
 }
 
+/* WHICH PLATE IS BEING LOOKED AT, ON A PHONE.
+
+   The stacked column has no hover to answer with, so the answer is the scroll
+   itself: the plate crossing the middle of the screen is the one the reader is
+   looking at, and it unmasks (see .card.is-mid in the compact stylesheet).
+
+   It is an observer rather than a scroll handler, and the reason is the band.
+   Asking every frame which card is nearest the centre means reading seven
+   rects a frame in the one room that is already three screens tall; instead
+   the root box is squeezed to a hairline across the viewport's middle —
+   -49% top and bottom leaves about 2% of the height — and the browser tells
+   us when a plate crosses it. Nothing runs between crossings.
+
+   The band is deliberately thinner than the gap between two cards, so two
+   plates can never be lit at once. The cost is that between one card leaving
+   the band and the next entering it nothing is lit, which is correct: in that
+   moment the reader is looking at the gap.
+
+   It watches the .shot rather than the whole card so the plate is what has to
+   be centred, not the plate plus its caption. */
+var midIO = null;
+function watchMid() {
+  if (!('IntersectionObserver' in window)) return;
+  if (midIO) { midIO.disconnect(); midIO = null; }
+  if (!STACKED.matches) {
+    cards.forEach(function (c) { c.classList.remove('is-mid'); });
+    return;
+  }
+  midIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      var card = en.target.parentNode;
+      if (card) card.classList.toggle('is-mid', en.isIntersecting);
+    });
+  }, { rootMargin: '-49% 0px -49% 0px', threshold: 0 });
+  cards.forEach(function (c) {
+    var shot = c.querySelector('.shot');
+    if (shot) midIO.observe(shot);
+  });
+}
+
 /* The stylus overhead, and the dial it swings over.
 
    There were six invisible clickable wedges here. They have gone. The
@@ -4675,14 +6040,34 @@ function litTick(i) {
 var caseEl = $('case');
 var C = {
   count: $('caseCount'), cat: $('caseCat'), title: $('caseTitle'), long: $('caseLong'),
-  dek: $('caseDek'), facts: $('caseFacts'), media: $('caseMedia'), status: $('caseStatus')
+  dek: $('caseDek'), facts: $('caseFacts'), media: $('caseMedia'), status: $('caseStatus'),
+  mast: caseEl.querySelector('.case-mast'), scroll: $('caseScroll')
 };
+
+/* THE MASTHEAD LIFTS ON THE FIRST LINE OF READING.
+
+   Hovering it is the mouse's way of asking to see the plate, and the
+   stylesheet answers that on its own. This is the other half: a reader who has
+   scrolled a line into the case study has committed to it, and the photograph
+   can stop being the room's ground and become the picture it is. One-way
+   inside an open room — it would be a fidget if it masked itself again every
+   time the reader scrolled back up to look at the title — and cleared by
+   fillCase, so paging on to the next project starts it veiled again. */
+if (C.scroll && C.mast) {
+  C.scroll.addEventListener('scroll', function () {
+    if (C.scroll.scrollTop > 18) C.mast.classList.add('lit');
+  }, { passive: true });
+}
 var cIdx = 0, lastFocus = null;
 caseEl.setAttribute('inert', '');
 
 function fillCase(i) {
   var p = P[i];
   cIdx = i;
+  /* a new plate arrives veiled, and the room is put back to its top so the
+     reader is not dropped into the middle of somebody else's reading */
+  if (C.mast) C.mast.classList.remove('lit');
+  if (C.scroll) C.scroll.scrollTop = 0;
   C.count.textContent = pad2(i + 1) + ' / ' + pad2(P.length);
   C.cat.textContent = p.cat;
   C.title.textContent = p.title;
@@ -4763,7 +6148,6 @@ document.addEventListener('keydown', function (e) {
    arriving in a room may also start a timed action inside it — the wax being
    cut, the markup typing itself and being wiped off. */
 var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
-var mSteps = Array.prototype.slice.call(document.querySelectorAll('.step'));
 var navEl = $('nav');
 var SNAP = window.matchMedia('(min-width: 901px) and (min-height: 601px)');
 var room = -1, tops = [], actT0 = 0, actMs = 0, deckRaf = 0;
@@ -4791,10 +6175,13 @@ function startAct(i) {
   actT0 = performance.now();
 }
 
+/* the steps are queried on entry rather than cached at parse: they are built
+   by renderCopy now, and there may be four of them or five */
 function runMethod() {
-  mSteps.forEach(function (s) { s.classList.remove('lit'); });
-  if (REDUCED) { mSteps.forEach(function (s) { s.classList.add('lit'); }); return; }
-  mSteps.forEach(function (s, i) {
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  steps.forEach(function (s) { s.classList.remove('lit'); });
+  if (REDUCED) { steps.forEach(function (s) { s.classList.add('lit'); }); return; }
+  steps.forEach(function (s, i) {
     setTimeout(function () { s.classList.add('lit'); }, 420 + i * 900);
   });
 }
@@ -4841,26 +6228,46 @@ function enterRoom(i) {
   });
 }
 
-var tick = null;
+/* THE LAYOUT THRASH THAT WAS COSTING A PHONE ITS FRAME BUDGET.
+
+   This ran every frame of every scroll and it took up to twenty-six
+   getBoundingClientRect() readings to do it — thirteen to find the room with
+   the most of itself on screen, thirteen more to decide which rooms are live.
+   A rect reading is only cheap while nothing has invalidated layout; and the
+   second loop WROTE a class between two of its readings, so on the compact
+   path the engine was forced to re-flow the whole document up to thirteen
+   times per frame. Read, write, read, write, all the way down. On a desktop
+   that is absorbed. On a phone it is the jerk between rooms.
+
+   Every number it needs is already in tops[] and hts[], measured once by
+   measure() and re-taken whenever anything can have moved them — a real
+   resize, a disclosure being opened, the hand-over. So the pass is now pure
+   arithmetic against the scroll position: no reads, and the writes are all at
+   the end where they cannot be seen by a read. The rooms are laid out in svh,
+   which does not move when the browser chrome does, so the cached values stay
+   true across exactly the events that used to be most expensive. */
+var tick = null, vis = [];
 function onScroll() {
   if (root.classList.contains('intro-locked')) return;
   if (tick) return;
   tick = requestAnimationFrame(function () {
     tick = null;
-    var vh = window.innerHeight, snapped = SNAP.matches;
-    var i = 0, bestV = -1, k, r, v;
-    for (k = 0; k < screens.length; k++) {
-      r = screens[k].getBoundingClientRect();
-      v = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    if (!tops.length) measure();
+    var y = window.scrollY, vh = window.innerHeight, snapped = SNAP.matches;
+    var n = screens.length, i = 0, bestV = -1, k, top, h, v;
+
+    for (k = 0; k < n; k++) {
+      top = tops[k] - y; h = hts[k] || 0;
+      v = Math.min(top + h, vh) - Math.max(top, 0);
+      vis[k] = v;
       if (v > bestV) { bestV = v; i = k; }
     }
     enterRoom(i);
-    for (k = 0; k < screens.length; k++) {
+    for (k = 0; k < n; k++) {
       if (snapped) { screens[k].classList.toggle('live', Math.abs(k - i) <= 1); continue; }
-      r = screens[k].getBoundingClientRect();
-      if (Math.min(r.bottom, vh) - Math.max(r.top, 0) > Math.min(r.height, vh) * 0.10) screens[k].classList.add('live');
+      if (vis[k] > Math.min(hts[k] || 0, vh) * 0.10) screens[k].classList.add('live');
     }
-    navEl.classList.toggle('stuck', window.scrollY > 40);
+    navEl.classList.toggle('stuck', y > 40);
   });
 }
 
@@ -4919,7 +6326,12 @@ function backplateAt(p) {
   /* two fades, and the halo takes whichever has got further: the clock one
      that runs on arrival, and the scroll one that clears it if the reader
      leaves the landing before the clock has finished. */
-  var o = backLive ? (1 - t) * (1 - t) * 0.80 * bloomFade : 0;
+  /* AND DIMMER.  0.80 was brighter than the plate ever is inside the loader,
+     so the hand-over ran the wrong way round: the photograph faded out of the
+     introduction and then came back UP behind the lattice. 0.52 keeps it
+     below the loader's own halo, which is what makes the landing read as the
+     last frame of the introduction rather than as a new brighter picture. */
+  var o = backLive ? (1 - t) * (1 - t) * 0.52 * bloomFade : 0;
   var b = 7 + t * 34 + (1 - bloomFade) * 26;
   if (Math.abs(o - backO) > 0.004) { backO = o; backEl.style.setProperty('--back-o', o.toFixed(3)); }
   if (Math.abs(b - backB) > 0.35)  { backB = b; backEl.style.setProperty('--back-blur', b.toFixed(1) + 'px'); }
@@ -5431,6 +6843,22 @@ function createMosaic(el) {
      doing, which is what the device is for. Each entry in MARKS is the index
      of the room being LEFT; add or remove one and nothing else has to change,
      and an empty array switches the mosaic off without removing it. */
+  /* TWO SEAMS, AND THE ARGUMENT FOR FOUR WAS TESTED AND LOST.
+
+     The case for adding seams was that twice in thirteen rooms is so rare a
+     reader cannot tell the band is a device at all. That is a fair reading of
+     the choreography and a bad reading of the LAYOUT, which is what settles
+     it: the band is 40vh of the bottom of the screen, and the rooms either
+     side of the two extra seams put content there. Adding 10 -> 11 laid the
+     tile field straight across the studio room's credit table — four rows of
+     qualifications behind a grid of soft squares — and 5 -> 6 does the same to
+     the register card's tag rule.
+
+     3 -> 4 and 8 -> 9 were not chosen for their rarity. They were chosen
+     because they are the two seams where the room being ARRIVED AT has nothing
+     in the bottom two fifths of it, which is the only place this device can
+     be used without standing on the reading. If the band is ever to appear
+     more often it needs to be shorter first. */
   var MARKS = [3, 8];
   /* Compact keeps only the first of them. The deck position between two rooms
      is measured centre to centre, and the works room stacked for a phone is
@@ -5620,32 +7048,70 @@ if (burger && sheetEl) {
 /* ---------------------------------------------------------------- 5 · chrome */
 $('toTop').addEventListener('click', function () { goTo(screens[0]); });
 
-/* The sentence in the practice room says the ink pair is a working control
-   rather than a demonstration; this is what makes that sentence true from
-   inside the sentence. It presses whichever swatch is not currently pressed,
-   so the copy never has to know which ink the reader is on. */
+/* The sentence in the practice room says the inks are a working control rather
+   than a demonstration; this is what makes that sentence true from inside the
+   sentence.
+
+   With two grounds it could simply press the one that was not pressed. With
+   three that is no longer a well-formed instruction — "the other one" is two
+   of them — so it advances to the NEXT ink in the row and wraps. Pressing it
+   three times therefore walks the whole palette and comes home, which is a
+   better answer to "press one" than jumping to whichever swatch the DOM
+   happened to list first. */
 (function () {
   var nudge = $('inkNudge');
   if (!nudge) return;
   nudge.addEventListener('click', function () {
-    var other = document.querySelector('.nav .sw[aria-pressed="false"]');
-    if (other) other.click();
+    var order = Object.keys(THEMES);
+    var i = order.indexOf(currentTheme());
+    setTheme(order[(i + 1) % order.length]);
   });
 })();
 
-Array.prototype.forEach.call(document.querySelectorAll('.sw'), function (b) {
-  b.addEventListener('click', function () {
-    var k = b.dataset.theme;
-    root.classList.toggle('t-green', k === 'green');
-    Array.prototype.forEach.call(document.querySelectorAll('.sw'), function (o) {
-      o.setAttribute('aria-pressed', String(o.dataset.theme === k));
-    });
-    if (window.FIGURE) window.FIGURE.setTheme(k);
-    if (mosaic) mosaic.recolour();
-    if (Portrait) Portrait.redraw();
-    var m = document.querySelector('meta[name="theme-color"]');
-    if (m) m.setAttribute('content', k === 'green' ? '#092c2a' : '#07264c');
+/* THE INK PAIR IS A TRIO NOW, and the switch had to stop being a toggle.
+
+   It was `classList.toggle('t-green', k === 'green')`, which says "green or
+   not-green" — one class, two states, and the blue theme was the absence of
+   the green one. A third ground cannot be expressed that way. The document
+   carries at most one t-* class and the blue theme is still the bare :root,
+   so nothing in the stylesheet changes shape; what changes is that the class
+   is SET rather than toggled.
+
+   Four things have to be told, and none of them can read the stylesheet: the
+   figure paints its own ground and holds its own palette, the mosaic caches
+   its two inks, the portrait's dither is a canvas of resolved colours, and the
+   browser chrome takes a colour of its own. */
+var THEMES = { blue: '#07264c', green: '#092c2a', wax: '#ece6d6' };
+
+function setTheme(k) {
+  if (!THEMES[k]) return;
+  root.classList.remove('t-green', 't-wax');
+  if (k !== 'blue') root.classList.add('t-' + k);
+  Array.prototype.forEach.call(document.querySelectorAll('.sw'), function (o) {
+    o.setAttribute('aria-pressed', String(o.dataset.theme === k));
   });
+  if (window.FIGURE) window.FIGURE.setTheme(k);
+  if (mosaic) mosaic.recolour();
+  if (Portrait) Portrait.redraw();
+  var m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', THEMES[k]);
+  /* AND IT IS REMEMBERED.  With two dark grounds a forgotten choice cost the
+     reader a hue; with a light one in the row it costs them a whole page —
+     somebody who chose wax because they are reading in daylight got dropped
+     back into the dark green on the next visit, and had to find the swatches
+     again. Written here rather than in the click handler so that every route
+     to a theme records it. Wrapped because Safari throws on storage access in
+     private browsing, and a preference that cannot be saved is not a reason to
+     stop the page. */
+  try { localStorage.setItem('stylos-ink', k); } catch (err) {}
+}
+function currentTheme() {
+  return root.classList.contains('t-wax') ? 'wax'
+       : root.classList.contains('t-green') ? 'green' : 'blue';
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('.sw'), function (b) {
+  b.addEventListener('click', function () { setTheme(b.dataset.theme); });
 });
 
 /* The pointer does two things to the figure and neither of them is a control:
@@ -5672,21 +7138,75 @@ if (!REDUCED && window.matchMedia('(pointer: fine)').matches) {
   }, { passive: true });
 }
 
-var rzT = null;
+/* THE URL BAR IS NOT A RESIZE, AND THIS IS THE MOBILE JERK.
+
+   On a phone, scrolling collapses and expands the browser's own chrome, and
+   every one of those fires `resize` — several times during a single swipe down
+   the page. What this handler does on a resize is rebuild EVERYTHING: the
+   figure reallocates six typed arrays the size of the lattice, repaints the
+   background gradient pixel by pixel, re-renders the digit atlas and rebuilds
+   the point cloud; the mosaic re-seeds its tiles; the portrait re-dithers. All
+   of it synchronous, all of it in the middle of a scroll the reader is still
+   performing. That is a stall of a good many frames, and it lands exactly when
+   the deck is moving between two rooms.
+
+   So a change that is ONLY in height and only by about the height of the
+   chrome is not treated as a resize at all. The layout does not depend on it —
+   every room is measured in svh, which is the small viewport and does not move
+   — and the figure's own framing survives it. Rooms are re-measured, because
+   that is cheap and their absolute offsets do shift; nothing else runs.
+
+   180px is the band: iOS Safari's bar is about 90 CSS px and Chrome Android's
+   about 56, and a doubled allowance covers the pair of them appearing and
+   disappearing together. A real rotation or a real window drag changes the
+   width, or changes the height by more than that, and takes the full path. */
+var rzT = null, rzW = window.innerWidth, rzH = window.innerHeight;
+var CHROME_BAND = 180;
+
 window.addEventListener('resize', function () {
+  var w = window.innerWidth, h = window.innerHeight;
+  if (w === rzW && Math.abs(h - rzH) <= CHROME_BAND) {
+    rzH = h;
+    clearTimeout(rzT);
+    rzT = setTimeout(function () { measure(); onScroll(); }, 160);
+    return;
+  }
+  rzW = w; rzH = h;
   clearTimeout(rzT);
   rzT = setTimeout(function () {
-    syncLanding(); measure(); buildHit(); auditFit();
+    /* a resize taken while the introduction is still running has to re-solve
+       the hand-over, and the figure has to be drawing to be measured — see the
+       pause in Intro.play. It is put back to sleep by the same callback. */
+    var mid = root.classList.contains('intro-locked');
+    if (mid && window.FIGURE && window.FIGURE.resume) window.FIGURE.resume();
+
+    syncLanding();
+    registerStylusSoon(0, mid ? function () {
+      if (window.FIGURE && window.FIGURE.pause) window.FIGURE.pause();
+    } : null);
+    measure(); buildHit(); auditFit();
     if (mosaic) mosaic.build();
     if (Portrait) Portrait.redraw();
     if (window.FIGURE && window.FIGURE.ready) window.FIGURE.resize();
     onScroll();
     setWorks(wIdx, 'resize');
+    /* crossing 901px changes the row into a column and back, and the centred-
+       plate observer belongs to only one of the two */
+    watchMid();
   }, 200);
 });
 
 /* ---------------------------------------------------------------- 6 · initialise */
 function initialise() {
+  /* THE COPY GOES IN FIRST, and everything below it depends on that.
+     dressReveals splits headings into word boxes and cannot split a heading
+     that has no text yet; dressAsides looks for .aside paragraphs that
+     renderCopy is what creates; buildCards reads a P that applyRemote may
+     just have replaced; and measure() has to be taken of rooms that are
+     already their final height. One order, and it is this one. */
+  renderCopy(COPY);
+  buildCards();
+
   dressReveals();
   dressAsides();
   numberMoves();
@@ -5706,15 +7226,23 @@ function initialise() {
   measure();
   buildHit();
   setWorks(0, 'initialise');
+  watchMid();
   auditFit();
 
   if (window.FIGURE) {
     window.FIGURE.init();
-    /* the document declares its theme in the html element so there is no
-       flash; the figure has to be told the same thing once, by hand. */
-    window.FIGURE.setTheme(root.classList.contains('t-green') ? 'green' : 'blue');
+    /* The document declares its theme in the html element — set in the markup,
+       and possibly overwritten by the restore in the head — so there is never
+       a flash. Everything else has to be told once, by hand: the figure paints
+       its own ground, and the swatches have to show which of the three is
+       pressed, which the restore deliberately did not do (it runs before the
+       markup for them exists). */
+    window.FIGURE.setTheme(currentTheme());
     window.FIGURE.setPose(0, 0);
   }
+  Array.prototype.forEach.call(document.querySelectorAll('.sw'), function (o) {
+    o.setAttribute('aria-pressed', String(o.dataset.theme === currentTheme()));
+  });
   poseLoop();
 
   /* the hero's copy waits for the hand-over to be well under way */
@@ -5738,18 +7266,71 @@ function initialise() {
     figure: function () { return window.FIGURE.state(); },
     stylus: function () { return window.FIGURE.stylus(); },
     room: function () { return room; },
-    goto: function (i) { goTo(screens[clamp(i, 0, screens.length - 1)]); }
+    goto: function (i) { goTo(screens[clamp(i, 0, screens.length - 1)]); },
+
+    /* WHAT THE PAGE IS ACTUALLY READING.  The seed and the backend look
+       identical once they are merged, which is the point and is also why you
+       cannot tell by eye whether Firestore answered. This is how you tell:
+       STYLOS.copy().rooms.studio.heading against what the console shows. */
+    copy: function () { return COPY; },
+    live: function () { return copyLive; },
+
+    /* SEEDING, WITHOUT TRANSCRIBING ANYTHING.
+
+       STYLOS.seed()          every document, as one object
+       STYLOS.seed('rooms')   just that collection
+       copy(STYLOS.seed())    puts it on the clipboard in most consoles
+
+       Each key of the returned object is a DOCUMENT ID and its value is the
+       document. Firestore's console does not import JSON, so the shortest
+       honest path is: create the document with the id shown, then paste each
+       field. For twenty documents that is an afternoon once. If you would
+       rather script it, the same object is what a Node script with
+       firebase-admin would iterate over — see the walkthrough. */
+    seed: function (which) {
+      var out = { rooms: COPY.rooms, site: COPY.site, works: {} };
+      P.forEach(function (p, i) {
+        var d = {}, k;
+        for (k in p) if (Object.prototype.hasOwnProperty.call(p, k)) d[k] = p[k];
+        /* `order` is what the row is sorted by and it does not exist in the
+           table, because in the table the order IS the order */
+        d.order = i;
+        out.works['work-' + (i + 1)] = d;
+      });
+      return which ? out[which] : out;
+    }
   };
 }
 
-if (document.fonts && document.fonts.ready) {
-  var done = false;
-  var go = function () { if (!done) { done = true; initialise(); } };
-  document.fonts.ready.then(go);
-  setTimeout(go, 2200);
-} else {
-  initialise();
-}
+/* THE TWO THINGS THE PAGE WAITS FOR, AND WHY WAITING COSTS NOTHING.
+
+   The fonts, because the reveals measure type; and the copy, because there is
+   no sense laying out a room twice. Both are races against the same 2200ms
+   ceiling and both start at parse, so they overlap and the wait is the longer
+   of the two rather than the sum — which means this revision starts the
+   introduction at exactly the moment the last one did.
+
+   And then the introduction runs for five seconds over the top of it. A
+   Firestore read that comes back inside two seconds is invisible: by the time
+   the loader lifts, the rooms behind it have had their copy for three seconds
+   and have been measured with it. There is no loading state to design because
+   the introduction already is one. */
+var fontsReady = (document.fonts && document.fonts.ready)
+  ? Promise.race([document.fonts.ready, new Promise(function (r) { setTimeout(r, 2200); })])
+  : Promise.resolve();
+
+Promise.all([fontsReady, window.COPY_READY || Promise.resolve(null)])
+  .then(function (res) {
+    applyRemote(res[1]);
+    initialise();
+  })
+  .catch(function (err) {
+    /* whatever went wrong upstream, the seed is complete and the page is owed
+       a render. This is the last guard and it must never be the reason a
+       reader gets a blank screen. */
+    console.warn('[stylos] copy: rendering the seed —', err && err.message);
+    initialise();
+  });
 
 })();
 </script>
