@@ -25,6 +25,89 @@
    One self-contained file, no build step. The figure is generated in the
    browser; the two introductory plates come from Cloudinary.
    ---------------------------------------------------------------------------
+   REVISION 12.2 — THE HAND. Eight changes, and every one of them is about the
+   tool being watched doing its job rather than being shown holding still.
+
+     THE CONTACT MARK      DELETED, both halves. A ring of eighteen splats at
+                           the top of the ramp, on an ellipse a few millimetres
+                           across, ROTATING at 2.2 rad/s around the pen's
+                           point; and on glass a caret blinking at 1.2Hz.
+                           These were the brightest marks in the frame and the
+                           only ones on the canvas put there by a clock rather
+                           than by the geometry, spinning around a point on an
+                           object otherwise perfectly still. Reported twice as
+                           "an artefact around the stylus" — correctly. 12.1
+                           read the report as being about the rod and sampled
+                           the rod more finely, which was worth doing and was
+                           not the answer. splatSafe and pose.touching go with
+                           them; they had no other caller.
+     THE WRITING           the point never left the surface and never crossed a
+                           letter: it swept along each character's advance box
+                           at a fixed height while the text arrived underneath.
+                           Two halves to the fix and they are one gesture.
+                           buildTextCloud now harvests an INK PROFILE per
+                           character — five columns, top and bottom of the ink
+                           in each — so the pen rises through a cap and drops
+                           through a descender because they are there. And a
+                           character's slot is split: PEN_DOWN (0.66) of it is
+                           spent drawing, the rest in the air on an arc to the
+                           next letter, or a much higher one back to the start
+                           of the next line. penInk maps the same clock to how
+                           much is WRITTEN, and it holds while the pen travels,
+                           so a letter is finished before the point leaves it.
+                           One number, and it moves both.
+     THE NEEDLE            the stylus BECOMES the pointer instead of being
+                           replaced by one. The works room ran a second
+                           renderer — its own camera, its own distance, its own
+                           matrix, the leaves simply not drawn — and the deck
+                           cut between the two on a boolean at room entry. It
+                           is one blend now, off KEY[].hand, which stateAt has
+                           been interpolating all along: the rod is a body of
+                           revolution, so carrying its two ends and the camera
+                           with them is the whole of it. No threshold anywhere.
+                           NOTE: styBasis aims the stylus's local +X, and the
+                           point is at x -60 with the butt at +62 — the axis to
+                           hand it is BUTT MINUS POINT. The other way round
+                           rebuilds it end for end, convincingly.
+     THE METHOD ROOM       ink 0.80 -> 0.96, dens 0.58 -> 0.70, dig 0.34 ->
+                           0.40, and --invert-c on wax rgb(216,212,200) ->
+                           rgb(202,188,174). This is the one room whose figure
+                           is DOING what the copy says, and it was the darkest
+                           room on the site: on the wax theme the difference
+                           layer landed the field at rgb(20,18,14), which is
+                           black, so the faint end of the lattice had nowhere
+                           to separate to. Solve --invert-c against the ground;
+                           do not nudge it.
+     THE PORTRAIT          it printed a NEGATIVE on the wax theme. The dither
+                           marks where the source is BRIGHT, which is a
+                           photograph in pale ink on a dark ground and an
+                           inverted one in dark ink on a light one. `lit` asks
+                           whether the ink is darker than the ground and reads
+                           the tone the other way up if it is, so a fourth
+                           palette gets the right answer untold.
+     compact · the figure  figC, a new keyframe channel: 1 in the three
+                           WORDLESS rooms, 0 elsewhere. The phone's band is 44%
+                           of the height across the top, which is right under a
+                           heading and two paragraphs and wrong in a room that
+                           is the object and nothing else — the showroom sat in
+                           the top third with two thirds of empty ground under
+                           it. Centred, and 0.88 x 0.78 rather than 0.80 x
+                           0.44. The width is the number that matters: all
+                           three rooms are width-bound on a phone.
+     compact · the plate   the studio portrait is the photograph on a phone:
+                           no dither, no line grid, and not a control. The
+                           dither's second half is resolving it under the
+                           pointer and there is no pointer, so the reader got a
+                           lattice over the one face on the site with no way of
+                           asking for the picture.
+     compact · the veil    a room taller than the screen scrolls its copy up
+                           through the band the figure is fixed in, and no
+                           amount of padding can answer that — the two are in
+                           different coordinate systems. The figure stands down
+                           as the room is read past its own top (veilAt, 0.22
+                           of a screen, 0.94 deep) and comes back if the reader
+                           scrolls back. Tall rooms only, phone only.
+   ---------------------------------------------------------------------------
    REVISION 12.1 — the review, answered; and three things that were wrong.
 
      THE STYLUS           it was 1,884 points against 27,546 in each leaf —
@@ -564,12 +647,24 @@
   /* THE METHOD ROOM STILL TURNS OVER — into night rather than into paper.
      The room is the one inversion on the deck, and on a page that is already
      paper the inversion cannot be more paper. --invert-c is solved against the
-     ground so the difference layer lands on a deep ink: |236 - 216| and so on
-     across the field, which comes out near black with a little life left at
-     the centre where the ground is lightest. --paper is that dark ground and
-     --paper-ink the pale type standing on it: the token names describe their
-     ROLE in the room, and on wax the roles swap ends. */
-  --invert-c:    rgb(216,212,200);
+     ground so the difference layer lands on a deep ink, and --paper is that
+     dark ground with --paper-ink the pale type standing on it: the token names
+     describe their ROLE in the room, and on wax the roles swap ends.
+
+     AND IT WAS SOLVED TOO CLOSE TO THE GROUND.  At rgb(216,212,200) the
+     difference against the wax came out at |236-216| and so on — rgb(20,18,14),
+     which is black to two decimal places. Night is the right instruction; a
+     hole in the page is not, and the cost was not the mood but the drawing:
+     the figure prints most of its lattice at the bottom of the ramp, those
+     marks land a step or two off the ground, and a step or two off BLACK is
+     invisible. The one room where the object is writing the four words the
+     copy lists was the one room where it could not be read.
+
+     Backed off to rgb(202,188,174), which puts the field at rgb(34,42,40) — a
+     deep slate-green, still plainly night, with enough room under the ink for
+     the faint end of the lattice to separate from it. Solve it, do not nudge
+     it: the ground is fixed, so pick the field you want and subtract. */
+  --invert-c:    rgb(202,188,174);
   --paper:       #12211c;
   --paper-ink:   #ece7d8;
 
@@ -1677,6 +1772,15 @@ html:not(.js) .step { opacity: 1; transform: none; }
 }
 /* once the dither is up it IS the treatment; the line scrim stands down */
 .portrait.dithered::after { opacity: 0; }
+/* AND WHERE THERE IS NO DITHER THERE IS NO TREATMENT EITHER.  .plain is
+   written by dressPortrait where the plate is a photograph and nothing more
+   (a phone — see the note there). The line scrim is the dither's understudy,
+   and an understudy for something that is not being performed is just a grid
+   over somebody's face; the plate is not a control here, so it does not ask
+   to be pressed and its caption has nothing to offer. */
+.portrait.plain { cursor: default; }
+.portrait.plain::after { opacity: 0; }
+.portrait.plain + .plate-cap .cue { display: none; }
 .portrait:hover::after, .portrait:focus-within::after { opacity: .14; }
 .portrait:hover img, .portrait:focus-within img { filter: grayscale(.15) contrast(1.02); transform: scale(1.015); }
 .portrait.resolved canvas { opacity: 0; }
@@ -3308,6 +3412,19 @@ var TURN1 = TAU;
    and the studio, which on a phone are reading and nothing else. 1 keeps it,
    0 dismisses it, and anything between is a proportion of its usual ink. */
 
+/* FIGC — and where the phone's band is the wrong shape for the room.
+   figM decides whether the figure is there at all; figC decides how much of
+   the screen it is given when it is. The compact layout holds it in a band
+   across the top of the viewport, 44% of the height, because underneath it
+   there is a heading and two paragraphs to get through — and that is right in
+   every room that has words in it and wrong in the three that have none. The
+   showroom is the object and nothing else: no eyebrow, no heading, no copy, a
+   whole screen, and the drawing sitting in the top third of it with two thirds
+   of blank ground underneath, which reads as a page that has failed to load
+   rather than as an object being turned over. 1 gives the room's figure the
+   whole screen and centres it; 0 is the band. It interpolates, so the walk out
+   of the showroom into THE NAME is one continuous move rather than a jump. */
+
 var KEY = [
   /* ---- 0 · THE LANDING ------------------------------------------------
      The pose the photographic plate is standing in, and it is a registration
@@ -3347,7 +3464,8 @@ var KEY = [
          curve in stateAt) so the first flick of the wheel throws it round. */
   { open: 0.06, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.36,
     yaw: -0.62, pit: 0.92, roll: 0.06, turn: TURN1, fill: 0.76, px: 0.00, py: -0.01,
-    dig: 0.50, dens: 0.46, ink: 0.96, lens: 1.60, regL: 0.40, spin: 0.30, figM: 1 },
+    dig: 0.50, dens: 0.46, ink: 0.96, lens: 1.60, regL: 0.40, spin: 0.30,
+    figM: 1, figC: 1 },
 
   /* 2 · EDGE-ON. The camera drops almost to the plane of the leaves, so the
          object is read as a thickness and a hinge rather than as two
@@ -3356,14 +3474,14 @@ var KEY = [
          lateral view the object has never been given. */
   { open: 0.60, morph: 0, write: 0.00, erase: 0, flip: 0, work: 0.88,
     yaw: -0.94, pit: 0.13, roll: 0.00, turn: TURN1, fill: 0.82, px: 0.00, py: 0.02,
-    dig: 0.40, dens: 0.50, ink: 1.00, lens: 1.26, spin: 0.26, figM: 1 },
+    dig: 0.40, dens: 0.50, ink: 1.00, lens: 1.26, spin: 0.26, figM: 1, figC: 1 },
 
   /* 3 · overhead, and it writes. actMs is long on purpose: the inscription
          should be watched being cut, not caught having been cut. This is the
          last of the wordless rooms, so it is also the biggest the object gets. */
   { open: 1.00, morph: 0, write: 0.02, erase: 0, flip: 0, work: 1.00,
     yaw: -0.14, pit: 0.96, roll: 0.02, turn: TURN1, fill: 0.88, px: 0.00, py: 0.00,
-    dig: 0.34, dens: 0.52, ink: 1.00, lens: 1.06, spin: 0.14, figM: 1,
+    dig: 0.34, dens: 0.52, ink: 1.00, lens: 1.06, spin: 0.14, figM: 1, figC: 1,
     writeTo: 1.00, actMs: 12000 },
 
   /* ---- the reading ---------------------------------------------------- */
@@ -3430,10 +3548,26 @@ var KEY = [
           gone: what the room does now is write, once, slowly, over twenty
           seconds — the same gentle single pass the contact room makes — and
           what it writes is legible and says what the four steps say. The text
-          is CODE, at the top of the figure script. */
+          is CODE, at the top of the figure script.
+
+          AND IT WAS THE DARKEST ROOM ON THE SITE, WHICH IS THE ONE THING IT
+          CANNOT AFFORD TO BE.  ink 0.80 and dens 0.58 are a room standing back
+          — correct where the figure is furniture beside a heading, and wrong
+          here, because this is the only room whose figure is DOING what the
+          copy says. It writes the four steps onto the glass while the reader
+          reads them, and at four fifths of the ink through a difference layer
+          the writing was a rumour. On the wax theme, where the inversion turns
+          the field to night, it was not even that (see --invert-c).
+
+          0.96 / 0.70 / 0.40. Nothing moves and nothing grows: the same object
+          in the same place, printed at nearly full ink and with two thirds of
+          its cells claimed rather than a little over half, and enough of the
+          grain left as numerals to keep it the same drawing as the rest of the
+          page. Raise `fill` instead and it crosses the measure — the copy
+          column ends at about 56% of the width and 0.72 already reaches it. */
   { open: 1.00, morph: 1, write: 0.00, erase: 0, flip: 0, work: 0.92,
     yaw: 0.02, pit: 0.94, roll: 0.02, turn: TURN1, fill: 0.72, px: 0.24, py: 0.02,
-    dig: 0.34, dens: 0.58, ink: 0.80, figM: 0,
+    dig: 0.40, dens: 0.70, ink: 0.96, figM: 0,
     writeTo: 1.00, actMs: 20000 },
 
   /* 11 · studio — AND IT WAS STANDING IN THE MIDDLE OF THE READING.
@@ -3528,8 +3662,16 @@ function stateAt(p, q) {
       o.morph = Math.max(o.morph, lerp(cur.morph, cur.morphTo, s01(q / 0.82)));
     }
   }
+  /* HAND IS A POSE NOW, NOT A SWITCH.  It was already interpolated here and
+     the renderer ignored it, reading a boolean the deck set on room entry
+     instead — which is why the works room used to arrive as a cut: the tablet
+     vanished on one frame and a needle appeared on the next, at a different
+     size, in a different projection, pivoting somewhere else. What is
+     interpolated is what is drawn now. See the blend in drawFrame. */
   o.hand = lerp(A.hand || 0, B.hand || 0, f);
   o.spin = lerp(A.spin || 0, B.spin || 0, f);
+  /* how much of the compact screen this room gives the figure — see FIGC */
+  o.figC = lerp(A.figC || 0, B.figC || 0, f);
 
   /* LENS.  Focal length, as a multiple of the 21-degree default. Above 1 the
      field of view narrows and the lens gets longer.
@@ -3646,11 +3788,15 @@ function poseFor(st, layout) {
   var pos = [lerp(rest[0], cw[0], work), lerp(rest[1], cw[1], work), lerp(rest[2], cw[2], work)];
   var mS = tMul(tTrans(pos[0], pos[1], pos[2]), Mfull);
 
+  /* `contact` and `touching` used to be read here as well, by the burst of
+     swarf and the blinking caret the printer drew at the pen's point. Both are
+     gone (see THE CONTACT MARK in drawFrame), and `touching` went with them
+     because it existed for nothing else. The point itself is still returned:
+     it is the one number a future mark would need, and it costs nothing. */
   return {
     theta: theta, write: wp, erase: ep, flip: flip, morph: m,
     mats: [mA, mB, mS],
-    contact: [cx, surfY, cz],
-    touching: (work > 0.7 && lift < 1.2 && (wp > 0.001 || ep > 0.001))
+    contact: [cx, surfY, cz]
   };
 }
 
@@ -3685,11 +3831,14 @@ function assemblyAt(t, roll, spin) {
    smooth used to be here as well and were read by nothing, which is the sort
    of thing that turns an interface into an inventory. If a member is added,
    it should be because something is about to call it. */
+/* styBasis is on it because the needle blend calls it: the stylus is a body of
+   revolution, so carrying it from the pose the room holds to the pose the dial
+   wants is a matter of aiming an axis, and aiming an axis is what this does. */
 var ENG = {
   CFG: CFG, FIELD: FIELD, SCREEN: SCREEN,
   KEY: KEY, STY_TIP: STY_TIP, STY_BUTT: STY_BUTT,
   buildScene: buildScene, stateAt: stateAt, poseFor: poseFor,
-  cameraAt: cameraAt, assemblyAt: assemblyAt,
+  cameraAt: cameraAt, assemblyAt: assemblyAt, styBasis: styBasis,
   tMul: tMul, tRotZ: tRotZ, tTrans: tTrans, tApply: tApply,
   clamp: clamp, lerp: lerp, s01: s01
 };
@@ -3888,7 +4037,14 @@ var compact = false;
 
 /* what the deck asks for */
 var deckP = 0, deckQ = 0;
-var handOn = 0, handPhi = Math.PI * 0.5, handSectors = 6;
+/* handOn stood here — the boolean the renderer branched on. It has gone: how
+   much needle there is in the stylus is KEY[].hand now, interpolated with
+   everything else, and the deck only says which sector to point at. */
+var handPhi = Math.PI * 0.5, handSectors = 6;
+/* how far the figure stands down while the reader reads past it — 0 unless a
+   room on a phone is taller than the screen. Written by the deck; see THE
+   READING PASSES THROUGH THE BAND. */
+var veil = 0;
 /* THE NEEDLE'S TRAVEL.  It used to be an exponential chase on a target — which
    is smooth in the abstract and stutters in practice, because the target was
    being rewritten several times a second by the carousel's own scroll handler
@@ -4107,6 +4263,48 @@ function buildTextCloud(spec) {
   }
 
   var data = m.getImageData(0, 0, mw, mh).data;
+
+  /* ---- what each letter looks like, so the pen can follow it ------------
+     THE PEN WAS SLIDING ALONG UNDER THE LINE.  makePath had no idea what it
+     was writing: it swept the point across each character's advance box at a
+     fixed height and the letters appeared underneath it, which is a printer's
+     carriage and not a hand. The one thing that turns the first into the
+     second is knowing where the INK is — an S sends the pen down and back up
+     twice, an L drops it once and runs it along the foot, and a comma is one
+     short stroke below everything else.
+
+     The raster is already here and already thresholded, so the profile is
+     nearly free: PROF columns across each character, and for each of them the
+     first and last row of ink inside that character's own line band. The pen
+     then crosses between the two, in the letter's own units, at the letter's
+     own place on the page. Five columns is enough at fourteen screen pixels a
+     glyph — the pen is being given a gesture, not a stroke order — and it is
+     stored per character rather than per line because the point of it is that
+     an I and a W do not move the hand the same way.
+
+     A column with no ink in it (the gap between the two strokes of a V, the
+     counter of an o) falls back to the line's own cap band, so the pen keeps
+     travelling through the letter rather than jumping to a baseline. */
+  var PROF = 5;
+  for (i = 0; i < chars.length; i++) {
+    var ce = chars[i], cl = lineRanges[ce.line];
+    var by0 = Math.max(0, Math.floor(cl.top - capPx * 0.20));
+    var by1 = Math.min(mh - 1, Math.ceil(cl.base + capPx * 0.32));
+    ce.top = new Float32Array(PROF);
+    ce.bot = new Float32Array(PROF);
+    for (var sp = 0; sp < PROF; sp++) {
+      var sx = Math.round(ce.px0 + (ce.px1 - ce.px0) * (sp + 0.5) / PROF);
+      if (sx < 0) sx = 0; if (sx > mw - 1) sx = mw - 1;
+      var ta = -1, ba = -1;
+      for (var sy = by0; sy <= by1; sy++) {
+        if (data[(sy * mw + sx) * 4 + 3] >= 130) { if (ta < 0) ta = sy; ba = sy; }
+      }
+      if (ta < 0) { ta = cl.top; ba = cl.base; }
+      ce.top[sp] = F.z0 + ta / PX;
+      ce.bot[sp] = F.z0 + ba / PX;
+    }
+  }
+
   var step = Math.max(2, Math.round(spec.harvest * PX));
   var px = [], pz = [], po = [], pu = [], pb = [], ps = [];
   var nC = chars.length, nBands = 3, gold = 0.6180339887, seedq = 0.123;
@@ -4142,35 +4340,114 @@ function buildTextCloud(spec) {
     x: new Float32Array(px), z: new Float32Array(pz),
     ord: new Float32Array(po), u: new Float32Array(pu),
     band: new Uint8Array(pb), seed: new Uint8Array(ps),
-    y: spec.y, chars: chars, nC: nC, field: F, cap: capPx / PX
+    y: spec.y, chars: chars, nC: nC, field: F, cap: capPx / PX, prof: PROF
   };
+}
+
+/* ---- the pen ----------------------------------------------------------
+   WHAT WAS WRONG WITH IT, IN ONE SENTENCE: the point never left the surface
+   and never crossed a letter, so what the reader watched was a rod sliding
+   rightwards along a line while text arrived under it.
+
+   Two things were missing and they are two halves of the same gesture.
+
+   THE STROKE.  A hand writing moves across the letter AND up and down it, and
+   the up and down is most of what the eye reads as writing — it is why a
+   seismograph looks like handwriting and a ruler does not. The glass path was
+   a horizontal sweep at a constant height; the wax path had a cosine on it,
+   which is movement but not the letter's movement, because it was the same
+   cosine over an I as over a W. The pen now crosses between the top and the
+   bottom of the ink AT THAT POINT IN THAT CHARACTER, off the profile
+   buildTextCloud harvests, so the hand rises through a cap and drops through a
+   descender because the cap and the descender are there.
+
+   THE LIFT.  And a hand does not draw the gaps. It finishes a letter, comes
+   off the surface, travels, and puts the point down again — and it does the
+   same thing much larger at the end of a line. A pen that never lifts is a
+   plotter. So a character's slot is split: PEN_DOWN of it is spent drawing,
+   the rest is spent in the air on the way to the next letter, on an arc whose
+   height says which kind of journey it is.
+
+   PEN_DOWN IS THE ONE NUMBER, and it is shared with the ink. penInk maps the
+   same clock to how much has been written, and it HOLDS while the pen is
+   travelling — so a letter is finished before the pen leaves it and the next
+   one does not begin to appear until the point is back down on it. Change
+   PEN_DOWN and both move together; change one of them alone and the writing
+   comes apart from the hand, which is the state this is fixing.
+
+   0.66 is about right at the speeds the rooms run: a fifth of a second of air
+   between letters at the landing's cadence, which is a hand and not a hop.
+   Lower and the pen hurries and hovers; higher and it starts to scribble. */
+var PEN_DOWN = 0.66;
+
+/* how much of the text has been written, given how far the clock has run. The
+   two are not the same thing, and that is the point — see PEN_DOWN. */
+function penInk(p, nC) {
+  if (!nC || nC < 1) return p;
+  var q = ENG.clamp(p, 0, 1) * nC;
+  var ci = Math.min(nC - 1, q | 0), f = q - ci;
+  return (ci + Math.min(1, f / PEN_DOWN)) / nC;
 }
 
 /* pen kinematics over a text cloud. 'script' cuts letters, 'glide' types */
 function makePath(T, style) {
   var chars = T.chars, nC = T.nC, F = T.field, nBands = T.nBands, CAP = T.cap;
+  var PROF = T.prof || 5, script = style !== 'glide';
+  /* how many times the point crosses the letter's own height while it draws
+     it. A cut capital is three or four strokes and a mono lowercase is one or
+     two; 1.5 against 1.0 is that, rounded to what reads at this size. */
+  var STROKES = script ? 1.5 : 1.0;
+  /* how high the point rides on the way to the next letter, and on the way
+     back to the start of the next line. The line move is the one gesture on
+     the page that is unmistakably a hand: it is long, it is fast, and it goes
+     over everything. Model millimetres, on a tablet 227mm across the spread. */
+  var HOP = script ? 5.5 : 3.8, RETURN = script ? 17 : 11;
+
+  /* the letter's ink, top and bottom, u across its advance box */
+  function inkAt(c, u, out) {
+    if (!c.top) { out[0] = c.mz - CAP * 0.62; out[1] = c.mz; return out; }
+    var q = ENG.clamp(u, 0, 1) * (PROF - 1);
+    var i0 = Math.min(PROF - 2, q | 0), f = q - i0;
+    out[0] = ENG.lerp(c.top[i0], c.top[i0 + 1], f);
+    out[1] = ENG.lerp(c.bot[i0], c.bot[i0 + 1], f);
+    return out;
+  }
+  var pA = [0, 0], pB = [0, 0];
+
   return {
     contact: function (p) {
       if (nC === 0) return [(F.x0 + F.x1) / 2, 0, 0];
       var q = Math.min(nC - 1e-6, Math.max(0, p) * nC);
       var ci = q | 0, f = q - ci, c = chars[ci];
-      if (c.first && ci > 0) {
-        var gate = style === 'glide' ? 0.55 : 0.42;
-        if (f < gate) {
-          var g = f / gate, s2 = g * g * (3 - 2 * g), pv = chars[ci - 1];
-          return [ENG.lerp(pv.mx1, c.mx0, s2), ENG.lerp(pv.mz, c.mz, s2),
-                  (style === 'glide' ? 9 : 17) * Math.sin(Math.PI * g)];
-        }
+
+      /* ON THE SURFACE — drawing this letter */
+      if (f <= PEN_DOWN) {
+        var u = f / PEN_DOWN;
+        inkAt(c, u, pA);
+        /* the stroke: 0 at the top of the ink, 1 at the foot of it, and back.
+           A raised cosine rather than a triangle, so the point decelerates
+           into the turn of a stroke the way a hand does. */
+        var s = 0.5 - 0.5 * Math.cos(u * Math.PI * 2 * STROKES);
+        return [
+          ENG.lerp(c.mx0, c.mx1, u),
+          ENG.lerp(pA[0], pA[1], s),
+          /* barely off the wax at the turn, biting at the middle of the
+             stroke — the difference between a cut and a scratch */
+          (script ? 0.9 : 0.5) * Math.pow(Math.abs(2 * s - 1), 4)
+        ];
       }
-      var g2 = c.first ? (style === 'glide' ? 0.55 : 0.42) : 0;
-      var ff = ENG.clamp(c.first ? (f - g2) / (1 - g2) : f, 0, 1);
-      if (style === 'glide') {
-        return [ENG.lerp(c.mx0, c.mx1, ff), c.mz - CAP * 0.42, 0.5 + 0.9 * Math.abs(2 * ff - 1)];
-      }
+
+      /* IN THE AIR — on the way to the next one */
+      var g = (f - PEN_DOWN) / (1 - PEN_DOWN);
+      var e = g * g * (3 - 2 * g);
+      var nx = chars[ci + 1];
+      inkAt(c, 1, pA);
+      if (!nx) return [c.mx1, pA[1], 0];
+      inkAt(nx, 0, pB);
       return [
-        ENG.lerp(c.mx0, c.mx1, ff),
-        c.mz - CAP * 0.45 + CAP * 0.45 * Math.cos(ff * Math.PI * 2 * 1.7),
-        2.4 * Math.pow(Math.abs(2 * ff - 1), 6)
+        ENG.lerp(c.mx1, nx.mx0, e),
+        ENG.lerp(pA[1], pB[0], e),
+        (nx.line !== c.line ? RETURN : HOP) * Math.sin(Math.PI * g)
       ];
     },
     erase: function (e) {
@@ -4287,9 +4564,10 @@ function splat(x, y, lev, warm) {
       ((db + (b - db) * a) << SB);
   }
 }
-function splatSafe(x, y, lev) {
-  if (x > DKR + 1 && y > DKR + 1 && x < W - DKR - 2 && y < H - DKR - 2) splat(x, y, lev);
-}
+/* splatSafe stood here — a bounds-checked splat, and the only two callers it
+   ever had were the swarf burst and the caret. Both are gone; see THE CONTACT
+   MARK IS GONE in drawFrame. Everything else printed goes through the lattice,
+   which is bounds-checked already. */
 function drawGlyph(x, y, lev, g, warm) {
   ctx.drawImage(warm ? atlasW : atlas, g * aw, lev * ah, aw, ah, (x - aw * 0.5) | 0, (y - ah * 0.5) | 0, aw, ah);
 }
@@ -4331,6 +4609,9 @@ function prepareCloud(m) {
 /* ====================================================================== */
 var WM = [null, null, null], MV = [null, null, null];
 var o3 = [0, 0, 0], v3 = [0, 0, 0];
+/* the stylus's two ends, in the room's pose and in the dial's — see the needle
+   blend in drawFrame. Held here rather than allocated per frame. */
+var sbA = [0, 0, 0], stA = [0, 0, 0], sbB = [0, 0, 0], stB = [0, 0, 0];
 
 /* THE LANDING'S RESTING STATE.
 
@@ -4386,7 +4667,10 @@ function drawFrame(t) {
     }
   }
   stCur = st;
-  var hand = handOn > 0.5;
+  /* HOW MUCH OF THE NEEDLE THERE IS IN THE STYLUS.  0 in every room but the
+     works room, 1 in the middle of it, and the whole of the walk in and out
+     is spent between the two — see THE STYLUS BECOMES THE NEEDLE below. */
+  var hb = ENG.s01(ENG.clamp(st.hand || 0, 0, 1));
 
   wavefront(st.morph);
   prepareCloud(st.morph);
@@ -4404,26 +4688,7 @@ function drawFrame(t) {
   var f = (H / 2) / Math.tan(21 * Math.PI / 180) * (st.lens === undefined ? 1 : st.lens);
   var panX, panY, cam;
 
-  if (hand) {
-    /* THE NEEDLE, SHORTENED.  At 0.30 of the width it swung a third of the
-       way across the screen from a pivot near the top, which put its tip
-       straight through the first screenshot in the carousel -- a drawn tool
-       lying across a photograph of somebody's website. 0.19 keeps the whole
-       swing inside the band above the cards at every aspect ratio the room is
-       laid out for. handGeom() in the deck script draws the dial off the same
-       two numbers and has to be changed with it. */
-    /* the needle draws back by a twelfth at the middle of a move and lets out
-       again as it lands (handSwing), and breathes a little while it waits, so
-       it reads as a weighted arm rather than as an indicator being set */
-    var len = Math.min(W * 0.19, H * 0.27) * (1 - 0.085 * handSwing);
-    dist = 122 * f / Math.max(1, len);
-    target = [0, 0, 0];
-    var sway = REDUCED ? 0 : 0.011 * Math.sin(t * 0.52) + 0.004 * Math.sin(t * 1.13);
-    WM[2] = ENG.tMul(ENG.tRotZ(handPhi + sway), ENG.tTrans(-ENG.STY_BUTT, 0, 0));
-    cam = ENG.cameraAt(0, 0, dist, target);
-    panX = 0; panY = (HAND_CY - 0.5) * H;
-    fitted = false;
-  } else {
+  {
     /* frame the whole assembly to the share of the box the room asks for */
     var iters = fitted ? 1 : 24;
     for (var it = 0; it < iters; it++) {
@@ -4462,12 +4727,31 @@ function drawFrame(t) {
          on the landing and 0 by the turnover, so the registered pose survives
          the compact layout and the band takes over the moment it is left. */
       var lw = compact ? ENG.clamp(1 - deckP, 0, 1) : 0;
-      var fillx = st.fill  * (compact ? ENG.lerp(0.80, 1.00, lw) : 1) * bloomGrow;
+      /* AND THE BAND IS NOT THE ONLY SHAPE THE PHONE HAS.  figC is 1 in the
+         three wordless rooms and 0 everywhere else, so the same two numbers
+         serve both: 0.80 x 0.44 is the band under the nav with a heading and
+         two paragraphs beneath it, 0.88 x 0.78 is a room that is the object
+         and nothing else. The pair are interpolated, which is what makes the
+         showroom give way to THE NAME as one move.
+         0.78, not 0.90: the nav is standing over the top of this and the
+         mosaic breaks up the bottom 28vh of it, so a figure filling nine
+         tenths of the height has its head and its feet in furniture.
+         AND 0.88, NOT 0.94, WHICH IS THE STYLUS'S NUMBER RATHER THAN THE
+         TABLET'S.  In all three of these rooms the object is width-bound on a
+         phone, so this is the only lever that changes its size — and the fit
+         is solved on every 29th point, which is about 190 samples of a rod
+         that is 5,600 points long, so the last centimetre of the butt is
+         routinely outside the measured extent. At 0.94 the overhead writing
+         room put the butt at 369px on a 376px screen and clipped it against
+         the edge for part of the pass. 0.88 leaves it about 60px of margin at
+         the widest moment of the writing, measured. */
+      var cw = compact ? ENG.clamp(st.figC || 0, 0, 1) : 0;
+      var fillx = st.fill  * (compact ? ENG.lerp(ENG.lerp(0.80, 0.88, cw), 1.00, lw) : 1) * bloomGrow;
       /* 0.44, not 0.52. At 0.52 the widest room (structure first, fill 0.92)
          put the foot of the figure at just past half the viewport while the
          copy began at 44svh, so the two overlapped by about six per cent of
          the screen and the paragraph was being read through the lattice. */
-      var filly = (st.fillY === undefined ? st.fill : st.fillY) * (compact ? ENG.lerp(0.44, 1.00, lw) : 1) * bloomGrow;
+      var filly = (st.fillY === undefined ? st.fill : st.fillY) * (compact ? ENG.lerp(ENG.lerp(0.44, 0.78, cw), 1.00, lw) : 1) * bloomGrow;
       var kk = Math.max(mx / (0.5 * fillx * W), my / (0.5 * filly * H));
       var want = dist * kk;
       /* 0.075, not 0.12. The fit chases a target that moves whenever the
@@ -4488,14 +4772,91 @@ function drawFrame(t) {
       dist = ENG.clamp(dist, 140, 1700);
     }
     fitted = true;
-    cam = ENG.cameraAt(st.yaw + pxNudge, st.pit + pyNudge, dist, target);
     panX = st.px * W; panY = st.py * H;
     if (compact) {
       var lw2 = ENG.clamp(1 - deckP, 0, 1);
+      var cw2 = ENG.clamp(st.figC || 0, 0, 1);
       panX = ENG.lerp(0, st.px, lw2) * W;
-      panY = ENG.lerp(-0.250, st.py, lw2) * H;
+      /* -0.250 is the band's centre, a quarter of the screen up from the
+         middle; -0.030 is the wordless room's, which is the middle with a
+         hair taken off for the nav standing over it. */
+      panY = ENG.lerp(ENG.lerp(-0.250, -0.030, cw2), st.py, lw2) * H;
     }
   }
+
+  /* ---- THE STYLUS BECOMES THE NEEDLE ---------------------------------
+     It used to be replaced by one. The works room ran an entirely separate
+     branch — its own camera at yaw 0 and pit 0, its own distance, its own
+     matrix for the stylus, and the two leaves simply not drawn — and the deck
+     switched between the two on a boolean at room entry. So the transition
+     out of register 03 was a cut: the tablet was there and then it was not,
+     and the tool that had been lying on it was suddenly a different size, in a
+     different projection, pivoting from a point near the top of the screen.
+     The one object that runs the whole length of the page teleported.
+
+     There is nothing to switch. Both states are poses of the same rod, and the
+     rod is a body of revolution — its roll about its own axis is invisible —
+     so ONLY ITS TWO ENDS HAVE TO AGREE. Carry the butt and the point from
+     where the room holds them to where the dial wants them, aim a rigid stylus
+     down the line between, and carry the camera with them: yaw and pit to
+     nought, the distance to the needle's, the pan to the pivot. The leaves go
+     out on the same ramp (leafInk), so what the reader watches is the tablet
+     fading away from under the stylus while the stylus swings up and becomes
+     the thing that indexes the row.
+
+     The ramp is KEY[].hand, interpolated by stateAt like every other channel,
+     which means it is spent across the WHOLE walk from register 03 into works
+     and back out again into the method room. There is no threshold anywhere in
+     it. The fit is left running underneath the whole time — it costs two
+     strided passes over the cloud and it means the object is already framed
+     where it belongs when the reader leaves, instead of solving itself from
+     scratch in front of them, which is what `fitted = false` used to buy. */
+  var camYaw = st.yaw + pxNudge, camPit = st.pit + pyNudge;
+  var useDist = dist, tgx = target[0], tgy = target[1], tgz = target[2];
+
+  if (hb > 0.0015) {
+    /* THE NEEDLE, SHORTENED.  At 0.30 of the width it swung a third of the
+       way across the screen from a pivot near the top, which put its tip
+       straight through the first screenshot in the carousel -- a drawn tool
+       lying across a photograph of somebody's website. 0.19 keeps the whole
+       swing inside the band above the cards at every aspect ratio the room is
+       laid out for. handGeom() in the deck script draws the dial off the same
+       two numbers and has to be changed with it. */
+    /* the needle draws back by a twelfth at the middle of a move and lets out
+       again as it lands (handSwing), and breathes a little while it waits, so
+       it reads as a weighted arm rather than as an indicator being set */
+    var len = Math.min(W * 0.19, H * 0.27) * (1 - 0.085 * handSwing);
+    var sway = REDUCED ? 0 : 0.011 * Math.sin(t * 0.52) + 0.004 * Math.sin(t * 1.13);
+    var mN = ENG.tMul(ENG.tRotZ(handPhi + sway), ENG.tTrans(-ENG.STY_BUTT, 0, 0));
+
+    ENG.tApply(WM[2], ENG.STY_BUTT, 0, 0, sbA);
+    ENG.tApply(WM[2], ENG.STY_TIP,  0, 0, stA);
+    ENG.tApply(mN,    ENG.STY_BUTT, 0, 0, sbB);
+    ENG.tApply(mN,    ENG.STY_TIP,  0, 0, stB);
+    var bx = ENG.lerp(sbA[0], sbB[0], hb), by = ENG.lerp(sbA[1], sbB[1], hb), bz = ENG.lerp(sbA[2], sbB[2], hb);
+    /* AND THE AXIS IS BUTT MINUS POINT, NOT THE OTHER WAY ROUND.  styBasis
+       aims the stylus's local +X, and in the profile tables the point is at
+       x = -60 and the butt at +62 — so local +X runs from the point towards
+       the butt. Handed (tip - butt) the rod is rebuilt end for end: correct
+       length, correct pivot, pointing backwards, and it flips the instant the
+       blend starts because below the threshold nothing is rebuilt at all. */
+    var ax2 = bx - ENG.lerp(stA[0], stB[0], hb);
+    var ay2 = by - ENG.lerp(stA[1], stB[1], hb);
+    var az2 = bz - ENG.lerp(stA[2], stB[2], hb);
+    var al = Math.sqrt(ax2 * ax2 + ay2 * ay2 + az2 * az2) || 1;
+    ax2 /= al; ay2 /= al; az2 /= al;
+    WM[2] = ENG.tMul(
+      ENG.tTrans(bx - ax2 * ENG.STY_BUTT, by - ay2 * ENG.STY_BUTT, bz - az2 * ENG.STY_BUTT),
+      ENG.styBasis([ax2, ay2, az2]));
+
+    camYaw = ENG.lerp(camYaw, 0, hb);
+    camPit = ENG.lerp(camPit, 0, hb);
+    useDist = ENG.lerp(useDist, 122 * f / Math.max(1, len), hb);
+    tgx = ENG.lerp(tgx, 0, hb); tgy = ENG.lerp(tgy, 0, hb); tgz = ENG.lerp(tgz, 0, hb);
+    panX = ENG.lerp(panX, 0, hb);
+    panY = ENG.lerp(panY, (HAND_CY - 0.5) * H, hb);
+  }
+  cam = ENG.cameraAt(camYaw, camPit, useDist, [tgx, tgy, tgz]);
 
   for (p = 0; p < 3; p++) MV[p] = ENG.tMul(cam.V, WM[p]);
 
@@ -4508,8 +4869,13 @@ function drawFrame(t) {
      doubling on the landing. --sty-r / --sty-s / --sty-x / --sty-y in the
      stylesheet are set against these numbers: the angle it reports at deck
      position 0 is the angle the photograph has to hold. Four multiplications
-     a frame, and it answers the one question the hand-over turns on. */
-  if (!hand) {
+     a frame, and it answers the one question the hand-over turns on.
+
+     It used to be skipped in the works room, because there the stylus was not
+     the stylus but a needle drawn by another branch. There is one branch now,
+     so it is taken everywhere and STYLOS.stylus() reports the truth in every
+     room — including, in the works room, where the needle is pointing. */
+  {
     ENG.tApply(MV[2], ENG.STY_TIP, 0, 0, o3);
     var pz0 = -o3[2];
     styScr[0] = W * 0.5 + panX + f * o3[0] / (pz0 || 1);
@@ -4528,6 +4894,11 @@ function drawFrame(t) {
   var ink = (st.ink === undefined ? 1 : st.ink);
   /* on a phone the figure keeps only the rooms it is the subject of */
   if (compact) ink *= (st.figM === undefined ? 1 : ENG.clamp(st.figM, 0, 1));
+  /* AND IT STANDS DOWN WHILE THE READING PASSES THROUGH IT.  veil is written
+     by the deck; it is 0 everywhere except inside a room on a phone that is
+     taller than the screen, where the copy scrolls up through the band the
+     figure is drawn in. See THE READING PASSES THROUGH THE BAND in 5f. */
+  ink *= (1 - veil);
 
   /* AND WHERE THERE IS NO INK THERE IS NOTHING TO PRINT.
 
@@ -4559,23 +4930,28 @@ function drawFrame(t) {
 
   var N = gw * gh;
   bufI.fill(-1);
-  var dNear = dist * 0.45, dFar = dist * 2.0, dRange = dFar - dNear;
+  var dNear = useDist * 0.45, dFar = useDist * 2.0, dRange = dFar - dNear;
   var tick = (t * 3.1) | 0;
-  var ghosts = OPT.xray && !hand;
+  var ghosts = OPT.xray && hb < 0.5;
   var moving = st.morph > 0.0004 && st.morph < 0.9996;
+  /* the two leaves go out as the stylus becomes the needle. It used to be
+     `if (hand && pt !== 2) continue` — one frame with a tablet in it and the
+     next without. This is the same instruction spread over the walk. */
+  var leafInk = ink * (1 - hb);
 
   var pos = posCur, nor = norCur, part = scene.part, flag = scene.flag, sd = scene.seed;
-  var M, a0, a1, a2, a4, a5, a6, a8, a9, a10;
+  var M, a0, a1, a2, a4, a5, a6, a8, a9, a10, pInk = 0;
   var curPart = -1;
 
   for (i = 0; i < scene.n; i++) {
     var pt = part[i];
-    if (hand && pt !== 2) continue;
     if (pt !== curPart) {
       curPart = pt; M = MV[pt];
+      pInk = pt === 2 ? ink : leafInk;
       a0 = M[0]; a1 = M[1]; a2 = M[2]; a4 = M[4]; a5 = M[5]; a6 = M[6];
       a8 = M[8]; a9 = M[9]; a10 = M[10];
     }
+    if (pInk < 0.004) continue;
     var i3 = i * 3, X = pos[i3], Y = pos[i3 + 1], Z = pos[i3 + 2];
     var vx = a0 * X + a1 * Y + a2 * Z + M[3];
     var vy = a4 * X + a5 * Y + a6 * Z + M[7];
@@ -4601,7 +4977,7 @@ function drawFrame(t) {
 
     var val = alb * (0.135 + 0.76 * lam + 0.66 * rim * eb) * (eb > 1 ? 1.22 : 1);
     var fade = (dFar - d) / dRange; fade = fade < 0.30 ? 0.30 : (fade > 1 ? 1 : fade);
-    val *= fade * ink;
+    val *= fade * pInk;
     if (moving) {
       var w = 1 - ENG.clamp(Math.abs(X - front) / (SPREAD * 0.42), 0, 1);
       val *= 1 + 1.35 * w * w;
@@ -4620,13 +4996,20 @@ function drawFrame(t) {
     }
   }
 
-  /* ---- what is written ---------------------------------------------- */
-  if (!hand) {
+  /* ---- what is written ----------------------------------------------
+     THE INK IS NOT THE CLOCK.  st.write is how far through the room's action
+     the reader is; penInk is how much of the line the pen has actually put
+     down by then, which holds still for the third of every character's slot
+     the point spends in the air on its way to the next one. Passing the clock
+     straight in is what made the letters appear from under a pen that was not
+     touching them. Both clouds are given the same raw value and each maps it
+     against its own character count — see PEN_DOWN. */
+  if (leafInk > 0.004) {
     M = MV[0];
     var tnx = M[1], tny = M[5], tnz = M[9];
     var lam2 = tnx * lx + tny * ly + tnz * lz; if (lam2 < 0) lam2 = 0;
-    drawInscription(tLat, false, st.write, st.erase, f, dFar, dRange, lam2, M, tnx, tny, tnz, panX, panY, ink);
-    drawInscription(tCode, true, st.write, st.erase, f, dFar, dRange, lam2, M, tnx, tny, tnz, panX, panY, ink);
+    drawInscription(tLat, false, penInk(st.write, tLat.nC), st.erase, f, dFar, dRange, lam2, M, tnx, tny, tnz, panX, panY, leafInk);
+    drawInscription(tCode, true, penInk(st.write, tCode.nC), st.erase, f, dFar, dRange, lam2, M, tnx, tny, tnz, panX, panY, leafInk);
   }
 
   /* ---- print ------------------------------------------------------------
@@ -4685,39 +5068,31 @@ function drawFrame(t) {
     splat(bufX[k], bufY[k], lev, warm);
   }
 
-  /* THE CONTACT MARK: a burst of grain on wax, a caret on glass.
+  /* THE CONTACT MARK IS GONE, BOTH HALVES OF IT, AND IT SHOULD HAVE GONE THE
+     FIRST TIME THE STYLUS WAS REPORTED AS AN ARTEFACT.
 
-     BOTH WERE MEASURED IN LATTICE CELLS, WHICH IS THE ONE UNIT THEY MUST NOT
-     USE.  A cell is a fixed number of screen pixels; the figure is not. So the
-     caret was 11 cells tall whether it stood on a slab filling the screen or
-     on a thumbnail in a phone's top band — which is exactly the complaint: a
-     cursor half the height of the object it is supposedly writing on.
+     There were two marks at the pen's point. On wax, a burst of swarf: eighteen
+     splats on an ellipse two to five times a millimetre across, at the top two
+     levels of the ramp, ROTATING — the angle carried `+ t * 2.2`. On glass, a
+     caret: a column of splats blinking at 1.2Hz.
 
-     `mm` is how many screen pixels a millimetre of the model measures at the
-     depth the pen is touching, so both marks are now sized in the object's own
-     units and hold their proportion at every framing and on every screen. The
-     cell floor is kept only so they never fall below one printable mark. */
-  if (!hand && pose.touching) {
-    var c = pose.contact;
-    ENG.tApply(MV[0], c[0], c[1], c[2], o3);
-    var dz = -o3[2];
-    if (dz > 12) {
-      var cxp = W * 0.5 + panX + f * o3[0] / dz, cyp = H * 0.5 + panY - f * o3[1] / dz;
-      var mm = f / dz;                                  /* px per model mm */
-      if (mScalar < 0.5) {
-        var rBase = Math.max(cell * 0.55, mm * 1.15);   /* ~1mm of swarf */
-        for (i = 0; i < 18; i++) {
-          var an = (i / 18) * Math.PI * 2 + t * 2.2, rr2 = (2 + (i % 4)) * rBase;
-          splatSafe(cxp + Math.cos(an) * rr2, cyp + Math.sin(an) * rr2 * 0.55, i % 3 === 0 ? 4 : 2);
-        }
-      } else if (((t * 2.4) | 0) % 2 === 0) {
-        /* the caret is one cap height of the text it is writing, halved */
-        var hgt = Math.max(cell * 2, mm * (tCode ? tCode.cap : 6.8) * 0.62);
-        var stp = Math.max(cell * 0.8, hgt / 7);
-        for (i = -hgt; i <= hgt; i += stp) splatSafe(cxp, cyp + i, 3);
-      }
-    }
-  }
+     Neither survives contact with the drawing they are drawn on. Every other
+     mark on the canvas is a lattice cell holding one point of a solved
+     silhouette, dithered against its neighbours, and these two were the only
+     things on screen put there by a clock rather than by the geometry: the
+     brightest marks in the frame, an order of magnitude larger than their
+     neighbours, spinning around a point on an object that is otherwise
+     perfectly still. The reader sees a rotating ring near the tip of the
+     stylus and reads it, correctly, as a rendering fault — which is exactly
+     what was reported, twice, once before the stylus itself was fixed and
+     again after. The swarf was not the diagnosis. The swarf was the artefact.
+
+     And they were redundant even when they behaved. What they were for was to
+     say "the point is here and it is cutting". The point is drawn, in the same
+     ink and at the same pitch as everything else; it is now genuinely moving
+     the way a hand moves (see PEN_DOWN), and the letter appears under it as it
+     passes. Nothing is left for a second indicator to add. `pose.touching`
+     went with them — see the note in poseFor. */
 
   ctx.putImageData(img, 0, 0);
 
@@ -4860,8 +5235,12 @@ window.FIGURE = {
     if (p !== deckP || q !== deckQ) dirty = true;
     deckP = p; deckQ = q;
   },
-  setHand: function (on, sector, sectors) {
-    handOn = on ? 1 : 0;
+  /* WHICH SECTOR THE NEEDLE POINTS AT, and nothing else. It used to take an
+     `on` as well and that was the switch the works room was cut on; whether
+     there is a needle at all is a pose now (KEY[].hand) and the figure works
+     it out for itself, so all the deck has left to say is where in the row the
+     reader is. The dial under it is still the deck's, and still a class. */
+  setHand: function (sector, sectors) {
     if (sectors) handSectors = sectors;
     if (sector !== undefined && sector !== null) {
       if (sector !== handSec) {
@@ -4885,6 +5264,13 @@ window.FIGURE = {
   /* the landing's write-and-wipe loop starts here, when the introduction has
      finished handing over — see IDLE_CYCLE */
   beginIdle: function () { if (idleT0 < 0) idleT0 = clock; dirty = true; },
+  /* how far to stand down while the reading passes through the figure's band.
+     0 is the drawing at the room's own ink; 1 is nothing at all. */
+  setVeil: function (v) {
+    v = ENG.clamp(v || 0, 0, 1);
+    if (Math.abs(v - veil) < 0.002) return;
+    veil = v; dirty = true;
+  },
   /* g is a multiplier on how much of the box the figure is allowed. The deck
      drives it 1 -> 1.16 across the landing as the photograph leaves. */
   setBloom: function (g) {
@@ -5906,7 +6292,7 @@ function setWorks(i, src) {
   litTick(i);
   /* the row says which one it is talking about, and not only the chrome */
   for (var k = 0; k < cards.length; k++) cards[k].classList.toggle('is-on', k === i && !STACKED.matches);
-  if (window.FIGURE && window.FIGURE.ready) window.FIGURE.setHand(handOn, i, P.length);
+  if (window.FIGURE && window.FIGURE.ready) window.FIGURE.setHand(i, P.length);
   if (src !== 'track' && (changed || src === 'hand')) centerOn(i);
 }
 
@@ -6192,14 +6578,23 @@ function enterRoom(i) {
   startAct(i);
 
   var inWorks = screens[i].id === 'works';
-  /* stacked, there is no row for the needle to index and it stays away */
+  /* THE DIAL, NOT THE NEEDLE.  This used to switch the figure between two
+     renderers; it only raises the ticks the needle swings over now, because
+     the needle itself is a pose the figure interpolates into (KEY[].hand).
+     Stacked, there is no row to index and the dial stays away — and there is
+     no needle either, because figM is 0 in this room on a phone.
+     The sector is told rather than asked for: the reader may arrive at the
+     works room with the row already on item four, and the needle has to be
+     pointing there before the walk in starts drawing it. */
   var wantHand = inWorks && !STACKED.matches;
   if (wantHand !== handOn) {
     handOn = wantHand;
     handEl.classList.toggle('on', handOn);
-    if (window.FIGURE && window.FIGURE.ready) window.FIGURE.setHand(handOn, wIdx, P.length);
   }
-  if (inWorks) runCascade();
+  if (inWorks) {
+    if (window.FIGURE && window.FIGURE.ready) window.FIGURE.setHand(wIdx, P.length);
+    runCascade();
+  }
 
   var inMethod = screens[i].id === 'method';
   body.classList.toggle('on-paper', inMethod);
@@ -6528,10 +6923,48 @@ function poseLoop() {
     q = (kr && kr.eraseTo !== undefined) ? 0.58 : 1;
   }
   window.FIGURE.setPose(poseP, q);
+  window.FIGURE.setVeil(veilAt());
   backplateAt(poseP);
   overtureAt(poseP);
   showIndexAt(poseP);
   if (mosaic) mosaic.update(poseP);
+}
+
+/* THE READING PASSES THROUGH THE BAND, and no amount of padding can stop it.
+
+   On a phone the figure is drawn into a band across the top of the viewport
+   and every room that carries it reserves that band with padding, which holds
+   perfectly while the room is sitting at its rest position. It stops holding
+   the moment the room is TALLER than the screen — and four of them are, by
+   design. The canvas is fixed; the room is not. So a reader who scrolls on
+   down through the contact room takes their own copy up into the band, and the
+   invitation to write is read through the lattice. Padding cannot answer this,
+   because the two things are in different coordinate systems.
+
+   What can answer it is the figure standing down. The room's own top edge is
+   the datum: while it is at or below the top of the screen the reader is
+   looking at the room as it was composed and the figure is at full ink; every
+   pixel past that is the reader moving their reading INTO the drawing, and the
+   drawing gives way over about a third of a screen. Scroll back and it comes
+   back. Nothing is switched off and nothing is decided on the reader's behalf:
+   the object is the plate at the head of the room, and it recedes as the room
+   is read, which is what a plate at the head of a room should do.
+
+   Only tall rooms, and only on a phone. A room that fits is left entirely
+   alone — the settle keeps it aligned, and applying this to it would fade the
+   figure out and back in on every ordinary movement between two rooms. */
+/* 0.22 of a screen, and 0.94 deep. The first cut was 0.34 and 0.88, which is
+   the right gesture measured against the wrong room: the contact room only
+   runs about 150px over on a phone, so the reader reaches the END of the
+   document with the fade a little past half done and the heading still
+   standing in a lattice. The ramp has to be shorter than the shortest room it
+   serves overruns by, not than the longest. */
+function veilAt() {
+  if (!STACKED.matches || !tops.length) return 0;
+  var i = room >= 0 ? room : 0, vh = window.innerHeight;
+  if (!hts[i] || hts[i] <= vh + 8) return 0;
+  var over = (window.scrollY - tops[i]) / (vh * 0.22);
+  return clamp(over, 0, 1) * 0.94;
 }
 
 /* ---------------------------------------------------------------- 5g · the showroom index
@@ -6615,8 +7048,9 @@ document.addEventListener('click', function (e) {
 /* ---------------------------------------------------------------- 4d · the plate
    The portrait, printed through the same apparatus as the figure: one
    ordered-dither lattice, one ramp between the ground and the bone, and the
-   second tone reserved for the few brightest cells so the plate belongs to
-   the same two inks as everything else on the page.
+   second tone reserved for the few heaviest cells so the plate belongs to
+   the same two inks as everything else on the page. Heaviest, not brightest:
+   on a light ground the mark is a shadow — see the note over `lit`.
 
    The source is read cross-origin from a second request, exactly as the
    landing plate is; if that is refused the canvas never appears and the
@@ -6649,8 +7083,60 @@ function dressPortrait() {
     return m ? [+m[0], +m[1], +m[2]] : [240, 240, 240];
   }
 
+  /* the plate is a control only where it has something to offer — see the
+     compact bail in draw(). The label goes with the role, because the label
+     is a promise about what pressing it does; with the dither gone the
+     photograph is simply a photograph, and the img's alt already says so. */
+  var PLATE_LABEL = fig.getAttribute('aria-label') || '';
+  var isCtl = true;
+  function setControl(on) {
+    if (on === isCtl) return;
+    isCtl = on;
+    fig.classList.toggle('plain', !on);
+    if (on) {
+      fig.setAttribute('role', 'button');
+      fig.setAttribute('tabindex', '0');
+      fig.setAttribute('aria-pressed', 'false');
+      fig.setAttribute('aria-label', PLATE_LABEL);
+    } else {
+      fig.removeAttribute('role');
+      fig.removeAttribute('tabindex');
+      fig.removeAttribute('aria-pressed');
+      fig.removeAttribute('aria-label');
+    }
+  }
+
   function draw() {
     if (!src) return;
+    /* THE PLATE IS THE PHOTOGRAPH ON A PHONE, and it is the one room where
+       that is not a compromise. The dither is an argument — the portrait made
+       of the same substance as the drawing, resolving under the pointer — and
+       the argument needs the second half of it to land. There is no pointer on
+       a phone: the reader gets the lattice and no way of asking for the
+       photograph except a tap nobody is told about, on the one image on the
+       site that is a person's face, in the room that is there to say who that
+       person is. Face first; the reader can want the treatment afterwards, and
+       on a wide screen they get it for free.
+       It is also the most expensive thing in this room to keep — a canvas the
+       height of the viewport, re-dithered on every theme change and every real
+       resize, on the device with the least to spend.
+       The alternative considered and not taken: dither, and lift it as the
+       plate crosses the middle of the screen, the way the works column does
+       with .is-mid. It is a better ending and a worse beginning — the first
+       thing the reader sees is still a face they cannot read. */
+    if (window.innerWidth < 901) {
+      if (built) { if (cv.parentNode) cv.parentNode.removeChild(cv); fig.classList.remove('dithered'); built = false; }
+      /* and with no dither there is nothing to resolve, so the plate stops
+         claiming to be a control. A button that does nothing when it is
+         pressed is worse than no button, and it is announced as one. The
+         resolved state is cleared with it, or a reader who crossed the
+         breakpoint with the plate open would get the new canvas built
+         straight into an opacity of nought. */
+      stuck = false; setResolved(false);
+      setControl(false);
+      return;
+    }
+    setControl(true);
     var r = fig.getBoundingClientRect();
     if (r.width < 8 || r.height < 8) return;
     var dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -6688,6 +7174,31 @@ function dressPortrait() {
     pctx.fillStyle = 'rgb(' + ground.join(',') + ')';
     pctx.fillRect(0, 0, Wc, Hc);
 
+    /* AND ON PAPER THE MARKS ARE THE SHADOWS, NOT THE LIGHTS.
+
+       The loop below prints a mark where the source is BRIGHT: more coverage,
+       a bigger disc, more of the ink. On a dark ground that is a photograph —
+       the ink is pale, so the lit side of a face carries the most of it and
+       the shadows are the bare ground. On the wax theme the ground goes light
+       and the ink goes dark, and the identical instruction prints a NEGATIVE:
+       the reader was given a portrait with black highlights and clean white
+       eye sockets, which is exactly as unsettling as it sounds, and it stood
+       that way until the plate was resolved and a normal photograph appeared
+       underneath it.
+
+       It is not a theme to special-case, it is a question to ask: is the ink
+       darker than the ground? If it is, the mark is a shadow and the tone has
+       to be read the other way up. `lit` asks it of the two colours actually
+       resolved, so a fourth palette gets the right answer without being told.
+
+       The gamma follows the same logic. 0.80 lifts the source so a high-key
+       plate keeps its shadows on a dark ground; on paper the risk is the
+       opposite one — ink filling the light side of the face and the whole
+       plate closing up — so it is taken slightly the other way. */
+    var lum = function (c) { return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255; };
+    var lit = lum(bone) < lum(ground);
+    var gam = lit ? 1.06 : 0.80;
+
     /* seven levels, not five. A face is mostly mid-tones and five steps put
        the whole of a cheek into one of them; the extra two are spent exactly
        where the modelling is. */
@@ -6699,7 +7210,8 @@ function dressPortrait() {
         /* Rec. 709 luminance, lifted a little: the source is a high-key
            black-and-white plate and the shadows close up otherwise */
         var l = (0.2126 * d[o] + 0.7152 * d[o + 1] + 0.0722 * d[o + 2]) / 255;
-        l = Math.pow(l, 0.80);
+        if (lit) l = 1 - l;
+        l = Math.pow(l, gam);
         var q = l * LV + (B[(y & 7) * 8 + (x & 7)] + 0.5) / 64 - 0.5;
         var lev = q | 0;
         if (lev < 1) continue;
